@@ -65,26 +65,16 @@ export async function POST(req: NextRequest) {
       )
     );
 
-    if (existing.length > 0 && !body.variantId) {
+    // Find if there's an exact match including variantId or variantName
+    const exactMatch = existing.find(c => 
+      c.variantId === (body.variantId || null) && 
+      c.variantName === (body.variantName || null)
+    );
+
+    if (exactMatch) {
       await db.update(carts)
-        .set({ quantity: existing[0].quantity + (body.quantity || 1) })
-        .where(eq(carts.id, existing[0].id));
-    } else if (existing.length > 0 && body.variantId) {
-      const existingVariant = await db.select().from(carts).where(
-        and(
-          eq(carts.sessionId, sessionId), 
-          eq(carts.itemId, body.itemId), 
-          eq(carts.itemType, body.itemType || "item"),
-          eq(carts.variantId, body.variantId)
-        )
-      );
-      if (existingVariant.length > 0) {
-        await db.update(carts)
-          .set({ quantity: existingVariant[0].quantity + (body.quantity || 1) })
-          .where(eq(carts.id, existingVariant[0].id));
-      } else {
-        await db.insert(carts).values({ ...body, sessionId });
-      }
+        .set({ quantity: exactMatch.quantity + (body.quantity || 1) })
+        .where(eq(carts.id, exactMatch.id));
     } else {
       await db.insert(carts).values({ ...body, sessionId });
     }

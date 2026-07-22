@@ -133,11 +133,11 @@ export default function HomeClient({ data }: { data: HomeData }) {
     setCart(data);
   }
 
-  async function addToCart(itemId: number, name: string, price: string, quantity = 1, itemType = "item") {
+  async function addToCart(itemId: number, name: string, price: string, quantity = 1, itemType = "item", variantName: string | null = null) {
     await fetch("/api/cart", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ itemId, quantity, itemType }),
+      body: JSON.stringify({ itemId, quantity, itemType, variantName }),
     });
     fetchCart();
     setCartOpen(true);
@@ -1068,7 +1068,9 @@ export default function HomeClient({ data }: { data: HomeData }) {
                       {item.item?.images?.[0] ? <img src={item.item.images[0]} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xl">📦</div>}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm text-slate-900 truncate">{item.item?.name}</p>
+                      <p className="font-medium text-sm text-slate-900 truncate">
+                        {item.item?.name} {item.variantName ? `(${item.variantName})` : ""}
+                      </p>
                       <p className="text-xs text-slate-500">£{item.item?.price}</p>
                     </div>
                     <div className="flex items-center border border-slate-300 rounded-lg">
@@ -1272,7 +1274,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
                     <button
                       type="button"
                       onClick={() => {
-                        addToCart(detailProduct.id, `${detailProduct.name} (${selectedColor || 'Default'})`, detailProduct.price, detailQty, detailProduct.isDress ? "dress" : "item");
+                        addToCart(detailProduct.id, `${detailProduct.name} (${selectedColor || 'Default'})`, detailProduct.price, detailQty, detailProduct.isDress ? "dress" : "item", selectedColor);
                         setDetailProduct(null);
                       }}
                       className="w-full bg-[#fdd835] hover:bg-[#fbc02d] text-stone-900 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition shadow-md shadow-amber-400/20 uppercase tracking-wider"
