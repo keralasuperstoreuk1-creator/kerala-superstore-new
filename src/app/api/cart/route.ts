@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { carts, items, itemVariants } from "@/db/schema";
+import { carts, items, itemVariants, dresses, offers } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { cookies } from "next/headers";
 
@@ -20,9 +20,20 @@ export async function GET(req: NextRequest) {
     
     const result = [];
     for (const cartItem of cartItems) {
-      const item = await db.select().from(items).where(eq(items.id, cartItem.itemId));
+      let item = [];
+      if (cartItem.itemType === "dress") {
+        item = await db.select().from(dresses).where(eq(dresses.id, cartItem.itemId));
+      } else if (cartItem.itemType === "offer") {
+        const offerItem = await db.select().from(offers).where(eq(offers.id, cartItem.itemId));
+        if (offerItem.length > 0) {
+          // Normalize offer to look like an item for the cart
+          item = [{ id: offerItem[0].id, name: offerItem[0].name, price: offerItem[0].newPrice, images: [offerItem[0].image] }];
+        }
+      } else {
+        item = await db.select().from(items).where(eq(items.id, cartItem.itemId));
+      }
       let variant = null;
-      if (cartItem.variantId) {
+      if (cartItem.variantId && cartItem.itemType !== "dress") {
         const variants = await db.select().from(itemVariants).where(eq(itemVariants.id, cartItem.variantId));
         variant = variants[0];
       }
@@ -47,7 +58,11 @@ export async function POST(req: NextRequest) {
     const sessionId = await getSessionId();
 
     const existing = await db.select().from(carts).where(
-      and(eq(carts.sessionId, sessionId), eq(carts.itemId, body.itemId))
+      and(
+        eq(carts.sessionId, sessionId), 
+        eq(carts.itemId, body.itemId),
+        eq(carts.itemType, body.itemType || "item")
+      )
     );
 
     if (existing.length > 0 && !body.variantId) {
@@ -56,7 +71,12 @@ export async function POST(req: NextRequest) {
         .where(eq(carts.id, existing[0].id));
     } else if (existing.length > 0 && body.variantId) {
       const existingVariant = await db.select().from(carts).where(
-        and(eq(carts.sessionId, sessionId), eq(carts.itemId, body.itemId), eq(carts.variantId, body.variantId))
+        and(
+          eq(carts.sessionId, sessionId), 
+          eq(carts.itemId, body.itemId), 
+          eq(carts.itemType, body.itemType || "item"),
+          eq(carts.variantId, body.variantId)
+        )
       );
       if (existingVariant.length > 0) {
         await db.update(carts)

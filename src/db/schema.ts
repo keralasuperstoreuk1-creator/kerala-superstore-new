@@ -116,6 +116,7 @@ export const carts = pgTable("carts", {
   id: serial("id").primaryKey(),
   sessionId: varchar("session_id", { length: 255 }).notNull(),
   itemId: integer("item_id").notNull(),
+  itemType: varchar("item_type", { length: 20 }).default("item"),
   variantId: integer("variant_id"),
   quantity: integer("quantity").notNull().default(1),
   createdAt: timestamp("created_at").defaultNow(),

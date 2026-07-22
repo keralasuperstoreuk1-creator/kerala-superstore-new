@@ -133,11 +133,11 @@ export default function HomeClient({ data }: { data: HomeData }) {
     setCart(data);
   }
 
-  async function addToCart(itemId: number, name: string, price: string, quantity = 1) {
+  async function addToCart(itemId: number, name: string, price: string, quantity = 1, itemType = "item") {
     await fetch("/api/cart", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ itemId, quantity }),
+      body: JSON.stringify({ itemId, quantity, itemType }),
     });
     fetchCart();
     setCartOpen(true);
@@ -589,7 +589,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
                             <span className="text-2xl font-bold text-slate-900">£{offer.newPrice}</span>
                             <span className="text-lg text-slate-400 line-through">£{offer.oldPrice}</span>
                           </div>
-                          <button onClick={() => addToCart(offer.id, offer.name, offer.newPrice)} className="mt-4 bg-green-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-green-700 transition w-fit flex items-center gap-2">
+                          <button onClick={() => addToCart(offer.id, offer.name, offer.newPrice, 1, "offer")} className="mt-4 bg-green-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-green-700 transition w-fit flex items-center gap-2">
                             <ShoppingCart className="w-4 h-4" /> Add to Cart
                           </button>
                         </div>
@@ -757,7 +757,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
                           )}
                         </div>
                         <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 p-3">
-                          <button onClick={() => addToCart(item.id, item.name, item.price)} className="w-full bg-[#0b2416] text-white py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-emerald-800 transition shadow-xl">
+                          <button onClick={() => addToCart(item.id, item.name, item.price, 1, item.isDress ? "dress" : "item")} className="w-full bg-[#0b2416] text-white py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-emerald-800 transition shadow-xl">
                             <ShoppingCart className="w-3.5 h-3.5" /> Add to cart
                           </button>
                         </div>
@@ -772,7 +772,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
                           <span className="font-display text-xl font-bold text-[#0b2416]">£{item.price}</span>
                           {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">£{item.compareAtPrice}</span>}
                         </div>
-                        <button onClick={() => addToCart(item.id, item.name, item.price)} className="md:hidden mt-3 w-full bg-[#0b2416] text-white py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5">
+                        <button onClick={() => addToCart(item.id, item.name, item.price, 1, item.isDress ? "dress" : "item")} className="md:hidden mt-3 w-full bg-[#0b2416] text-white py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5">
                           <ShoppingCart className="w-3.5 h-3.5" /> Add
                         </button>
                       </div>
@@ -842,7 +842,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
                       </div>
                     )}
                     <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 p-3 flex gap-2">
-                      <button onClick={() => addToCart(item.id, item.name, item.price)} className={`flex-1 ${isPreOrder ? "bg-amber-600 hover:bg-amber-700" : "bg-[#0b2416] hover:bg-emerald-800"} text-white py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition shadow-xl`}>
+                      <button onClick={() => addToCart(item.id, item.name, item.price, 1, item.isDress ? "dress" : "item")} className={`flex-1 ${isPreOrder ? "bg-amber-600 hover:bg-amber-700" : "bg-[#0b2416] hover:bg-emerald-800"} text-white py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition shadow-xl`}>
                         {isPreOrder ? <Clock className="w-3.5 h-3.5" /> : <ShoppingCart className="w-3.5 h-3.5" />}
                         {isPreOrder ? "PRE-ORDER" : "ADD TO BAG"}
                       </button>
@@ -867,7 +867,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
                       {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">£{item.compareAtPrice}</span>}
                     </div>
                     <div className="md:hidden flex gap-2 mt-3">
-                      <button onClick={() => addToCart(item.id, item.name, item.price)} className={`flex-1 ${isPreOrder ? "bg-amber-600" : "bg-[#0b2416]"} text-white py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5`}>
+                      <button onClick={() => addToCart(item.id, item.name, item.price, 1, item.isDress ? "dress" : "item")} className={`flex-1 ${isPreOrder ? "bg-amber-600" : "bg-[#0b2416]"} text-white py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5`}>
                         {isPreOrder ? "PRE-ORDER" : "ADD TO BAG"}
                       </button>
                       <button onClick={() => shareOnWhatsApp(item.name, item.price)} className="p-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-xs">
@@ -1272,7 +1272,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
                     <button
                       type="button"
                       onClick={() => {
-                        addToCart(detailProduct.id, `${detailProduct.name} (${selectedColor || 'Default'})`, detailProduct.price, detailQty);
+                        addToCart(detailProduct.id, `${detailProduct.name} (${selectedColor || 'Default'})`, detailProduct.price, detailQty, detailProduct.isDress ? "dress" : "item");
                         setDetailProduct(null);
                       }}
                       className="w-full bg-[#fdd835] hover:bg-[#fbc02d] text-stone-900 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition shadow-md shadow-amber-400/20 uppercase tracking-wider"
