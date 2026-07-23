@@ -895,46 +895,172 @@ function CollectionsContent() {
                     <label className="block text-xs font-semibold text-amber-900">
                       🎨 Color Variants & Images Setup:
                     </label>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+
+                    {/* Quick Color Preset Buttons */}
+                    <div className="space-y-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500">⚡ Quick Add (tap to add color):</span>
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          { name: "Gold", bg: "#D4A843", text: "#fff" },
+                          { name: "Kasavu White", bg: "#FFF8E7", text: "#333" },
+                          { name: "Maroon", bg: "#800000", text: "#fff" },
+                          { name: "Black", bg: "#1a1a1a", text: "#fff" },
+                          { name: "White", bg: "#ffffff", text: "#333" },
+                          { name: "Red", bg: "#DC2626", text: "#fff" },
+                          { name: "Green", bg: "#166534", text: "#fff" },
+                          { name: "Navy Blue", bg: "#1e3a5f", text: "#fff" },
+                          { name: "Pink", bg: "#EC4899", text: "#fff" },
+                          { name: "Purple", bg: "#7C3AED", text: "#fff" },
+                          { name: "Orange", bg: "#EA580C", text: "#fff" },
+                          { name: "Cream", bg: "#FFFDD0", text: "#333" },
+                        ].map((preset) => {
+                          const alreadyAdded = dressForm.colorVariants.some((v) => v.color === preset.name);
+                          return (
+                            <button
+                              key={preset.name}
+                              type="button"
+                              disabled={alreadyAdded}
+                              onClick={() => {
+                                if (!alreadyAdded) {
+                                  setDressForm((prev) => ({
+                                    ...prev,
+                                    colors: prev.colors.includes(preset.name) ? prev.colors : [...prev.colors, preset.name],
+                                    colorVariants: [...prev.colorVariants, { color: preset.name, image: "" }],
+                                  }));
+                                }
+                              }}
+                              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold border transition ${
+                                alreadyAdded
+                                  ? "opacity-40 cursor-not-allowed border-stone-200"
+                                  : "hover:scale-105 hover:shadow-md cursor-pointer border-stone-300"
+                              }`}
+                              style={{ backgroundColor: preset.bg, color: preset.text }}
+                            >
+                              {alreadyAdded ? "✓" : "+"} {preset.name}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Custom Color Input */}
+                    <div className="flex items-center gap-2 pt-1">
                       <input
                         value={currentColorInput}
                         onChange={(e) => setCurrentColorInput(e.target.value)}
-                        placeholder="Color name: Maroon / Kasavu / Gold"
-                        className="w-full px-3 py-2 bg-white border border-amber-300 rounded-xl text-xs outline-none"
+                        placeholder="Or type custom color name..."
+                        className="flex-1 px-3 py-2 bg-white border border-amber-300 rounded-xl text-xs outline-none"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            if (currentColorInput.trim()) {
+                              const color = currentColorInput.trim();
+                              setDressForm((prev) => ({
+                                ...prev,
+                                colors: prev.colors.includes(color) ? prev.colors : [...prev.colors, color],
+                                colorVariants: [...prev.colorVariants, { color, image: "" }],
+                              }));
+                              setCurrentColorInput("");
+                            }
+                          }
+                        }}
                       />
-                      <label className="flex items-center justify-center gap-1.5 px-3 py-2 bg-white border border-amber-300 rounded-xl cursor-pointer hover:bg-stone-50 text-[11px] font-semibold">
-                        <ImageIcon className="w-3.5 h-3.5 text-amber-700" />
-                        <span>{variantUploading ? "Uploading..." : "Upload Image"}</span>
-                        <input type="file" accept="image/*" className="hidden" onChange={handleDressVariantImageUpload} />
-                      </label>
                       <button
                         type="button"
-                        onClick={addColorVariant}
-                        className="w-full bg-[#0b2416] text-white hover:bg-emerald-950 px-3 py-2 rounded-xl text-xs font-bold transition"
+                        onClick={() => {
+                          if (currentColorInput.trim()) {
+                            const color = currentColorInput.trim();
+                            setDressForm((prev) => ({
+                              ...prev,
+                              colors: prev.colors.includes(color) ? prev.colors : [...prev.colors, color],
+                              colorVariants: [...prev.colorVariants, { color, image: "" }],
+                            }));
+                            setCurrentColorInput("");
+                          }
+                        }}
+                        className="bg-[#0b2416] text-white hover:bg-emerald-950 px-4 py-2 rounded-xl text-xs font-bold transition"
                       >
-                        ➕ Add Color Variant
+                        ➕ Add
                       </button>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-                      {dressForm.colorVariants.map((variant, idx) => (
-                        <div key={idx} className="relative bg-white border rounded-xl p-2 text-center text-xs shadow-xs space-y-1 group">
-                          {variant.image ? (
-                            <img src={variant.image} alt="" className="w-full h-16 object-cover rounded-lg" />
-                          ) : (
-                            <div className="w-full h-16 bg-stone-100 rounded-lg flex items-center justify-center text-stone-400 text-[9px]">No image</div>
-                          )}
-                          <div className="font-semibold text-stone-900">{variant.color}</div>
-                          <button
-                            type="button"
-                            onClick={() => removeColorVariant(idx)}
-                            className="absolute -top-1 -right-1 bg-red-100 text-red-700 p-1 rounded-full opacity-0 group-hover:opacity-100 transition"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </button>
+                    {/* Added Variants Grid with Inline Image Upload */}
+                    {dressForm.colorVariants.length > 0 && (
+                      <div className="space-y-2 pt-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
+                          Added Variants ({dressForm.colorVariants.length}):
+                        </span>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                          {dressForm.colorVariants.map((variant, idx) => (
+                            <div key={idx} className="relative bg-white border border-stone-200 rounded-xl p-2 text-center text-xs shadow-xs space-y-1.5 group hover:border-emerald-300 transition">
+                              {variant.image ? (
+                                <div className="relative">
+                                  <img src={variant.image} alt="" className="w-full h-20 object-cover rounded-lg" />
+                                  <label className="absolute bottom-1 right-1 bg-white/90 text-[9px] font-bold px-1.5 py-0.5 rounded cursor-pointer hover:bg-emerald-50 border border-stone-200">
+                                    📷 Change
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      className="hidden"
+                                      onChange={async (e) => {
+                                        const file = e.target.files?.[0];
+                                        if (!file) return;
+                                        const fd = new FormData();
+                                        fd.append("file", file);
+                                        fd.append("folder", "uploads/dresses");
+                                        const res = await fetch("/api/upload", { method: "POST", body: fd });
+                                        const data = await res.json();
+                                        if (data.url) {
+                                          setDressForm((prev) => {
+                                            const newVariants = [...prev.colorVariants];
+                                            newVariants[idx] = { ...newVariants[idx], image: data.url };
+                                            return { ...prev, colorVariants: newVariants };
+                                          });
+                                        }
+                                      }}
+                                    />
+                                  </label>
+                                </div>
+                              ) : (
+                                <label className="w-full h-20 bg-stone-50 border-2 border-dashed border-stone-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-50 hover:border-emerald-400 transition">
+                                  <ImageIcon className="w-5 h-5 text-stone-400 mb-1" />
+                                  <span className="text-[10px] text-stone-500 font-semibold">📷 Upload Photo</span>
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={async (e) => {
+                                      const file = e.target.files?.[0];
+                                      if (!file) return;
+                                      const fd = new FormData();
+                                      fd.append("file", file);
+                                      fd.append("folder", "uploads/dresses");
+                                      const res = await fetch("/api/upload", { method: "POST", body: fd });
+                                      const data = await res.json();
+                                      if (data.url) {
+                                        setDressForm((prev) => {
+                                          const newVariants = [...prev.colorVariants];
+                                          newVariants[idx] = { ...newVariants[idx], image: data.url };
+                                          return { ...prev, colorVariants: newVariants };
+                                        });
+                                      }
+                                    }}
+                                  />
+                                </label>
+                              )}
+                              <div className="font-bold text-stone-900 text-[11px]">{variant.color}</div>
+                              <button
+                                type="button"
+                                onClick={() => removeColorVariant(idx)}
+                                className="absolute -top-1.5 -right-1.5 bg-red-500 text-white p-1 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
