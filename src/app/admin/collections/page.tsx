@@ -526,6 +526,18 @@ function CollectionsContent() {
             />
           </div>
 
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Cover Image</label>
+            <div className="flex items-center gap-3">
+              <label className="flex items-center gap-2 px-4 py-2 bg-stone-50 border border-stone-300 rounded-xl cursor-pointer hover:bg-stone-100 text-xs font-semibold text-stone-700">
+                <ImageIcon className="w-4 h-4 text-emerald-700" />
+                <span>{uploading ? "Uploading..." : "Upload Image"}</span>
+                <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+              </label>
+              {form.image && <img src={form.image} alt="" className="w-10 h-10 object-cover rounded-xl border border-stone-200" />}
+            </div>
+          </div>
+
           <div className="flex gap-3 pt-4 border-t border-stone-100">
             <button type="submit" className="bg-[#0b2416] text-white px-6 py-2.5 rounded-xl hover:bg-emerald-950 transition font-bold text-xs shadow-sm">
               Save Collection
