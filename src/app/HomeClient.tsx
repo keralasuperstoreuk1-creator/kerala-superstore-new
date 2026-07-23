@@ -41,11 +41,22 @@ export default function HomeClient({ data }: { data: HomeData }) {
   const [detailQty, setDetailQty] = useState<number>(1);
   const [zoomOpen, setZoomOpen] = useState<boolean>(false);
 
+
+
   function getProductThumbnails(prod: any) {
     const list: { url: string; color?: string }[] = [];
+    // First add default color variant image(s) if any
     if (prod?.colorVariants && Array.isArray(prod.colorVariants)) {
       prod.colorVariants.forEach((cv: any) => {
-        if (cv.image) list.push({ url: cv.image, color: cv.color });
+        if (cv.image && cv.isDefault) {
+          list.push({ url: cv.image, color: cv.color });
+        }
+      });
+      // Then add the rest of the color variant images
+      prod.colorVariants.forEach((cv: any) => {
+        if (cv.image && !cv.isDefault) {
+          list.push({ url: cv.image, color: cv.color });
+        }
       });
     }
     if (prod?.variants && Array.isArray(prod.variants)) {

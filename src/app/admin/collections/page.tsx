@@ -311,7 +311,8 @@ function CollectionsContent() {
         images: item.images || [],
         sizes: item.sizes || ["Free Size"],
         colors: item.colors || [],
-        colorVariants: item.colorVariants || [],
+        // Ensure each variant has isDefault flag (default false if missing)
+        colorVariants: (item.colorVariants || []).map((cv) => ({ ...cv, isDefault: cv.isDefault ?? false })),
         orderType: item.orderType || "add_to_bag",
         stock: item.stock || 50,
         isActive: item.isActive ?? true,
@@ -925,7 +926,7 @@ function CollectionsContent() {
                                   setDressForm((prev) => ({
                                     ...prev,
                                     colors: prev.colors.includes(preset.name) ? prev.colors : [...prev.colors, preset.name],
-                                    colorVariants: [...prev.colorVariants, { color: preset.name, image: "" }],
+                                    colorVariants: [...prev.colorVariants, { color: preset.name, image: "", isDefault: false }],
                                   }));
                                 }
                               }}
@@ -958,7 +959,7 @@ function CollectionsContent() {
                               setDressForm((prev) => ({
                                 ...prev,
                                 colors: prev.colors.includes(color) ? prev.colors : [...prev.colors, color],
-                                colorVariants: [...prev.colorVariants, { color, image: "" }],
+                                colorVariants: [...prev.colorVariants, { color, image: "", isDefault: false }],
                               }));
                               setCurrentColorInput("");
                             }
@@ -973,7 +974,7 @@ function CollectionsContent() {
                             setDressForm((prev) => ({
                               ...prev,
                               colors: prev.colors.includes(color) ? prev.colors : [...prev.colors, color],
-                              colorVariants: [...prev.colorVariants, { color, image: "" }],
+                              colorVariants: [...prev.colorVariants, { color, image: "", isDefault: false }],
                             }));
                             setCurrentColorInput("");
                           }
@@ -1020,6 +1021,16 @@ function CollectionsContent() {
                                       }}
                                     />
                                   </label>
+                                  {/* Default selection radio button */}
+                                  <div className="mt-1 flex items-center justify-center">
+                                    <label className="inline-flex items-center">
+                                      <input type="radio" name="defaultVariant" checked={variant.isDefault} onChange={() => setDressForm(prev => ({
+                                        ...prev,
+                                        colorVariants: prev.colorVariants.map((v, i) => ({ ...v, isDefault: i === idx }))
+                                      }))} className="form-radio h-4 w-4 text-emerald-600" />
+                                      <span className="ml-1 text-xs text-emerald-700">Default</span>
+                                    </label>
+                                  </div>
                                 </div>
                               ) : (
                                 <label className="w-full h-20 bg-stone-50 border-2 border-dashed border-stone-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-50 hover:border-emerald-400 transition">

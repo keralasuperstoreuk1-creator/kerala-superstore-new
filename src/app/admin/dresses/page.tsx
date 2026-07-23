@@ -17,7 +17,7 @@ export default function DressesPage() {
   const [form, setForm] = useState({
     name: "", type: "ladies", description: "", price: "", compareAtPrice: "",
     images: [] as string[], sizes: [] as string[], colors: [] as string[],
-    colorVariants: [] as { color: string; image: string }[],
+    colorVariants: [] as { color: string; image: string; isDefault?: boolean }[],
     orderType: "add_to_bag",
     stock: 50, sortOrder: 0, isActive: true,
   });
@@ -97,7 +97,7 @@ export default function DressesPage() {
   }
 
   function addColorVariant() {
-    setForm((f) => ({ ...f, colorVariants: [...f.colorVariants, { color: "", image: "" }] }));
+    setForm((f) => ({ ...f, colorVariants: [...f.colorVariants, { color: "", image: "", isDefault: false }] }));
   }
 
   function removeColorVariant(idx: number) {
@@ -290,7 +290,7 @@ export default function DressesPage() {
                     key={preset.name}
                     type="button"
                     onClick={() => {
-                      setForm((f) => ({ ...f, colorVariants: [...f.colorVariants, { color: preset.name, image: "" }] }));
+                      setForm((f) => ({ ...f, colorVariants: [...f.colorVariants, { color: preset.name, image: "", isDefault: false }] }));
                     }}
                     style={{ backgroundColor: preset.bg, color: preset.text }}
                     className="px-2.5 py-1 rounded-lg text-xs font-bold border border-black/10 hover:scale-105 transition shadow-xs flex items-center gap-1"
@@ -323,6 +323,23 @@ export default function DressesPage() {
                   {cv.image && (
                     <img src={cv.image} alt={cv.color} className="w-10 h-10 object-cover rounded-lg border border-stone-200" />
                   )}
+
+                  {/* Default selection radio button */}
+                  <div className="mt-1 flex items-center justify-center">
+                    <label className="inline-flex items-center">
+                      <input
+                        type="radio"
+                        name="defaultVariant"
+                        checked={cv.isDefault}
+                        onChange={() => setForm(prev => ({
+                          ...prev,
+                          colorVariants: prev.colorVariants.map((v, i) => ({ ...v, isDefault: i === idx }))
+                        }))}
+                        className="form-radio h-4 w-4 text-emerald-600"
+                      />
+                      <span className="ml-1 text-xs text-emerald-700">Default</span>
+                    </label>
+                  </div>
 
                   <button type="button" onClick={() => removeColorVariant(idx)} className="p-2 text-rose-600 hover:bg-rose-50 rounded-lg">
                     <X className="w-4 h-4" />
