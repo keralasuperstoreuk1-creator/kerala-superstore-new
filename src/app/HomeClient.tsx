@@ -619,7 +619,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
       )}
 
       {/* Promo Banner */}
-      {settings.promo_banner_active !== "false" && (
+      {settings.promo_banner_active !== "false" && (settings.promo_banner_tag || settings.promo_banner_title || settings.promo_banner_image) && (
         <section id="promo-banner" className="relative py-20 overflow-hidden">
           <div 
             className="absolute inset-0" 
@@ -629,18 +629,22 @@ export default function HomeClient({ data }: { data: HomeData }) {
             <img src={settings.promo_banner_image} alt="Promo Banner" className="absolute inset-0 w-full h-full object-cover" />
           )}
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            {(settings.promo_banner_tag || "🌿 Onam Special 2026") && (
-              <span className="inline-block bg-white/20 text-white px-4 py-1 rounded-full text-sm font-medium mb-4">{settings.promo_banner_tag || "🌿 Onam Special 2026"}</span>
+            {settings.promo_banner_tag && (
+              <span style={{ color: settings.promo_banner_tag_color || "#ffffff" }} className="inline-block bg-white/20 px-4 py-1 rounded-full text-sm font-medium mb-4">{settings.promo_banner_tag}</span>
             )}
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              {settings.promo_banner_title || "Happy Onam"}
-            </h2>
-            {(settings.promo_banner_subtitle || "Celebrate the harvest festival with our exclusive collection! Traditional dresses, special offers & more.") && (
-              <p className="text-white/90 text-lg max-w-2xl mx-auto mb-8">{settings.promo_banner_subtitle || "Celebrate the harvest festival with our exclusive collection! Traditional dresses, special offers & more."}</p>
+            {settings.promo_banner_title && (
+              <h2 style={{ color: settings.promo_banner_title_color || "#ffffff" }} className="text-4xl md:text-5xl font-bold mb-4">
+                {settings.promo_banner_title}
+              </h2>
             )}
-            <a href={settings.promo_banner_btn_link || "#dresses"} className="inline-block bg-white text-orange-600 px-8 py-3 rounded-lg font-bold hover:bg-orange-50 transition">
-              {settings.promo_banner_btn_text || "Explore Collection"}
-            </a>
+            {settings.promo_banner_subtitle && (
+              <p style={{ color: settings.promo_banner_subtitle_color || "#ffffffcc" }} className="text-lg max-w-2xl mx-auto mb-8">{settings.promo_banner_subtitle}</p>
+            )}
+            {settings.promo_banner_btn_text && (
+              <a href={settings.promo_banner_btn_link || "#dresses"} style={{ backgroundColor: settings.promo_banner_btn_color || "#f97316", color: settings.promo_banner_btn_text_color || "#ffffff" }} className="inline-block px-8 py-3 rounded-lg font-bold hover:opacity-90 transition">
+                {settings.promo_banner_btn_text}
+              </a>
+            )}
           </div>
         </section>
       )}
