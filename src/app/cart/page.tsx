@@ -70,6 +70,7 @@ export default function CartPage() {
                     <p className="text-sm text-slate-500">{cartItem.variant.color} {cartItem.variant.size && `- ${cartItem.variant.size}`}</p>
                   )}
                   <p className="font-medium text-slate-900 mt-1">£{cartItem.item?.price}</p>
+{cartItem.item?.description && <p className="text-sm text-slate-600 mt-2">{cartItem.item?.description}</p>}
                 </div>
                 <div className="flex items-center border border-slate-300 rounded-lg">
                   <button onClick={() => updateQuantity(cartItem.id, cartItem.quantity - 1)} className="px-3 py-2 hover:bg-slate-50"><Minus className="w-4 h-4" /></button>

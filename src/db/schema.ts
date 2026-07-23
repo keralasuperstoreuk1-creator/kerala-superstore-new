@@ -102,6 +102,7 @@ export const orderItems = pgTable("order_items", {
   variantName: varchar("variant_name", { length: 255 }),
   quantity: integer("quantity").notNull(),
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  imageUrl: varchar("image_url", { length: 500 }),
   total: decimal("total", { precision: 10, scale: 2 }).notNull(),
 });
 
