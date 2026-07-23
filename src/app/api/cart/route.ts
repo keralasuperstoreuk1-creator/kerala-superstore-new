@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
     return res;
   } catch (error) {
     console.error('Error in POST /api/cart:', error);
-    return NextResponse.json({ error: "Failed to add to cart", details: error?.message }, { status: 500 });
+    return NextResponse.json({ error: "Failed to add to cart", details: String(error) }, { status: 500 });
   }
 }
 
