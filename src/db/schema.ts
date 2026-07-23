@@ -71,6 +71,12 @@ export const slides = pgTable("slides", {
   isActive: boolean("is_active").default(true),
   width: integer("width").default(1920),
   height: integer("height").default(600),
+  titleColor: varchar("title_color", { length: 20 }).default("#ffffff"),
+  titleSize: varchar("title_size", { length: 10 }),
+  subtitleColor: varchar("subtitle_color", { length: 20 }).default("#ffffffcc"),
+  subtitleSize: varchar("subtitle_size", { length: 10 }),
+  btnBgColor: varchar("btn_bg_color", { length: 20 }),
+  btnTextColor: varchar("btn_text_color", { length: 20 }),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

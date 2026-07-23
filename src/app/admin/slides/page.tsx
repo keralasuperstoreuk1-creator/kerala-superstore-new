@@ -19,6 +19,12 @@ export default function SlidesPage() {
     width: 1920,
     height: 600,
     isActive: true,
+    titleColor: "#ffffff",
+    titleSize: "72",
+    subtitleColor: "#ffffffcc",
+    subtitleSize: "20",
+    btnBgColor: "#f59e0b",
+    btnTextColor: "#1c1917",
   });
   const [uploading, setUploading] = useState(false);
 
@@ -98,6 +104,12 @@ export default function SlidesPage() {
       width: s.width || 1920,
       height: s.height || 600,
       isActive: s.isActive ?? true,
+      titleColor: s.titleColor || "#ffffff",
+      titleSize: s.titleSize || "72",
+      subtitleColor: s.subtitleColor || "#ffffffcc",
+      subtitleSize: s.subtitleSize || "20",
+      btnBgColor: s.btnBgColor || "#f59e0b",
+      btnTextColor: s.btnTextColor || "#1c1917",
     });
     setShowForm(true);
   }
@@ -121,7 +133,7 @@ export default function SlidesPage() {
           onClick={() => {
             setShowForm(true);
             setEditing(null);
-            setForm({ title: "", subtitle: "", image: "", link: "", buttonText: "Explore Collection", sortOrder: 0, width: 1920, height: 600, isActive: true });
+    setForm({ title: "", subtitle: "", image: "", link: "", buttonText: "Explore Collection", sortOrder: 0, width: 1920, height: 600, isActive: true, titleColor: "#ffffff", titleSize: "72", subtitleColor: "#ffffffcc", subtitleSize: "20", btnBgColor: "#f59e0b", btnTextColor: "#1c1917" });
           }}
           className="flex items-center gap-2 bg-forest-900 text-white px-5 py-2.5 rounded-xl hover:bg-forest-800 transition font-medium shadow-sm"
         >
@@ -202,6 +214,55 @@ export default function SlidesPage() {
               rows={2}
               className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-forest-600 outline-none transition text-sm"
             />
+          </div>
+
+          <div className="bg-slate-50 border border-stone-200 p-4 rounded-xl space-y-4">
+            <div className="text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1">Text Styling</div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-[11px] font-mono text-stone-500 mb-1">Title Color</label>
+                <div className="flex gap-2 items-center">
+                  <input type="color" value={form.titleColor || "#ffffff"} onChange={(e) => setForm({ ...form, titleColor: e.target.value })} className="w-10 h-10 rounded cursor-pointer border-0" />
+                  <input value={form.titleColor || ""} onChange={(e) => setForm({ ...form, titleColor: e.target.value })} className="flex-1 px-3 py-2 border border-stone-200 rounded-lg text-sm font-mono" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-[11px] font-mono text-stone-500 mb-1">Title Font Size: <span className="text-forest-700 font-bold">{form.titleSize || 72}px</span></label>
+                <input type="range" min="24" max="120" step="2" value={form.titleSize || 72} onChange={(e) => setForm({ ...form, titleSize: e.target.value })} className="w-full accent-forest-600" />
+              </div>
+              <div></div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-[11px] font-mono text-stone-500 mb-1">Subtitle Color</label>
+                <div className="flex gap-2 items-center">
+                  <input type="color" value={(form.subtitleColor || "#ffffff").slice(0, 7)} onChange={(e) => setForm({ ...form, subtitleColor: e.target.value })} className="w-10 h-10 rounded cursor-pointer border-0" />
+                  <input value={form.subtitleColor || ""} onChange={(e) => setForm({ ...form, subtitleColor: e.target.value })} className="flex-1 px-3 py-2 border border-stone-200 rounded-lg text-sm font-mono" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-[11px] font-mono text-stone-500 mb-1">Subtitle Font Size: <span className="text-forest-700 font-bold">{form.subtitleSize || 20}px</span></label>
+                <input type="range" min="12" max="36" step="1" value={form.subtitleSize || 20} onChange={(e) => setForm({ ...form, subtitleSize: e.target.value })} className="w-full accent-forest-600" />
+              </div>
+              <div></div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-[11px] font-mono text-stone-500 mb-1">Button Background</label>
+                <div className="flex gap-2 items-center">
+                  <input type="color" value={form.btnBgColor || "#f59e0b"} onChange={(e) => setForm({ ...form, btnBgColor: e.target.value })} className="w-10 h-10 rounded cursor-pointer border-0" />
+                  <input value={form.btnBgColor || ""} onChange={(e) => setForm({ ...form, btnBgColor: e.target.value })} className="flex-1 px-3 py-2 border border-stone-200 rounded-lg text-sm font-mono" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-[11px] font-mono text-stone-500 mb-1">Button Text Color</label>
+                <div className="flex gap-2 items-center">
+                  <input type="color" value={form.btnTextColor || "#1c1917"} onChange={(e) => setForm({ ...form, btnTextColor: e.target.value })} className="w-10 h-10 rounded cursor-pointer border-0" />
+                  <input value={form.btnTextColor || ""} onChange={(e) => setForm({ ...form, btnTextColor: e.target.value })} className="flex-1 px-3 py-2 border border-stone-200 rounded-lg text-sm font-mono" />
+                </div>
+              </div>
+              <div></div>
+            </div>
           </div>
 
           {/* DYNAMIC EXPLORE BUTTON TARGET COLLECTION SELECTOR */}

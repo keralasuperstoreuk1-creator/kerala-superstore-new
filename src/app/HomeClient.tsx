@@ -498,18 +498,34 @@ export default function HomeClient({ data }: { data: HomeData }) {
               </span>
             </div>
 
-            <h1 className="font-editorial text-4xl sm:text-6xl lg:text-7xl font-bold leading-[1.02] tracking-tight drop-shadow-md">
+            <h1 
+              style={{ 
+                color: heroSlides[heroIndex]?.titleColor || "#ffffff",
+                fontSize: heroSlides[heroIndex]?.titleSize ? `${heroSlides[heroIndex].titleSize}px` : undefined
+              }}
+              className="font-editorial text-4xl sm:text-6xl lg:text-7xl font-bold leading-[1.02] tracking-tight drop-shadow-md"
+            >
               {heroSlides[heroIndex]?.title || "Grand Onam & Kerala Festive Collection 2026"}
             </h1>
 
-            <p className="mt-6 text-base sm:text-xl text-emerald-50/90 max-w-2xl leading-relaxed font-light drop-shadow-sm">
+            <p 
+              style={{ 
+                color: heroSlides[heroIndex]?.subtitleColor || "#ffffffcc",
+                fontSize: heroSlides[heroIndex]?.subtitleSize ? `${heroSlides[heroIndex].subtitleSize}px` : undefined
+              }}
+              className="mt-6 max-w-2xl leading-relaxed font-light drop-shadow-sm"
+            >
               {heroSlides[heroIndex]?.subtitle || "Authentic Kasavu sarees, shirts, kids attire & traditional Kerala groceries delivered straight to your doorstep across the UK."}
             </p>
 
             <div className="mt-8 flex flex-wrap gap-4 items-center">
               <button
                 onClick={() => handleExploreSlide(heroSlides[heroIndex])}
-                className="group inline-flex items-center gap-2.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-stone-950 px-8 py-4 rounded-full font-bold text-base transition-all shadow-xl shadow-amber-500/20 hover:scale-105 cursor-pointer"
+                style={{ 
+                  backgroundColor: heroSlides[heroIndex]?.btnBgColor || "#f59e0b",
+                  color: heroSlides[heroIndex]?.btnTextColor || "#1c1917"
+                }}
+                className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-full font-bold text-base transition-all shadow-xl hover:scale-105 cursor-pointer"
               >
                 {heroSlides[heroIndex]?.buttonText || "Explore Collection"}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
