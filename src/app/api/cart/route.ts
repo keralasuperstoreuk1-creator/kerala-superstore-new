@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
       body = JSON.parse(rawBody);
     } catch (parseError) {
       console.error('JSON parse error in POST /api/cart:', parseError);
-      return NextResponse.json({ error: 'Invalid JSON', details: parseError?.message }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid JSON', details: String(parseError) }, { status: 400 });
     }
     const sessionId = await getSessionId();
 
