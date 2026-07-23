@@ -39,6 +39,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
   const [selectedImage, setSelectedImage] = useState<string>("");
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [detailQty, setDetailQty] = useState<number>(1);
+  const [zoomOpen, setZoomOpen] = useState<boolean>(false);
 
   function getProductThumbnails(prod: any) {
     const list: { url: string; color?: string }[] = [];
@@ -1091,9 +1092,25 @@ export default function HomeClient({ data }: { data: HomeData }) {
                   <span className="font-semibold">Total:</span>
                   <span className="text-xl font-bold">£{cartTotal.toFixed(2)}</span>
                 </div>
-                <button onClick={() => { setCartOpen(false); setCheckoutOpen(true); }} className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2">
-                  <Phone className="w-4 h-4" /> Order via WhatsApp
-                </button>
+                <button
+                   type="button"
+                   onClick={() => {
+                     const itemsMsg = cart
+                       .map((item) => {
+                         const name = item.item?.name ?? '';
+                         const variant = item.variantName ? ` (${item.variantName})` : '';
+                         const qty = item.quantity;
+                         const price = item.item?.price ?? '';
+                         return `${name}${variant} x${qty} - £${price}`;
+                       })
+                       .join('%0A');
+                     const msg = `Hi! I want to place an order:%0A${itemsMsg}%0ATotal: £${cartTotal.toFixed(2)}`;
+                     window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, "_blank");
+                   }}
+                   className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2"
+                 >
+                   <Phone className="w-4 h-4" /> Order via WhatsApp (All Items)
+                 </button>
               </div>
             )}
           </div>
@@ -1139,8 +1156,24 @@ export default function HomeClient({ data }: { data: HomeData }) {
                     </div>
                     <p className="text-sm text-slate-500 mt-2">💰 Payment: Cash on Delivery</p>
                   </div>
-                  <button type="submit" className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2">
-                    <Phone className="w-4 h-4" /> Place Order via WhatsApp
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const itemsMsg = cart
+                        .map((item) => {
+                          const name = item.item?.name ?? '';
+                          const variant = item.variantName ? ` (${item.variantName})` : '';
+                          const qty = item.quantity;
+                          const price = item.item?.price ?? '';
+                          return `${name}${variant} x${qty} - £${price}`;
+                        })
+                        .join('%0A');
+                      const msg = `Hi! I want to place an order:%0A${itemsMsg}%0ATotal: £${cartTotal.toFixed(2)}`;
+                      window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, "_blank");
+                    }}
+                    className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2"
+                  >
+                    <Phone className="w-4 h-4" /> Order via WhatsApp (All Items)
                   </button>
                 </form>
               </div>
@@ -1170,11 +1203,11 @@ export default function HomeClient({ data }: { data: HomeData }) {
                         setSelectedImage(thumb.url);
                         if (thumb.color) setSelectedColor(thumb.color);
                       }}
-                      className={`relative aspect-square w-16 md:w-full rounded-xl overflow-hidden border-2 transition ${
+                      className={`relative w-16 md:w-full h-auto rounded-xl overflow-hidden border-2 transition ${
                         isSelected ? "border-blue-600 ring-2 ring-blue-600/30 scale-105" : "border-stone-200 hover:border-stone-300 opacity-70 hover:opacity-100"
                       }`}
                     >
-                      <img src={thumb.url} alt={thumb.color || ""} className="w-full h-full object-cover" />
+                      <img src={thumb.url} alt={thumb.color || ""} className="w-full h-auto object-contain" />
                       {thumb.color && (
                         <div className="absolute bottom-0 inset-x-0 bg-black/70 text-white text-[9px] font-mono text-center truncate py-0.5 px-1">
                           {thumb.color}
@@ -1185,8 +1218,8 @@ export default function HomeClient({ data }: { data: HomeData }) {
                 })}
               </div>
 
-              {/* Center Column: Big Main Image Preview */}
-              <div className="md:col-span-5 aspect-[3/4] bg-stone-100 rounded-2xl overflow-hidden border border-stone-200 relative order-1 md:order-2 shadow-sm">
+              {/* Center Column: Big Main Image Preview with Zoom */}
+              <div className="md:col-span-5 aspect-[3/4] bg-stone-100 rounded-2xl overflow-hidden border border-stone-200 relative order-1 md:order-2 shadow-sm cursor-pointer" onClick={() => setZoomOpen(true)}>
                 {selectedImage ? (
                   <img src={selectedImage} alt={detailProduct.name} className="w-full h-full object-cover" />
                 ) : (
@@ -1198,6 +1231,13 @@ export default function HomeClient({ data }: { data: HomeData }) {
                   </span>
                 )}
               </div>
+
+              {/* Zoom Overlay */}
+              {zoomOpen && (
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4" onClick={() => setZoomOpen(false)}>
+                  <img src={selectedImage} alt={detailProduct.name} className="max-w-full max-h-full object-contain" />
+                </div>
+              )}
 
               {/* Right Column: Product Specs & Purchase Box */}
               <div className="md:col-span-5 space-y-4 order-3">
@@ -1259,31 +1299,26 @@ export default function HomeClient({ data }: { data: HomeData }) {
                   </div>
                 </div>
 
-                {/* Action Buttons (ADD TO BAG vs PRE-ORDER) */}
+                {/* Action Buttons (ADD TO BAG / PRE-ORDER → both go to cart) */}
                 <div className="space-y-3 pt-3">
-                  {isPreOrder(detailProduct) ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const msg = `Hi! I want to PRE-ORDER: ${detailProduct.name} (${selectedColor ? 'Color: ' + selectedColor : ''}) - Qty: ${detailQty} - Price: £${detailProduct.price}`;
-                        window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, "_blank");
-                      }}
-                      className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition shadow-lg shadow-amber-500/25 uppercase tracking-wider"
-                    >
-                      <Clock className="w-4 h-4 text-white" /> PRE-ORDER NOW
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        addToCart(detailProduct.id, `${detailProduct.name} (${selectedColor || 'Default'})`, detailProduct.price, detailQty, detailProduct.isDress ? "dress" : "item", selectedColor);
-                        setDetailProduct(null);
-                      }}
-                      className="w-full bg-[#fdd835] hover:bg-[#fbc02d] text-stone-900 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition shadow-md shadow-amber-400/20 uppercase tracking-wider"
-                    >
-                      <ShoppingCart className="w-4 h-4 text-stone-900" /> ADD TO BAG
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      addToCart(detailProduct.id, `${detailProduct.name} (${selectedColor || 'Default'})`, detailProduct.price, detailQty, detailProduct.isDress ? "dress" : "item", selectedColor);
+                      setDetailProduct(null);
+                    }}
+                    className={`w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition shadow-lg uppercase tracking-wider ${
+                      isPreOrder(detailProduct)
+                        ? "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-amber-500/25"
+                        : "bg-[#fdd835] hover:bg-[#fbc02d] text-stone-900 shadow-amber-400/20"
+                    }`}
+                  >
+                    {isPreOrder(detailProduct) ? (
+                      <><Clock className="w-4 h-4" /> PRE-ORDER — ADD TO CART</>
+                    ) : (
+                      <><ShoppingCart className="w-4 h-4" /> ADD TO BAG</>
+                    )}
+                  </button>
 
                   <button
                     type="button"
@@ -1294,7 +1329,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
                     }}
                     className="w-full bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition uppercase tracking-wider"
                   >
-                    ⚡ {isPreOrder(detailProduct) ? "WHATSAPP PRE-ORDER" : "BUY NOW"}
+                    ⚡ {isPreOrder(detailProduct) ? "WHATSAPP PRE-ORDER" : "BUY NOW VIA WHATSAPP"}
                   </button>
                 </div>
 
