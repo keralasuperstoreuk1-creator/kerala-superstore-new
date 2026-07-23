@@ -56,7 +56,7 @@ function CollectionsContent() {
     images: [] as string[],
     sizes: ["Free Size"] as string[],
     colors: [] as string[],
-    colorVariants: [] as { color: string; image: string }[],
+    colorVariants: [] as { color: string; image: string; isDefault?: boolean }[],
     orderType: "add_to_bag" as "add_to_bag" | "pre_order",
     stock: 50,
     isActive: true,
@@ -312,7 +312,7 @@ function CollectionsContent() {
         sizes: item.sizes || ["Free Size"],
         colors: item.colors || [],
         // Ensure each variant has isDefault flag (default false if missing)
-        colorVariants: (item.colorVariants || []).map((cv: any) => ({ ...cv, isDefault: cv.isDefault ?? false })),
+        colorVariants: (item.colorVariants || []).map((cv: { color: string; image: string; isDefault?: boolean }) => ({ ...cv, isDefault: cv.isDefault ?? false })),
         orderType: item.orderType || "add_to_bag",
         stock: item.stock || 50,
         isActive: item.isActive ?? true,
