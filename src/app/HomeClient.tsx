@@ -61,7 +61,9 @@ export default function HomeClient({ data }: { data: HomeData }) {
   }
 
   function openDetailModal(prod: any) {
-    setDetailProduct(prod);
+    // Tag dresses (they have a 'type' field like ladies/gents/kids/combo)
+    const isDress = !!(prod.type && ['ladies','gents','kids','combo'].includes(prod.type));
+    setDetailProduct({ ...prod, isDress });
     const thumbs = getProductThumbnails(prod);
     setSelectedImage(thumbs[0]?.url || prod.images?.[0] || "");
     setSelectedColor(thumbs[0]?.color || prod.colors?.[0] || "");
