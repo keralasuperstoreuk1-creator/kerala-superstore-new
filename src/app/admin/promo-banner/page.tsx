@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Save, Eye, EyeOff } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { Save, Eye, EyeOff, Image as ImageIcon } from "lucide-react";
 
 export default function PromoBannerPage() {
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [message, setMessage] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchSettings();
@@ -24,9 +26,9 @@ export default function PromoBannerPage() {
     if (!map.promo_banner_subtitle) map.promo_banner_subtitle = "Celebrate the harvest festival with our exclusive collection! Traditional dresses, special offers & more.";
     if (!map.promo_banner_btn_text) map.promo_banner_btn_text = "Explore Collection";
     if (!map.promo_banner_btn_link) map.promo_banner_btn_link = "#dresses";
-    if (!map.promo_banner_color1) map.promo_banner_color1 = "#f97316"; // orange-500
-    if (!map.promo_banner_color2) map.promo_banner_color2 = "#fbbf24"; // amber-400
-    if (!map.promo_banner_color3) map.promo_banner_color3 = "#eab308"; // yellow-500
+    if (!map.promo_banner_color1) map.promo_banner_color1 = "#f97316";
+    if (!map.promo_banner_color2) map.promo_banner_color2 = "#fbbf24";
+    if (!map.promo_banner_color3) map.promo_banner_color3 = "#eab308";
     
     setSettings(map);
   }
@@ -38,7 +40,8 @@ export default function PromoBannerPage() {
   async function saveAllSettings() {
     const keys = [
       "promo_banner_active", "promo_banner_tag", "promo_banner_title", "promo_banner_subtitle", 
-      "promo_banner_btn_text", "promo_banner_btn_link", "promo_banner_color1", "promo_banner_color2", "promo_banner_color3"
+      "promo_banner_btn_text", "promo_banner_btn_link", "promo_banner_color1", "promo_banner_color2", "promo_banner_color3",
+      "promo_banner_image"
     ];
     
     for (const key of keys) {
@@ -57,6 +60,42 @@ export default function PromoBannerPage() {
     await saveSetting("promo_banner_active", newVal);
     setMessage(`Banner is now ${newVal === "true" ? "Visible" : "Hidden"}`);
     setTimeout(() => setMessage(""), 3000);
+  }
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("File too large! Maximum size is 5 MB.");
+      return;
+    }
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("folder", "promo-banner");
+
+    try {
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      if (!res.ok) {
+        const errText = await res.text();
+        console.error("Upload error:", res.status, errText);
+        alert(`Upload failed (${res.status}). Try a smaller image.`);
+        setUploading(false);
+        return;
+      }
+      const data = await res.json();
+      if (data.success && data.url) {
+        setSettings({ ...settings, promo_banner_image: data.url });
+      } else {
+        alert("Upload failed: " + (data.error || "Unknown error"));
+      }
+    } catch (err: any) {
+      console.error("Upload exception:", err);
+      alert("Upload failed: " + (err?.message || "Network error."));
+    }
+    setUploading(false);
   }
 
   return (
@@ -122,6 +161,44 @@ export default function PromoBannerPage() {
         </div>
 
         <div>
+          <label className="block text-sm font-medium text-slate-700 mb-3">Banner Image (Optional)</label>
+          <div className="flex items-start gap-4">
+            <div className="w-40 h-24 bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl flex items-center justify-center overflow-hidden relative group">
+              {settings.promo_banner_image ? (
+                <img src={settings.promo_banner_image} alt="Banner" className="w-full h-full object-cover" />
+              ) : (
+                <div className="text-center text-slate-400">
+                  <ImageIcon className="w-6 h-6 mx-auto mb-1 opacity-50" />
+                  <span className="text-xs">No Image</span>
+                </div>
+              )}
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                <button onClick={() => fileInputRef.current?.click()} className="bg-white text-slate-900 text-xs font-bold px-3 py-1.5 rounded-full">Change</button>
+              </div>
+            </div>
+            <div className="flex-1">
+              <p className="text-sm text-slate-500 mb-3">Upload a banner background image. Recommended size: 1200x400px.</p>
+              <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleImageUpload} />
+              <button 
+                onClick={() => fileInputRef.current?.click()} 
+                disabled={uploading}
+                className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm transition"
+              >
+                {uploading ? "Uploading..." : "Upload Image"}
+              </button>
+              {settings.promo_banner_image && (
+                <button 
+                  onClick={() => setSettings({ ...settings, promo_banner_image: "" })} 
+                  className="block text-red-600 text-xs font-medium mt-2 hover:underline"
+                >
+                  Remove Image
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div>
           <label className="block text-sm font-medium text-slate-700 mb-3">Gradient Background Colors (Hex Code)</label>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
@@ -166,6 +243,9 @@ export default function PromoBannerPage() {
             className="absolute inset-0 opacity-100" 
             style={{ background: `linear-gradient(to right, ${settings.promo_banner_color1}, ${settings.promo_banner_color2}, ${settings.promo_banner_color3})` }} 
           />
+          {settings.promo_banner_image && (
+            <img src={settings.promo_banner_image} alt="Banner" className="absolute inset-0 w-full h-full object-cover" />
+          )}
           <div className="relative max-w-5xl mx-auto px-4 text-center">
             {settings.promo_banner_tag && (
               <span className="inline-block bg-white/20 text-white px-4 py-1 rounded-full text-sm font-medium mb-4">{settings.promo_banner_tag}</span>

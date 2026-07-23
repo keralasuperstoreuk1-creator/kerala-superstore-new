@@ -625,6 +625,9 @@ export default function HomeClient({ data }: { data: HomeData }) {
             className="absolute inset-0" 
             style={{ background: `linear-gradient(to right, ${settings.promo_banner_color1 || '#f97316'}, ${settings.promo_banner_color2 || '#fbbf24'}, ${settings.promo_banner_color3 || '#eab308'})` }} 
           />
+          {settings.promo_banner_image && (
+            <img src={settings.promo_banner_image} alt="Promo Banner" className="absolute inset-0 w-full h-full object-cover" />
+          )}
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             {(settings.promo_banner_tag || "🌿 Onam Special 2026") && (
               <span className="inline-block bg-white/20 text-white px-4 py-1 rounded-full text-sm font-medium mb-4">{settings.promo_banner_tag || "🌿 Onam Special 2026"}</span>
