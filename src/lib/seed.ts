@@ -25,14 +25,18 @@ async function seed() {
     await db.insert(settings).values(s).onConflictDoNothing();
   }
 
-  // Collection
-  const [col] = await db.insert(collections).values({
+  // Collection — use ON CONFLICT DO NOTHING, then fetch existing
+  await db.insert(collections).values({
     name: "Groceries", slug: "groceries",
     description: "Authentic South Indian pantry staples",
     sortOrder: 0, isActive: true,
-  }).returning();
+  }).onConflictDoNothing();
 
-  // Categories
+  const allCols = await db.select().from(collections);
+  const col = allCols.find((c: any) => c.slug === "groceries") || allCols[0];
+  if (!col) throw new Error("Could not find or create Groceries collection");
+
+  // Categories — use ON CONFLICT DO NOTHING, then fetch existing
   const catData = [
     ["Rice & Grains", "rice-grains"],
     ["Spices", "spices"],
@@ -43,13 +47,16 @@ async function seed() {
   ];
   const catMap: Record<string, number> = {};
   for (const [name, slug] of catData) {
-    const [c] = await db.insert(categories).values({
+    await db.insert(categories).values({
       name, slug, collectionId: col.id, sortOrder: 0, isActive: true,
-    }).returning();
-    catMap[slug] = c.id;
+    }).onConflictDoNothing();
+  }
+  const allCats = await db.select().from(categories);
+  for (const cat of allCats) {
+    catMap[cat.slug] = cat.id;
   }
 
-  // Products
+  // Products — skip if slug already exists
   const products: Array<[string, string, string, string, string, string | null, number]> = [
     ["Basmati Rice 5kg", "basmati-rice-5kg", "8.99", "rice-grains", "Premium long-grain basmati, aged 12 months.", "12.99", 30],
     ["Kerala Red Rice 2kg", "kerala-red-rice-2kg", "6.50", "rice-grains", "Traditional matta rice, hand-pounded.", null, 25],
@@ -70,66 +77,79 @@ async function seed() {
     ["Frozen Kerala Fish Curry", "frozen-fish-curry", "6.99", "frozen", "Meen curry in coconut gravy.", null, 20],
   ];
   for (const [name, slug, price, cat, desc, compare, stock] of products) {
+    if (!catMap[cat]) continue; // skip if category not found
     await db.insert(items).values({
       name, slug, price, categoryId: catMap[cat],
       description: desc, compareAtPrice: compare, stock, sortOrder: 0, isActive: true,
-    });
+    }).onConflictDoNothing();
   }
 
-  // Offers
-  const offersData = [
-    ["Basmati Rice 5kg", "🍚", "LIMITED TIME", "12.99", "8.99", "-30%"],
-    ["Banana Chips Combo", "🍘", "MEGA DEAL", "9.96", "5.99", "-40%"],
-    ["Spice Combo Pack", "🌶️", "BEST VALUE", "15.99", "11.99", "-25%"],
-    ["Masala Chai Bundle", "☕", "HOT DEAL", "11.97", "7.99", "-35%"],
-    ["Coconut Oil 2L", "🥥", "FRESH", "9.98", "7.99", "-20%"],
-  ];
-  for (const [name, emoji, tag, oldP, newP, disc] of offersData) {
-    await db.insert(offers).values({
-      name, emoji, tag, oldPrice: oldP, newPrice: newP, discount: disc, sortOrder: 0, isActive: true,
-    });
+  // Offers — no unique constraint, only insert if table is empty
+  const existingOffers = await db.select().from(offers);
+  if (existingOffers.length === 0) {
+    const offersData = [
+      ["Basmati Rice 5kg", "🍚", "LIMITED TIME", "12.99", "8.99", "-30%"],
+      ["Banana Chips Combo", "🍘", "MEGA DEAL", "9.96", "5.99", "-40%"],
+      ["Spice Combo Pack", "🌶️", "BEST VALUE", "15.99", "11.99", "-25%"],
+      ["Masala Chai Bundle", "☕", "HOT DEAL", "11.97", "7.99", "-35%"],
+      ["Coconut Oil 2L", "🥥", "FRESH", "9.98", "7.99", "-20%"],
+    ];
+    for (const [name, emoji, tag, oldP, newP, disc] of offersData) {
+      await db.insert(offers).values({
+        name, emoji, tag, oldPrice: oldP, newPrice: newP, discount: disc, sortOrder: 0, isActive: true,
+      });
+    }
   }
 
-  // Slides
-  const slidesData = [
-    ["Up to 40% OFF on Groceries", "Fresh vegetables, fruits, spices & more at unbeatable prices.", "Shop the shelves", "#products"],
-    ["Onam Collection is Here", "Traditional Kerala dresses, hampers & festive essentials.", "Shop Onam", "#onam"],
-    ["Free Delivery over £30", "Cash on delivery available across the UK.", "Order Now", "#products"],
-    ["Fresh Kerala Spices & Snacks", "Authentic cardamom, pepper, banana chips — taste of home.", "Explore", "#products"],
-  ];
-  for (const [title, sub, btn, link] of slidesData) {
-    await db.insert(slides).values({
-      title, subtitle: sub, image: "", buttonText: btn, link, sortOrder: 0, isActive: true, width: 1920, height: 1080,
-    });
+  // Slides — only insert if table is empty
+  const existingSlides = await db.select().from(slides);
+  if (existingSlides.length === 0) {
+    const slidesData = [
+      ["Up to 40% OFF on Groceries", "Fresh vegetables, fruits, spices & more at unbeatable prices.", "Shop the shelves", "#products"],
+      ["Onam Collection is Here", "Traditional Kerala dresses, hampers & festive essentials.", "Shop Onam", "#onam"],
+      ["Free Delivery over £30", "Cash on delivery available across the UK.", "Order Now", "#products"],
+      ["Fresh Kerala Spices & Snacks", "Authentic cardamom, pepper, banana chips — taste of home.", "Explore", "#products"],
+    ];
+    for (const [title, sub, btn, link] of slidesData) {
+      await db.insert(slides).values({
+        title, subtitle: sub, image: "", buttonText: btn, link, sortOrder: 0, isActive: true, width: 1920, height: 1080,
+      });
+    }
   }
 
-  // Dresses
-  const dressesData: Array<[string, string, string, string | null, string[], string]> = [
-    ["Kerala Kasavu Saree", "ladies", "89.00", "120.00", ["S","M","L","XL"], "Handloom Kasavu saree with golden zari border."],
-    ["Ladies Half Saree (Settu)", "ladies", "65.00", "85.00", ["S","M","L"], "Traditional half-saree for Onam."],
-    ["Gents Mundu & Shirt Set", "gents", "49.00", null, ["M","L","XL","2XL"], "Kasavu mundu paired with cotton shirt."],
-    ["Boys Mundu Set", "kids", "35.00", null, ["3-5","6-8","9-12"], "Mini mundu set for little gentlemen."],
-    ["Girls Frock Combo (3pc)", "kids", "45.00", "60.00", ["2-4","5-7","8-10"], "Three-piece frock combo in festive colors."],
-    ["Family Onam Combo Pack", "combo", "180.00", "240.00", ["Assorted"], "Complete family dress set — 4 members."],
-  ];
-  for (const [name, type, price, compare, sizes, desc] of dressesData) {
-    await db.insert(dresses).values({
-      name, type, price, compareAtPrice: compare, sizes, colors: ["Gold","White"],
-      description: desc, stock: 15, sortOrder: 0, isActive: true,
-    });
+  // Dresses — only insert if table is empty
+  const existingDresses = await db.select().from(dresses);
+  if (existingDresses.length === 0) {
+    const dressesData: Array<[string, string, string, string | null, string[], string]> = [
+      ["Kerala Kasavu Saree", "ladies", "89.00", "120.00", ["S","M","L","XL"], "Handloom Kasavu saree with golden zari border."],
+      ["Ladies Half Saree (Settu)", "ladies", "65.00", "85.00", ["S","M","L"], "Traditional half-saree for Onam."],
+      ["Gents Mundu & Shirt Set", "gents", "49.00", null, ["M","L","XL","2XL"], "Kasavu mundu paired with cotton shirt."],
+      ["Boys Mundu Set", "kids", "35.00", null, ["3-5","6-8","9-12"], "Mini mundu set for little gentlemen."],
+      ["Girls Frock Combo (3pc)", "kids", "45.00", "60.00", ["2-4","5-7","8-10"], "Three-piece frock combo in festive colors."],
+      ["Family Onam Combo Pack", "combo", "180.00", "240.00", ["Assorted"], "Complete family dress set — 4 members."],
+    ];
+    for (const [name, type, price, compare, sizes, desc] of dressesData) {
+      await db.insert(dresses).values({
+        name, type, price, compareAtPrice: compare, sizes, colors: ["Gold","White"],
+        description: desc, stock: 15, sortOrder: 0, isActive: true,
+      });
+    }
   }
 
-  // Winners
-  const winnersData = [
-    ["Rajesh Kumar", "Won: £100 Voucher", "Onam 2025", "https://api.dicebear.com/7.x/avataaars/svg?seed=Rajesh"],
-    ["Priya Menon", "Won: Free Groceries", "Onam 2025", "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya"],
-    ["Suresh Nair", "Won: Gold Coin", "Christmas 2025", "https://api.dicebear.com/7.x/avataaars/svg?seed=Suresh"],
-    ["Lakshmi Pillai", "Won: £50 Voucher", "New Year 2026", "https://api.dicebear.com/7.x/avataaars/svg?seed=Lakshmi"],
-    ["Mohan Das", "Won: Free Delivery 1 Yr", "Onam 2024", "https://api.dicebear.com/7.x/avataaars/svg?seed=Mohan"],
-    ["Anitha Varma", "Won: Kerala Saree", "Vishu 2025", "https://api.dicebear.com/7.x/avataaars/svg?seed=Anitha"],
-  ];
-  for (const [name, prize, event, photo] of winnersData) {
-    await db.insert(winners).values({ name, prize, event, photo, sortOrder: 0, isActive: true });
+  // Winners — only insert if table is empty
+  const existingWinners = await db.select().from(winners);
+  if (existingWinners.length === 0) {
+    const winnersData = [
+      ["Rajesh Kumar", "Won: £100 Voucher", "Onam 2025", "https://api.dicebear.com/7.x/avataaars/svg?seed=Rajesh"],
+      ["Priya Menon", "Won: Free Groceries", "Onam 2025", "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya"],
+      ["Suresh Nair", "Won: Gold Coin", "Christmas 2025", "https://api.dicebear.com/7.x/avataaars/svg?seed=Suresh"],
+      ["Lakshmi Pillai", "Won: £50 Voucher", "New Year 2026", "https://api.dicebear.com/7.x/avataaars/svg?seed=Lakshmi"],
+      ["Mohan Das", "Won: Free Delivery 1 Yr", "Onam 2024", "https://api.dicebear.com/7.x/avataaars/svg?seed=Mohan"],
+      ["Anitha Varma", "Won: Kerala Saree", "Vishu 2025", "https://api.dicebear.com/7.x/avataaars/svg?seed=Anitha"],
+    ];
+    for (const [name, prize, event, photo] of winnersData) {
+      await db.insert(winners).values({ name, prize, event, photo, sortOrder: 0, isActive: true });
+    }
   }
 }
 
