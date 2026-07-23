@@ -260,7 +260,7 @@ export default function PromoBannerPage() {
       {/* Live Preview */}
       <h2 className="text-xl font-bold text-slate-900 mt-10 mb-4">Live Preview</h2>
       <div className="border-4 border-slate-200 rounded-xl overflow-hidden shadow-lg mb-20 relative bg-white">
-        <div className="relative py-16 overflow-hidden">
+        <div className="relative overflow-hidden" style={{ minHeight: settings.promo_banner_image ? '300px' : undefined }}>
           <div 
             className="absolute inset-0 opacity-100" 
             style={{ background: `linear-gradient(to right, ${settings.promo_banner_color1 || '#f97316'}, ${settings.promo_banner_color2 || '#fbbf24'}, ${settings.promo_banner_color3 || '#eab308'})` }} 
@@ -268,7 +268,7 @@ export default function PromoBannerPage() {
           {settings.promo_banner_image && (
             <img src={settings.promo_banner_image} alt="Banner" className="absolute inset-0 w-full h-full object-cover" />
           )}
-          <div className="relative max-w-5xl mx-auto px-4 text-center">
+          <div className={`relative max-w-5xl mx-auto px-4 text-center ${settings.promo_banner_image ? 'py-20' : 'py-16'}`}>
             {settings.promo_banner_tag && (
               <span style={{ color: settings.promo_banner_tag_color || "#ffffff" }} className="inline-block bg-white/20 px-4 py-1 rounded-full text-sm font-medium mb-4">{settings.promo_banner_tag}</span>
             )}

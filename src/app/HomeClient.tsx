@@ -620,7 +620,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
 
       {/* Promo Banner */}
       {settings.promo_banner_active !== "false" && (settings.promo_banner_tag || settings.promo_banner_title || settings.promo_banner_image) && (
-        <section id="promo-banner" className="relative py-20 overflow-hidden">
+        <section id="promo-banner" className="relative overflow-hidden" style={{ minHeight: settings.promo_banner_image ? '400px' : undefined }}>
           <div 
             className="absolute inset-0" 
             style={{ background: `linear-gradient(to right, ${settings.promo_banner_color1 || '#f97316'}, ${settings.promo_banner_color2 || '#fbbf24'}, ${settings.promo_banner_color3 || '#eab308'})` }} 
@@ -628,7 +628,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
           {settings.promo_banner_image && (
             <img src={settings.promo_banner_image} alt="Promo Banner" className="absolute inset-0 w-full h-full object-cover" />
           )}
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className={`relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center ${settings.promo_banner_image ? 'py-24' : 'py-20'}`}>
             {settings.promo_banner_tag && (
               <span style={{ color: settings.promo_banner_tag_color || "#ffffff" }} className="inline-block bg-white/20 px-4 py-1 rounded-full text-sm font-medium mb-4">{settings.promo_banner_tag}</span>
             )}
