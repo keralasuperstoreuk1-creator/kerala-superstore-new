@@ -1,15 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 
-// Allow uploads up to 10 MB (Next.js default is 1 MB)
-export const config = {
-  api: { bodyParser: false },
-};
+export const maxDuration = 60;
 
-// Also set the route-segment config for the App Router
-export const maxDuration = 60; // seconds
-
-// Configure Cloudinary — set these env vars in your hosting dashboard
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -26,16 +19,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    // Sanitize folder name
+    if (file.size > 5 * 1024 * 1024) {
+      return NextResponse.json({ error: "File too large. Maximum size is 5 MB." }, { status: 400 });
+    }
+
     const safeFolder = folder.replace(/[^a-zA-Z0-9_\-/]/g, "").replace(/^\/+|\/+$/g, "");
 
-    // Convert file to buffer then base64 for Cloudinary upload
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
     const base64 = buffer.toString("base64");
     const dataUri = `data:${file.type || "image/png"};base64,${base64}`;
 
-    // Upload to Cloudinary
     const result = await cloudinary.uploader.upload(dataUri, {
       folder: `kerala-superstore/${safeFolder}`,
       resource_type: "auto",

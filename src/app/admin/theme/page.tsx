@@ -55,9 +55,9 @@ export default function ThemeSettingsPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check file size (max 10 MB)
-    if (file.size > 10 * 1024 * 1024) {
-      alert("File too large! Maximum size is 10 MB. Please use a smaller image.");
+    // Check file size (max 5 MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert("File too large! Maximum size is 5 MB. Please use a smaller image.");
       return;
     }
 
