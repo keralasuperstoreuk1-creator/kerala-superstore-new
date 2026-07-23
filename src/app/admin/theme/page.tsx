@@ -55,6 +55,12 @@ export default function ThemeSettingsPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Check file size (max 10 MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert("File too large! Maximum size is 10 MB. Please use a smaller image.");
+      return;
+    }
+
     setUploading(true);
     const formData = new FormData();
     formData.append("file", file);
@@ -62,14 +68,23 @@ export default function ThemeSettingsPage() {
 
     try {
       const res = await fetch("/api/upload", { method: "POST", body: formData });
+      if (!res.ok) {
+        const errText = await res.text();
+        console.error("Upload response error:", res.status, errText);
+        alert(`Upload failed (${res.status}). Try a smaller image or check your internet connection.`);
+        setUploading(false);
+        return;
+      }
       const data = await res.json();
       if (data.success && data.url) {
         setSettings({ ...settings, theme_logo: data.url });
       } else {
-        alert("Upload failed");
+        console.error("Upload response:", data);
+        alert("Upload failed: " + (data.error || "Unknown error"));
       }
-    } catch (err) {
-      alert("Upload failed");
+    } catch (err: any) {
+      console.error("Upload exception:", err);
+      alert("Upload failed: " + (err?.message || "Network error. Check your internet connection."));
     }
     setUploading(false);
   }

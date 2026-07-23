@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 
+// Allow uploads up to 10 MB (Next.js default is 1 MB)
+export const config = {
+  api: { bodyParser: false },
+};
+
+// Also set the route-segment config for the App Router
+export const maxDuration = 60; // seconds
+
 // Configure Cloudinary — set these env vars in your hosting dashboard
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

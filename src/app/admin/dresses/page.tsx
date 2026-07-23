@@ -17,7 +17,8 @@ export default function DressesPage() {
   const [form, setForm] = useState({
     name: "", type: "ladies", description: "", price: "", compareAtPrice: "",
     images: [] as string[], sizes: [] as string[], colors: [] as string[],
-    colorVariants: [] as { color: string; image: string; isDefault?: boolean }[],
+    // Initialise with a single default colour variant so the radio button is always visible
+    colorVariants: [{ color: "", image: "", isDefault: true }],
     orderType: "add_to_bag",
     stock: 50, sortOrder: 0, isActive: true,
   });
@@ -35,6 +36,16 @@ export default function DressesPage() {
     fetchDresses();
     fetchCategories();
   }, []);
+
+  // When the Add/Edit form is opened, make sure there is at least one colour variant
+  useEffect(() => {
+    if (showForm && form.colorVariants.length === 0) {
+      setForm(prev => ({
+        ...prev,
+        colorVariants: [{ color: "", image: "", isDefault: true }],
+      }));
+    }
+  }, [showForm]);
 
   async function fetchCategories() {
     try {
@@ -97,7 +108,14 @@ export default function DressesPage() {
   }
 
   function addColorVariant() {
-    setForm((f) => ({ ...f, colorVariants: [...f.colorVariants, { color: "", image: "", isDefault: false }] }));
+    setForm((f) => ({
+      ...f,
+      colorVariants: [...f.colorVariants, {
+        color: "",
+        image: "",
+        isDefault: f.colorVariants.length === 0 ? true : false,
+      }],
+    }));
   }
 
   function removeColorVariant(idx: number) {
@@ -290,7 +308,14 @@ export default function DressesPage() {
                     key={preset.name}
                     type="button"
                     onClick={() => {
-                      setForm((f) => ({ ...f, colorVariants: [...f.colorVariants, { color: preset.name, image: "", isDefault: false }] }));
+                      setForm((f) => ({
+                        ...f,
+                        colorVariants: [...f.colorVariants, {
+                          color: preset.name,
+                          image: "",
+                          isDefault: f.colorVariants.length === 0 ? true : false,
+                        }],
+                      }));
                     }}
                     style={{ backgroundColor: preset.bg, color: preset.text }}
                     className="px-2.5 py-1 rounded-lg text-xs font-bold border border-black/10 hover:scale-105 transition shadow-xs flex items-center gap-1"
@@ -330,7 +355,7 @@ export default function DressesPage() {
                       <input
                         type="radio"
                         name="defaultVariant"
-                        checked={cv.isDefault}
+                        checked={!!cv.isDefault}
                         onChange={() => setForm(prev => ({
                           ...prev,
                           colorVariants: prev.colorVariants.map((v, i) => ({ ...v, isDefault: i === idx }))
