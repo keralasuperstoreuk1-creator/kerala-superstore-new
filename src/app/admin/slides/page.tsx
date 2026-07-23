@@ -21,8 +21,10 @@ export default function SlidesPage() {
     isActive: true,
     titleColor: "#ffffff",
     titleSize: "72",
+    titleFont: "",
     subtitleColor: "#ffffffcc",
     subtitleSize: "20",
+    subtitleFont: "",
     btnBgColor: "#f59e0b",
     btnTextColor: "#1c1917",
   });
@@ -82,7 +84,7 @@ export default function SlidesPage() {
     }
     setShowForm(false);
     setEditing(null);
-    setForm({ title: "", subtitle: "", image: "", link: "", buttonText: "Explore Collection", sortOrder: 0, width: 1920, height: 600, isActive: true, titleColor: "#ffffff", titleSize: "72", subtitleColor: "#ffffffcc", subtitleSize: "20", btnBgColor: "#f59e0b", btnTextColor: "#1c1917" });
+    setForm({ title: "", subtitle: "", image: "", link: "", buttonText: "Explore Collection", sortOrder: 0, width: 1920, height: 600, isActive: true, titleColor: "#ffffff", titleSize: "72", titleFont: "", subtitleColor: "#ffffffcc", subtitleSize: "20", subtitleFont: "", btnBgColor: "#f59e0b", btnTextColor: "#1c1917" });
     fetchData();
   }
 
@@ -106,8 +108,10 @@ export default function SlidesPage() {
       isActive: s.isActive ?? true,
       titleColor: s.titleColor || "#ffffff",
       titleSize: s.titleSize || "72",
+      titleFont: s.titleFont || "",
       subtitleColor: s.subtitleColor || "#ffffffcc",
       subtitleSize: s.subtitleSize || "20",
+      subtitleFont: s.subtitleFont || "",
       btnBgColor: s.btnBgColor || "#f59e0b",
       btnTextColor: s.btnTextColor || "#1c1917",
     });
@@ -133,7 +137,7 @@ export default function SlidesPage() {
           onClick={() => {
             setShowForm(true);
             setEditing(null);
-    setForm({ title: "", subtitle: "", image: "", link: "", buttonText: "Explore Collection", sortOrder: 0, width: 1920, height: 600, isActive: true, titleColor: "#ffffff", titleSize: "72", subtitleColor: "#ffffffcc", subtitleSize: "20", btnBgColor: "#f59e0b", btnTextColor: "#1c1917" });
+    setForm({ title: "", subtitle: "", image: "", link: "", buttonText: "Explore Collection", sortOrder: 0, width: 1920, height: 600, isActive: true, titleColor: "#ffffff", titleSize: "72", titleFont: "", subtitleColor: "#ffffffcc", subtitleSize: "20", subtitleFont: "", btnBgColor: "#f59e0b", btnTextColor: "#1c1917" });
           }}
           className="flex items-center gap-2 bg-forest-900 text-white px-5 py-2.5 rounded-xl hover:bg-forest-800 transition font-medium shadow-sm"
         >
@@ -230,7 +234,22 @@ export default function SlidesPage() {
                 <label className="block text-[11px] font-mono text-stone-500 mb-1">Title Font Size: <span className="text-forest-700 font-bold">{form.titleSize || 72}px</span></label>
                 <input type="range" min="24" max="120" step="2" value={form.titleSize || 72} onChange={(e) => setForm({ ...form, titleSize: e.target.value })} className="w-full accent-forest-600" />
               </div>
-              <div></div>
+              <div>
+                <label className="block text-[11px] font-mono text-stone-500 mb-1">Title Font Family</label>
+                <select value={form.titleFont || ""} onChange={(e) => setForm({ ...form, titleFont: e.target.value })} className="w-full px-3 py-2 bg-white border border-stone-200 rounded-lg text-sm">
+                  <option value="">Default (Editorial)</option>
+                  <option value="Playfair Display">Playfair Display</option>
+                  <option value="Poppins">Poppins</option>
+                  <option value="Montserrat">Montserrat</option>
+                  <option value="Oswald">Oswald</option>
+                  <option value="Raleway">Raleway</option>
+                  <option value="Bebas Neue">Bebas Neue</option>
+                  <option value="Lora">Lora</option>
+                  <option value="Merriweather">Merriweather</option>
+                  <option value="Abril Fatface">Abril Fatface</option>
+                  <option value="Righteous">Righteous</option>
+                </select>
+              </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
@@ -244,7 +263,19 @@ export default function SlidesPage() {
                 <label className="block text-[11px] font-mono text-stone-500 mb-1">Subtitle Font Size: <span className="text-forest-700 font-bold">{form.subtitleSize || 20}px</span></label>
                 <input type="range" min="12" max="36" step="1" value={form.subtitleSize || 20} onChange={(e) => setForm({ ...form, subtitleSize: e.target.value })} className="w-full accent-forest-600" />
               </div>
-              <div></div>
+              <div>
+                <label className="block text-[11px] font-mono text-stone-500 mb-1">Subtitle Font Family</label>
+                <select value={form.subtitleFont || ""} onChange={(e) => setForm({ ...form, subtitleFont: e.target.value })} className="w-full px-3 py-2 bg-white border border-stone-200 rounded-lg text-sm">
+                  <option value="">Default (Inter)</option>
+                  <option value="Poppins">Poppins</option>
+                  <option value="Open Sans">Open Sans</option>
+                  <option value="Roboto">Roboto</option>
+                  <option value="Lato">Lato</option>
+                  <option value="Nunito">Nunito</option>
+                  <option value="Montserrat">Montserrat</option>
+                  <option value="Raleway">Raleway</option>
+                </select>
+              </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>

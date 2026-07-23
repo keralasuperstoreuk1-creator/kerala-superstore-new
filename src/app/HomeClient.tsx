@@ -501,9 +501,10 @@ export default function HomeClient({ data }: { data: HomeData }) {
             <h1 
               style={{ 
                 color: heroSlides[heroIndex]?.titleColor || "#ffffff",
-                fontSize: heroSlides[heroIndex]?.titleSize ? `${heroSlides[heroIndex].titleSize}px` : undefined
+                fontSize: heroSlides[heroIndex]?.titleSize ? `${heroSlides[heroIndex].titleSize}px` : undefined,
+                fontFamily: heroSlides[heroIndex]?.titleFont || undefined,
               }}
-              className="font-editorial text-4xl sm:text-6xl lg:text-7xl font-bold leading-[1.02] tracking-tight drop-shadow-md"
+              className="font-editorial font-bold leading-[1.02] tracking-tight drop-shadow-md text-[clamp(28px,5vw,72px)]"
             >
               {heroSlides[heroIndex]?.title || "Grand Onam & Kerala Festive Collection 2026"}
             </h1>
@@ -511,9 +512,10 @@ export default function HomeClient({ data }: { data: HomeData }) {
             <p 
               style={{ 
                 color: heroSlides[heroIndex]?.subtitleColor || "#ffffffcc",
-                fontSize: heroSlides[heroIndex]?.subtitleSize ? `${heroSlides[heroIndex].subtitleSize}px` : undefined
+                fontSize: heroSlides[heroIndex]?.subtitleSize ? `${heroSlides[heroIndex].subtitleSize}px` : undefined,
+                fontFamily: heroSlides[heroIndex]?.subtitleFont || undefined,
               }}
-              className="mt-6 max-w-2xl leading-relaxed font-light drop-shadow-sm"
+              className="mt-6 max-w-2xl leading-relaxed font-light drop-shadow-sm text-[clamp(14px,2.5vw,20px)]"
             >
               {heroSlides[heroIndex]?.subtitle || "Authentic Kasavu sarees, shirts, kids attire & traditional Kerala groceries delivered straight to your doorstep across the UK."}
             </p>

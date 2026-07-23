@@ -854,11 +854,14 @@ function CollectionsContent() {
                         value={dressForm.type}
                         onChange={(e: any) => {
                           const val = e.target.value;
-                          setDressForm({
-                            ...dressForm,
-                            type: val,
-                            sizes: val === "kids" ? ["22", "24", "26"] : ["Free Size", "M", "L", "XL"],
-                          });
+                          const presetSizes = val === "kids" 
+                            ? ["22", "24", "26", "28", "30"] 
+                            : val === "ladies" 
+                              ? ["Free Size", "S", "M", "L", "XL", "XXL"]
+                              : val === "gents"
+                                ? ["Free Size", "38", "40", "42", "44", "46"]
+                                : ["Free Size"];
+                          setDressForm({ ...dressForm, type: val, sizes: presetSizes });
                         }}
                         className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium focus:bg-white outline-none"
                       >
@@ -889,6 +892,64 @@ function CollectionsContent() {
                         placeholder="e.g. 45.00"
                         className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs focus:bg-white outline-none"
                       />
+                    </div>
+                  </div>
+
+                  {/* Sizes Management */}
+                  <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-200/65 space-y-3">
+                    <label className="block text-xs font-semibold text-blue-900">
+                      📏 Available Sizes:
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {dressForm.sizes.map((size, idx) => (
+                        <span key={idx} className="inline-flex items-center gap-1 bg-white border border-blue-300 text-blue-800 text-xs font-bold px-3 py-1.5 rounded-lg">
+                          {size}
+                          <button
+                            type="button"
+                            onClick={() => setDressForm({ ...dressForm, sizes: dressForm.sizes.filter((_, i) => i !== idx) })}
+                            className="ml-1 text-blue-400 hover:text-red-500 font-bold"
+                          >×</button>
+                        </span>
+                      ))}
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        id="customSizeInput"
+                        placeholder="Add size (e.g. 24, 26, 28, 30, 32, M, L)"
+                        className="flex-1 px-3 py-2 bg-white border border-blue-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-blue-400"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            const val = (e.target as HTMLInputElement).value.trim();
+                            if (val && !dressForm.sizes.includes(val)) {
+                              setDressForm({ ...dressForm, sizes: [...dressForm.sizes, val] });
+                              (e.target as HTMLInputElement).value = "";
+                            }
+                          }
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const input = document.getElementById("customSizeInput") as HTMLInputElement;
+                          const val = input?.value?.trim();
+                          if (val && !dressForm.sizes.includes(val)) {
+                            setDressForm({ ...dressForm, sizes: [...dressForm.sizes, val] });
+                            input.value = "";
+                          }
+                        }}
+                        className="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition"
+                      >Add</button>
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {["22", "24", "26", "28", "30", "32", "34", "36", "38", "40", "42", "44", "46", "S", "M", "L", "XL", "XXL", "XXXL", "Free Size"].filter(s => !dressForm.sizes.includes(s)).map(s => (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={() => setDressForm({ ...dressForm, sizes: [...dressForm.sizes, s] })}
+                          className="px-2 py-1 bg-white border border-dashed border-blue-300 text-blue-600 text-[10px] font-medium rounded hover:bg-blue-50 transition"
+                        >+ {s}</button>
+                      ))}
                     </div>
                   </div>
 
