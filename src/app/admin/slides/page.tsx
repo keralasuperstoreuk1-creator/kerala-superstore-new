@@ -82,7 +82,7 @@ export default function SlidesPage() {
     }
     setShowForm(false);
     setEditing(null);
-    setForm({ title: "", subtitle: "", image: "", link: "", buttonText: "Explore Collection", sortOrder: 0, width: 1920, height: 600, isActive: true });
+    setForm({ title: "", subtitle: "", image: "", link: "", buttonText: "Explore Collection", sortOrder: 0, width: 1920, height: 600, isActive: true, titleColor: "#ffffff", titleSize: "72", subtitleColor: "#ffffffcc", subtitleSize: "20", btnBgColor: "#f59e0b", btnTextColor: "#1c1917" });
     fetchData();
   }
 
