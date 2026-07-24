@@ -37,6 +37,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [catFilter, setCatFilter] = useState("all");
   const [checkoutForm, setCheckoutForm] = useState({ name: "", phone: "", email: "", address: "", postcode: "", notes: "" });
+const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
 
@@ -298,30 +299,50 @@ export default function HomeClient({ data }: { data: HomeData }) {
   async function handleCheckout(e: React.FormEvent) {
     e.preventDefault();
     if (cart.length === 0) return;
-    const cartData = cart.map((item) => ({
-      itemId: item.itemId,
-      variantId: item.variantId,
-      name: item.item?.name,
-      variantName: item.variant ? `${item.variant.color || ""} ${item.variant.size || ""}`.trim() : null,
-      color: item.variant?.color || null,
-      size: item.variant?.size || null,
-      quantity: item.quantity,
-      price: item.item?.price,
-      imageUrl: item.item?.images?.[0] || item.variant?.images?.[0] || null,
-    }));
-    const res = await fetch("/api/orders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...checkoutForm, customerName: checkoutForm.name, customerPhone: checkoutForm.phone, customerEmail: checkoutForm.email, totalAmount: cartTotal.toFixed(2), paymentMethod: "cod", items: cartData }),
-    });
-    const data = await res.json();
-    if (data.orderNumber) {
-      setOrderNumber(data.orderNumber);
-      setOrderPlaced(true);
-      for (const item of cart) {
-        await fetch(`/api/cart?id=${item.id}`, { method: "DELETE" });
+    if (checkoutLoading) return;
+    
+    // Validate required fields
+    if (!checkoutForm.name || !checkoutForm.phone || !checkoutForm.address || !checkoutForm.postcode) {
+      alert("Please fill all required fields: Name, Phone, Address, Postcode");
+      return;
+    }
+    
+    setCheckoutLoading(true);
+    try {
+      const cartData = cart.map((item) => ({
+        itemId: item.itemId,
+        variantId: item.variantId,
+        name: item.item?.name,
+        variantName: item.variant ? `${item.variant.color || ""} ${item.variant.size || ""}`.trim() : null,
+        color: item.variant?.color || null,
+        size: item.variant?.size || null,
+        quantity: item.quantity,
+        price: item.item?.price,
+        imageUrl: item.item?.images?.[0] || item.variant?.images?.[0] || null,
+      }));
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...checkoutForm, customerName: checkoutForm.name, customerPhone: checkoutForm.phone, customerEmail: checkoutForm.email, totalAmount: cartTotal.toFixed(2), paymentMethod: "cod", items: cartData }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || "Order failed. Please try again.");
+        return;
       }
-      fetchCart();
+      if (data.orderNumber) {
+        setOrderNumber(data.orderNumber);
+        setOrderPlaced(true);
+        for (const item of cart) {
+          await fetch(`/api/cart?id=${item.id}`, { method: "DELETE" });
+        }
+        fetchCart();
+      }
+    } catch (err) {
+      alert("Order failed. Please check console for details.");
+      console.error("Order error:", err);
+    } finally {
+      setCheckoutLoading(false);
     }
   }
 
@@ -1224,9 +1245,23 @@ export default function HomeClient({ data }: { data: HomeData }) {
                   </div>
                   <button
                     type="submit"
-                    className="w-full bg-emerald-700 text-white py-3 rounded-lg font-semibold hover:bg-emerald-800 transition flex items-center justify-center gap-2"
+                    disabled={checkoutLoading}
+                    className="w-full bg-emerald-700 text-white py-3 rounded-lg font-semibold hover:bg-emerald-800 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <CheckCircle className="w-4 h-4" /> Place Order
+                    {checkoutLoading ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Placing Order...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="w-4 h-4" /> Place Order
+                      </>
+                    )}
+                  </button>
                   </button>
                 </form>
               </div>
