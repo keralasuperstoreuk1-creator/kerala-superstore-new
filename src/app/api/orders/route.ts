@@ -48,6 +48,8 @@ export async function POST(req: NextRequest) {
         variantId: cartItem.variantId,
         itemName: cartItem.name,
         variantName: cartItem.variantName,
+        color: cartItem.color,
+        size: cartItem.size,
         quantity: cartItem.quantity,
         price: cartItem.price,
         imageUrl: cartItem.imageUrl,

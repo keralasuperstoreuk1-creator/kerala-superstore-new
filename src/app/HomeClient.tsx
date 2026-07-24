@@ -303,6 +303,8 @@ export default function HomeClient({ data }: { data: HomeData }) {
       variantId: item.variantId,
       name: item.item?.name,
       variantName: item.variant ? `${item.variant.color || ""} ${item.variant.size || ""}`.trim() : null,
+      color: item.variant?.color || null,
+      size: item.variant?.size || null,
       quantity: item.quantity,
       price: item.item?.price,
       imageUrl: item.item?.images?.[0] || item.variant?.images?.[0] || null,
