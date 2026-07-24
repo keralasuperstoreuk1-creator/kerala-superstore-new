@@ -1143,19 +1143,21 @@ export default function HomeClient({ data }: { data: HomeData }) {
                 </div>
                 <button
                    type="button"
-                   onClick={() => {
-                     const itemsMsg = cart
-                       .map((item) => {
-                         const name = item.item?.name ?? '';
-                         const variant = item.variantName ? ` (${item.variantName})` : '';
-                         const qty = item.quantity;
-                         const price = item.item?.price ?? '';
-                         return `${name}${variant} x${qty} - £${price}`;
-                       })
-                       .join('%0A');
-                     const msg = `Hi! I want to place an order:%0A${itemsMsg}%0ATotal: £${cartTotal.toFixed(2)}`;
-                     window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, "_blank");
-                   }}
+                    onClick={() => {
+                      const itemsMsg = cart
+                        .map((item) => {
+                          const name = item.item?.name ?? '';
+                          const img = item.item?.images?.[0] || '';
+                          const clr = item.variantName ? `🎨 Colour: ${item.variantName}` : '';
+                          const sz = item.variantSize ? `📏 Size: ${item.variantSize}` : '';
+                          const qty = item.quantity;
+                          const price = item.item?.price ?? '';
+                          return `*${name}*${img ? `%0A📷 ${img}` : ''}${clr ? `%0A${clr}` : ''}${sz ? `%0A${sz}` : ''}%0A×${qty} - £${price}`;
+                        })
+                        .join('%0A---%0A');
+                      const msg = `Hi! I want to place an order:%0A%0A${itemsMsg}%0A%0ATotal: £${cartTotal.toFixed(2)}`;
+                      window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, "_blank");
+                    }}
                    className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2"
                  >
                    <Phone className="w-4 h-4" /> Order via WhatsApp (All Items)
@@ -1211,14 +1213,15 @@ export default function HomeClient({ data }: { data: HomeData }) {
                       const itemsMsg = cart
                         .map((item) => {
                           const name = item.item?.name ?? '';
-                          const variant = item.variantName ? ` (${item.variantName})` : '';
-                          const sz = item.variantSize ? ` - Size: ${item.variantSize}` : '';
+                          const img = item.item?.images?.[0] || '';
+                          const clr = item.variantName ? `🎨 Colour: ${item.variantName}` : '';
+                          const sz = item.variantSize ? `📏 Size: ${item.variantSize}` : '';
                           const qty = item.quantity;
                           const price = item.item?.price ?? '';
-                          return `${name}${variant}${sz} x${qty} - £${price}`;
+                          return `*${name}*${img ? `%0A📷 ${img}` : ''}${clr ? `%0A${clr}` : ''}${sz ? `%0A${sz}` : ''}%0A×${qty} - £${price}`;
                         })
-                        .join('%0A');
-                      const msg = `Hi! I want to place an order:%0A${itemsMsg}%0ATotal: £${cartTotal.toFixed(2)}`;
+                        .join('%0A---%0A');
+                      const msg = `Hi! I want to place an order:%0A%0A${itemsMsg}%0A%0ATotal: £${cartTotal.toFixed(2)}`;
                       window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, "_blank");
                     }}
                     className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2"
@@ -1397,8 +1400,11 @@ export default function HomeClient({ data }: { data: HomeData }) {
                     type="button"
                     onClick={() => {
                       const prefix = isPreOrder(detailProduct) ? "PRE-ORDER INQUIRY" : "BUY NOW";
-                      const sizeLabel = selectedSize ? ` - Size: ${selectedSize}` : "";
-                      const msg = `Hi! ${prefix}: ${detailProduct.name} (${selectedColor ? 'Selected Color: ' + selectedColor : ''}${sizeLabel}) - Qty: ${detailQty} - Price: £${detailProduct.price}`;
+                      const name = detailProduct.name;
+                      const img = selectedImage || detailProduct.images?.[0] || '';
+                      const clr = selectedColor ? `🎨 Colour: ${selectedColor}` : '';
+                      const sz = selectedSize ? `📏 Size: ${selectedSize}` : '';
+                      const msg = `Hi! ${prefix}:%0A%0A*${name}*${img ? `%0A📷 ${img}` : ''}${clr ? `%0A${clr}` : ''}${sz ? `%0A${sz}` : ''}%0A×${detailQty} - £${detailProduct.price}`;
                       window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, "_blank");
                     }}
                     className="w-full bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition uppercase tracking-wider"
