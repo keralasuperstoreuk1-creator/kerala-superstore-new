@@ -1216,10 +1216,10 @@ export default function HomeClient({ data }: { data: HomeData }) {
                           const sz = item.variantSize || '-';
                           const qty = item.quantity;
                           const price = item.item?.price ?? '0';
-                          return `${idx + 1}. ${name}%0A   Image: ${img}%0A   Colour: ${clr}%0A   Size: ${sz}%0A   Qty: ${qty} - £${price}`;
+                          return `[${idx + 1}] ${name}%0A     Colour: ${clr} | Size: ${sz} | Qty: ${qty}%0A     Price: £${price}%0A     Image: ${img}`;
                         })
                         .join('%0A');
-                      const msg = `*NEW ORDER*%0A%0A*Customer*%0A. Name: ${custName}%0A. Phone: ${custPhone}%0A. Address: ${custAddress}${custPostcode ? `%0A. Postcode: ${custPostcode}` : ''}${custNotes ? `%0A. Notes: ${custNotes}` : ''}%0A%0A*Items*%0A${itemsMsg}%0A%0A*Total: £${cartTotal.toFixed(2)}*`;
+                      const msg = `--- NEW ORDER ---%0A%0A*CUSTOMER*%0AName: ${custName}%0APhone: ${custPhone}%0AAddress: ${custAddress}${custPostcode ? `%0APostcode: ${custPostcode}` : ''}${custNotes ? `%0ANotes: ${custNotes}` : ''}%0A%0A*ITEMS*%0A${itemsMsg}%0A%0A*TOTAL: £${cartTotal.toFixed(2)}*`;
                       window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, "_blank");
                     }}
                     className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2"
@@ -1403,12 +1403,12 @@ export default function HomeClient({ data }: { data: HomeData }) {
                       if (parseSizes(detailProduct.sizes).length > 0 && !selectedSize) {
                         return alert("⚠️ Please select a size before ordering");
                       }
-                      const prefix = isPreOrder(detailProduct) ? "PRE-ORDER INQUIRY" : "BUY NOW";
+                      const prefix = isPreOrder(detailProduct) ? "PRE-ORDER" : "BUY NOW";
                       const name = detailProduct.name;
                       const img = selectedImage || detailProduct.images?.[0] || '';
                       const clr = selectedColor || '-';
                       const sz = selectedSize || '-';
-                      const msg = `${prefix}%0A%0AItem: ${name}%0AImage: ${img}%0AColour: ${clr}%0ASize: ${sz}%0AQty: ${detailQty}%0APrice: £${detailProduct.price}`;
+                      const msg = `--- ${prefix} ---%0A%0A*Item:* ${name}%0A*Colour:* ${clr}%0A*Size:* ${sz}%0A*Qty:* ${detailQty}%0A*Price:* £${detailProduct.price}%0A*Image:* ${img}`;
                       window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, "_blank");
                     }}
                     className="w-full bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition uppercase tracking-wider"
