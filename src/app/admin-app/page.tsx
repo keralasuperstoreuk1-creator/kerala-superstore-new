@@ -166,12 +166,12 @@ export default function AdminAppPage() {
                 <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-bold">{order.customerName.charAt(0)}</div>
                 <div><p className="font-medium text-stone-900 text-sm">{order.customerName}</p><p className="text-xs text-stone-500">{order.customerPhone}</p></div>
               </div>
-                {order.items?.map((item) => (
+{order.items?.map((item) => (
                   <div key={item.id} className="flex items-center gap-2.5 bg-stone-50 rounded-xl p-2">
                     {item.imageUrl ? (
-                      <img src={item.imageUrl} alt="" className="w-10 h-10 rounded-lg object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; e.target.nextElementSibling?.classList.remove('hidden'); }} />
+                      <img src={item.imageUrl} alt="" className="w-10 h-10 rounded-lg object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                     ) : null}
-                    <div className={`w-10 h-10 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-bold ${item.imageUrl ? 'hidden' : ''}`}>{(item.itemName || '?').charAt(0)}</div>
+                    <div className={`w-10 h-10 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-bold ${item.imageUrl ? '' : ''}`}>{(item.itemName || '?').charAt(0)}</div>
                     <div className="flex-1 min-w-0"><p className="text-xs font-medium text-stone-900 truncate">{item.itemName}</p><p className="text-[10px] text-stone-500">{item.variantName} x{item.quantity}</p></div>
                     <p className="text-xs font-bold text-stone-900">£{item.price}</p>
                   </div>
@@ -249,9 +249,9 @@ export default function AdminAppPage() {
                 {selectedOrder.items.map((item) => (
                   <div key={item.id} className="flex items-center gap-3 bg-white border border-stone-200 rounded-xl p-3">
                     {item.imageUrl ? (
-                      <img src={item.imageUrl} alt="" className="w-14 h-14 rounded-xl object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; e.target.nextElementSibling?.classList.remove('hidden'); }} />
+                      <img src={item.imageUrl} alt="" className="w-14 h-14 rounded-xl object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                     ) : null}
-                    <div className={`w-14 h-14 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-sm font-bold ${item.imageUrl ? 'hidden' : ''}`}>{(item.itemName || '?').charAt(0)}</div>
+                    <div className={`w-14 h-14 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-sm font-bold ${item.imageUrl ? '' : ''}`}>{(item.itemName || '?').charAt(0)}</div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-stone-900 text-sm">{item.itemName}</p>
                       <p className="text-xs text-stone-500">{item.variantName || ""}</p>
