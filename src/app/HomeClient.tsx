@@ -1150,9 +1150,8 @@ export default function HomeClient({ data }: { data: HomeData }) {
                    className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2"
                  >
                    <Phone className="w-4 h-4" /> Proceed to Checkout
-                 </button>
-                 </button>
-              </div>
+                  </button>
+               </div>
             )}
           </div>
         </div>
