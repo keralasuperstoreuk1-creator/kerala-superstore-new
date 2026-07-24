@@ -3,7 +3,16 @@ import { db } from "@/db";
 import { adminUsers, passwordResetTokens } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
+import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
+
+const DEFAULT_ADMINS = [
+  { name: "Rajesh Kumar", email: "rajesh@keralasuperstore.com", password: "admin123" },
+  { name: "Priya Nair", email: "priya@keralasuperstore.com", password: "admin123" },
+  { name: "Suresh Menon", email: "suresh@keralasuperstore.com", password: "admin123" },
+  { name: "Anitha George", email: "anitha@keralasuperstore.com", password: "admin123" },
+  { name: "Vishnu Prakash", email: "vishnu@keralasuperstore.com", password: "admin123" },
+];
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,9 +21,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Email required" }, { status: 400 });
     }
 
-    const user = await db.select().from(adminUsers).where(eq(adminUsers.email, email)).limit(1);
+    let user = await db.select().from(adminUsers).where(eq(adminUsers.email, email)).limit(1);
+
     if (user.length === 0) {
-      return NextResponse.json({ error: "No account found with this email" }, { status: 404 });
+      const admin = DEFAULT_ADMINS.find((a) => a.email === email);
+      if (!admin) {
+        return NextResponse.json({ error: "No account found with this email" }, { status: 404 });
+      }
+      const passwordHash = await bcrypt.hash(admin.password, 10);
+      const result = await db.insert(adminUsers).values({ name: admin.name, email: admin.email, passwordHash }).returning();
+      user = result;
     }
 
     const token = uuidv4();
@@ -42,7 +58,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "A reset link has been sent to your email." });
     }
 
-    // Fallback: return the reset link directly when no SMTP configured
     return NextResponse.json({
       message: "Reset link generated",
       resetUrl,
