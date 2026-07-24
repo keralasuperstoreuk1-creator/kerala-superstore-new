@@ -99,7 +99,7 @@ export default function AdminAppPage() {
     setLoading(false);
   };
 
-  const resetPassword = async (e: React.FormEvent) => {
+  const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true); setError(""); setSuccess("");
     try {
@@ -223,7 +223,7 @@ export default function AdminAppPage() {
     if (view === "reset") {
       return (
         <AuthCard title="Reset Password" subtitle="Enter your new password">
-          <form onSubmit={resetPassword} className="space-y-3.5">
+          <form onSubmit={handleResetPassword} className="space-y-3.5">
             <Input label="New Password (min 6 characters)" type="password" value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} placeholder="••••••••" icon={<KeyRound className="w-4 h-4" />} />
             {error && <p className="text-red-300 text-xs text-center">{error}</p>}
             {success && <p className="text-emerald-300 text-xs text-center">{success}</p>}
