@@ -302,17 +302,21 @@ function CollectionsContent() {
       });
     } else {
       setProductTypeSelector("dress");
+      const parsedSizes = Array.isArray(item.sizes) ? item.sizes : (typeof item.sizes === "string" ? JSON.parse(item.sizes || "[]") : ["Free Size"]);
+      const parsedColors = Array.isArray(item.colors) ? item.colors : (typeof item.colors === "string" ? JSON.parse(item.colors || "[]") : []);
+      const parsedVariants = Array.isArray(item.colorVariants) ? item.colorVariants : (typeof item.colorVariants === "string" ? JSON.parse(item.colorVariants || "[]") : []);
+      const parsedImages = Array.isArray(item.images) ? item.images : (typeof item.images === "string" ? JSON.parse(item.images || "[]") : []);
       setDressForm({
         name: item.name,
         type: item.type || "ladies",
         description: item.description || "",
         price: String(item.price),
         compareAtPrice: item.compareAtPrice ? String(item.compareAtPrice) : "",
-        images: item.images || [],
-        sizes: item.sizes || ["Free Size"],
-        colors: item.colors || [],
+        images: parsedImages,
+        sizes: parsedSizes.length > 0 ? parsedSizes : ["Free Size"],
+        colors: parsedColors,
         // Ensure each variant has isDefault flag (default false if missing)
-        colorVariants: (item.colorVariants || []).map((cv: { color: string; image: string; isDefault?: boolean }) => ({ ...cv, isDefault: cv.isDefault ?? false })),
+        colorVariants: parsedVariants.map((cv: any) => ({ ...cv, isDefault: cv.isDefault ?? false })),
         orderType: item.orderType || "add_to_bag",
         stock: item.stock || 50,
         isActive: item.isActive ?? true,
@@ -1084,13 +1088,20 @@ function CollectionsContent() {
                                   </label>
                                   {/* Default selection radio button */}
                                   <div className="mt-1 flex items-center justify-center">
-                                    <label className="inline-flex items-center">
-                                      <input type="radio" name="defaultVariant" checked={variant.isDefault} onChange={() => setDressForm(prev => ({
+                                    <button
+                                      type="button"
+                                      onClick={() => setDressForm(prev => ({
                                         ...prev,
                                         colorVariants: prev.colorVariants.map((v, i) => ({ ...v, isDefault: i === idx }))
-                                      }))} className="form-radio h-4 w-4 text-emerald-600" />
-                                      <span className="ml-1 text-xs text-emerald-700">Default</span>
-                                    </label>
+                                      }))}
+                                      className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold transition border ${
+                                        variant.isDefault 
+                                          ? "bg-emerald-100 border-emerald-400 text-emerald-800" 
+                                          : "bg-stone-50 border-stone-200 text-stone-500 hover:bg-emerald-50 hover:border-emerald-300"
+                                      }`}
+                                    >
+                                      {variant.isDefault ? "★ Default" : "☆ Set Default"}
+                                    </button>
                                   </div>
                                 </div>
                               ) : (
