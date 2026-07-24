@@ -1209,17 +1209,18 @@ export default function HomeClient({ data }: { data: HomeData }) {
                       if (!custPhone) return alert("⚠️ Please enter your phone number");
                       if (!custAddress) return alert("⚠️ Please enter your delivery address");
                       const itemsMsg = cart
-                        .map((item) => {
+                        .map((item, idx) => {
                           const name = item.item?.name ?? '';
                           const img = item.item?.images?.[0] || '';
-                          const clr = item.variantName ? `🎨 Colour: ${item.variantName}` : '';
-                          const sz = item.variantSize ? `📏 Size: ${item.variantSize}` : '';
+                          const clr = item.variantName ? `Colour: ${item.variantName}` : '';
+                          const sz = item.variantSize ? `Size: ${item.variantSize}` : '';
                           const qty = item.quantity;
                           const price = item.item?.price ?? '';
-                          return `*${name}*${img ? `%0A📷 ${img}` : ''}${clr ? `%0A${clr}` : ''}${sz ? `%0A${sz}` : ''}%0A×${qty} - £${price}`;
+                          const details = [clr, sz].filter(Boolean).join(" | ");
+                          return `${idx + 1}) ${name}%0A   ${details}%0A   Qty: ${qty} x £${price} = £${(parseFloat(price) * qty).toFixed(2)}%0A   Product Image: ${img}`;
                         })
-                        .join('%0A---%0A');
-                      const msg = `🛍️ *NEW ORDER* 🛍️%0A%0A👤 *Name:* ${custName}%0A📞 *Phone:* ${custPhone}%0A📍 *Address:* ${custAddress}${custPostcode ? `%0A📮 *Postcode:* ${custPostcode}` : ''}${custNotes ? `%0A📝 *Notes:* ${custNotes}` : ''}%0A%0A📦 *ORDER ITEMS:*%0A${itemsMsg}%0A%0A💰 *Total: £${cartTotal.toFixed(2)}*`;
+                        .join('%0A');
+                      const msg = `*NEW ORDER* 🛍️%0A%0A*Customer Details*%0A------------------%0AName: ${custName}%0APhone: ${custPhone}%0AAddress: ${custAddress}${custPostcode ? `%0APostcode: ${custPostcode}` : ''}${custNotes ? `%0ANotes: ${custNotes}` : ''}%0A%0A*Order Items*%0A------------------%0A${itemsMsg}%0A%0A*Total: £${cartTotal.toFixed(2)}*`;
                       window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, "_blank");
                     }}
                     className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2"
@@ -1406,9 +1407,10 @@ export default function HomeClient({ data }: { data: HomeData }) {
                       const prefix = isPreOrder(detailProduct) ? "PRE-ORDER INQUIRY" : "BUY NOW";
                       const name = detailProduct.name;
                       const img = selectedImage || detailProduct.images?.[0] || '';
-                      const clr = selectedColor ? `🎨 Colour: ${selectedColor}` : '';
-                      const sz = selectedSize ? `📏 Size: ${selectedSize}` : '';
-                      const msg = `Hi! ${prefix}:%0A%0A*${name}*${img ? `%0A📷 ${img}` : ''}${clr ? `%0A${clr}` : ''}${sz ? `%0A${sz}` : ''}%0A×${detailQty} - £${detailProduct.price}`;
+                      const clr = selectedColor ? `Colour: ${selectedColor}` : '';
+                      const sz = selectedSize ? `Size: ${selectedSize}` : '';
+                      const details = [clr, sz].filter(Boolean).join(" | ");
+                      const msg = `${prefix}%0A%0A*Item:* ${name}%0A${details ? `*Details:* ${details}%0A` : ''}*Qty:* ${detailQty}%0A*Price:* £${detailProduct.price}%0A*Image:* ${img}`;
                       window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, "_blank");
                     }}
                     className="w-full bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition uppercase tracking-wider"
