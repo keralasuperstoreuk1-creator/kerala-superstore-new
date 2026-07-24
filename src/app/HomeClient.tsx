@@ -719,7 +719,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
                     </div>
                     {parseSizes(dress.sizes).length > 0 && <p className="text-xs text-slate-500 mt-1">Sizes: {parseSizes(dress.sizes).join(", ")}</p>}
                     <button onClick={(e) => { e.stopPropagation(); openDetailModal(dress); }} className="mt-3 w-full bg-[#fdd835] hover:bg-[#fbc02d] text-stone-900 py-2 rounded-lg text-sm font-bold transition flex items-center justify-center gap-1 shadow-sm uppercase tracking-wider">
-                      Select Colors & Options
+                      Add to Cart
                     </button>
                   </div>
                 </div>
