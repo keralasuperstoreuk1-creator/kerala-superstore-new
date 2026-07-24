@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { Store, Bell, Package, TrendingUp, CheckCircle, Truck, Search, LogOut, Clock, ChevronLeft } from "lucide-react";
+import { Store, Bell, Package, TrendingUp, CheckCircle, Truck, Search, LogOut, Clock, ChevronLeft, Trash2 } from "lucide-react";
 
 type AdminUser = { id: number; name: string; email: string; phone: string | null };
 type OrderItem = { id: number; itemName: string; variantName: string | null; color: string | null; size: string | null; quantity: number; price: string; imageUrl: string | null; total: string };
@@ -296,6 +296,7 @@ export default function AdminAppPage() {
                 {selectedOrder.status === "confirmed" && <button onClick={() => updateStatus(selectedOrder.id, "processing")} disabled={updating} className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition disabled:opacity-50 flex items-center justify-center gap-2"><Clock className="w-4 h-4" /> Mark Processing</button>}
                 {selectedOrder.status === "processing" && <button onClick={() => updateStatus(selectedOrder.id, "delivered")} disabled={updating} className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm transition disabled:opacity-50 flex items-center justify-center gap-2"><Truck className="w-4 h-4" /> Mark Delivered</button>}
                 {!["delivered", "cancelled"].includes(selectedOrder.status) && <button onClick={() => updateStatus(selectedOrder.id, "cancelled")} disabled={updating} className="w-full py-3 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 font-bold text-sm transition disabled:opacity-50">Cancel Order</button>}
+                <button onClick={async () => { if (confirm("Delete this order permanently?")) { setUpdating(true); try { await fetch(`/api/orders?id=${selectedOrder.id}`, { method: "DELETE" }); setSelectedOrder(null); fetchOrders(); } catch {} setUpdating(false); } }} disabled={updating} className="w-full py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-sm transition disabled:opacity-50 flex items-center justify-center gap-2"><Trash2 className="w-4 h-4" /> Delete Order</button>
               </div>
             </div>
           </div>

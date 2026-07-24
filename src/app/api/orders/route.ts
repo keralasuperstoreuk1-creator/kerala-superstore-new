@@ -112,3 +112,18 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: "Failed to update order" }, { status: 500 });
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+    if (!id) {
+      return NextResponse.json({ error: "Order id required" }, { status: 400 });
+    }
+    await db.delete(orderItems).where(eq(orderItems.orderId, parseInt(id)));
+    const result = await db.delete(orders).where(eq(orders.id, parseInt(id))).returning();
+    return NextResponse.json(result[0]);
+  } catch (error) {
+    return NextResponse.json({ error: "Failed to delete order" }, { status: 500 });
+  }
+}
