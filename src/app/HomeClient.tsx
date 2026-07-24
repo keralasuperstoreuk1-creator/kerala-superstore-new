@@ -312,7 +312,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
     const res = await fetch("/api/orders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...checkoutForm, customerName: checkoutForm.name, customerPhone: checkoutForm.phone, customerEmail: checkoutForm.email || loggedInUser?.email || "", totalAmount: cartTotal.toFixed(2), paymentMethod: "cod", items: cartData }),
+      body: JSON.stringify({ ...checkoutForm, customerName: checkoutForm.name, customerPhone: checkoutForm.phone, customerEmail: checkoutForm.email, totalAmount: cartTotal.toFixed(2), paymentMethod: "cod", items: cartData }),
     });
     const data = await res.json();
     if (data.orderNumber) {

@@ -38,7 +38,18 @@ export async function POST(req: NextRequest) {
     const { items: cartItems, ...orderData } = body;
 
     const orderNumber = generateOrderNumber();
-    const result = await db.insert(orders).values({ ...orderData, orderNumber }).returning();
+    const result = await db.insert(orders).values({
+      customerName: orderData.customerName,
+      customerPhone: orderData.customerPhone,
+      customerEmail: orderData.customerEmail,
+      address: orderData.address,
+      postcode: orderData.postcode,
+      city: orderData.city,
+      totalAmount: orderData.totalAmount,
+      paymentMethod: orderData.paymentMethod || "cod",
+      notes: orderData.notes,
+      orderNumber,
+    }).returning();
     const orderId = result[0].id;
 
     for (const cartItem of cartItems) {
