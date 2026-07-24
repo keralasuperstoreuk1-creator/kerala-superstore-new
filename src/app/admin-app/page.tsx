@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
-import { Store, Bell, Package, TrendingUp, CheckCircle, Truck, Search, LogOut, Clock, ChevronLeft, ArrowLeft, Mail, Lock, UserPlus, KeyRound } from "lucide-react";
+import { Store, Bell, Package, TrendingUp, CheckCircle, Truck, Search, LogOut, Clock, ChevronLeft } from "lucide-react";
 
 type AdminUser = { id: number; name: string; email: string; phone: string | null };
 type OrderItem = { id: number; itemName: string; variantName: string | null; quantity: number; price: string; imageUrl: string | null; total: string };
@@ -167,86 +167,99 @@ export default function AdminAppPage() {
 
   // Auth screens (login/signup/forgot/reset)
   if (!admin) {
-    const AuthCard = ({ children, title, subtitle }: { children: React.ReactNode; title: string; subtitle?: string }) => (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-800 to-stone-900 flex items-center justify-center p-4">
-        <div className="w-full max-w-sm">
-          <div className="text-center mb-6">
-            <div className="w-14 h-14 bg-white/10 backdrop-blur rounded-2xl flex items-center justify-center mx-auto mb-3"><Store className="w-7 h-7 text-emerald-300" /></div>
-            <h1 className="text-xl font-bold text-white">{title}</h1>
-            {subtitle && <p className="text-emerald-200/70 text-xs mt-1">{subtitle}</p>}
-          </div>
-          <div className="bg-white/10 backdrop-blur-md rounded-3xl p-5 border border-white/10">{children}</div>
-        </div>
-      </div>
-    );
-
-    const Input = ({ label, type, value, onChange, placeholder, icon }: { label: string; type: string; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; placeholder: string; icon?: React.ReactNode }) => (
-      <div>
-        <label className="block text-xs font-medium text-emerald-200 mb-1.5">{label}</label>
-        <div className="relative">
-          {icon && <div className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-300/50">{icon}</div>}
-          <input type={type} required value={value} onChange={onChange} className={`w-full ${icon ? "pl-9" : "px-4"} py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm outline-none focus:ring-2 focus:ring-emerald-400`} placeholder={placeholder} />
-        </div>
-      </div>
-    );
-
     if (view === "signup") {
       return (
-        <AuthCard title="Create Account" subtitle="Register as an admin">
-          <form onSubmit={signup} className="space-y-3.5">
-            <Input label="Full Name" type="text" value={signupName} onChange={(e) => setSignupName(e.target.value)} placeholder="Your name" icon={<UserPlus className="w-4 h-4" />} />
-            <Input label="Email" type="email" value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} placeholder="admin@email.com" icon={<Mail className="w-4 h-4" />} />
-            <Input label="Password (min 6 characters)" type="password" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} placeholder="••••••••" icon={<Lock className="w-4 h-4" />} />
-            {error && <p className="text-red-300 text-xs text-center">{error}</p>}
-            {success && <p className="text-emerald-300 text-xs text-center">{success}</p>}
-            <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-stone-900 font-bold text-sm transition disabled:opacity-50">{loading ? "Creating..." : "Sign Up"}</button>
-            <p className="text-center text-xs text-emerald-200/60">Already have an account? <button type="button" onClick={() => { setView("login"); setError(""); setSuccess(""); }} className="text-emerald-300 font-semibold underline">Login</button></p>
-          </form>
-        </AuthCard>
+        <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-800 to-stone-900 flex items-center justify-center p-4">
+          <div className="w-full max-w-sm">
+            <div className="text-center mb-6">
+              <div className="w-14 h-14 bg-white/10 backdrop-blur rounded-2xl flex items-center justify-center mx-auto mb-3"><Store className="w-7 h-7 text-emerald-300" /></div>
+              <h1 className="text-xl font-bold text-white">Create Account</h1>
+              <p className="text-emerald-200/70 text-xs mt-1">Register as an admin</p>
+            </div>
+            <div className="bg-white/10 backdrop-blur-md rounded-3xl p-5 border border-white/10">
+              <form onSubmit={signup} className="space-y-3.5">
+                <div><label className="block text-xs font-medium text-emerald-200 mb-1.5">Full Name</label><input type="text" required value={signupName} onChange={(e) => setSignupName(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm outline-none focus:ring-2 focus:ring-emerald-400" placeholder="Your name" /></div>
+                <div><label className="block text-xs font-medium text-emerald-200 mb-1.5">Email</label><input type="email" required value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm outline-none focus:ring-2 focus:ring-emerald-400" placeholder="admin@email.com" /></div>
+                <div><label className="block text-xs font-medium text-emerald-200 mb-1.5">Password (min 6 characters)</label><input type="password" required value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm outline-none focus:ring-2 focus:ring-emerald-400" placeholder="••••••••" /></div>
+                {error && <p className="text-red-300 text-xs text-center">{error}</p>}
+                {success && <p className="text-emerald-300 text-xs text-center">{success}</p>}
+                <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-stone-900 font-bold text-sm transition disabled:opacity-50">{loading ? "Creating..." : "Sign Up"}</button>
+                <p className="text-center text-xs text-emerald-200/60">Already have an account? <button type="button" onClick={() => { setView("login"); setError(""); setSuccess(""); }} className="text-emerald-300 font-semibold underline">Login</button></p>
+              </form>
+            </div>
+          </div>
+        </div>
       );
     }
 
     if (view === "forgot") {
       return (
-        <AuthCard title="Forgot Password" subtitle="Enter your email to reset">
-          <form onSubmit={forgotPassword} className="space-y-3.5">
-            <Input label="Email" type="email" value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} placeholder="admin@email.com" icon={<Mail className="w-4 h-4" />} />
-            {error && <p className="text-red-300 text-xs text-center">{error}</p>}
-            {success && <p className="text-emerald-300 text-xs text-center">{success}</p>}
-            <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-stone-900 font-bold text-sm transition disabled:opacity-50">{loading ? "Sending..." : "Send Reset Link"}</button>
-            <p className="text-center text-xs text-emerald-200/60"><button type="button" onClick={() => { setView("login"); setError(""); setSuccess(""); }} className="text-emerald-300 font-semibold underline">Back to Login</button></p>
-          </form>
-        </AuthCard>
+        <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-800 to-stone-900 flex items-center justify-center p-4">
+          <div className="w-full max-w-sm">
+            <div className="text-center mb-6">
+              <div className="w-14 h-14 bg-white/10 backdrop-blur rounded-2xl flex items-center justify-center mx-auto mb-3"><Store className="w-7 h-7 text-emerald-300" /></div>
+              <h1 className="text-xl font-bold text-white">Forgot Password</h1>
+              <p className="text-emerald-200/70 text-xs mt-1">Enter your email to reset</p>
+            </div>
+            <div className="bg-white/10 backdrop-blur-md rounded-3xl p-5 border border-white/10">
+              <form onSubmit={forgotPassword} className="space-y-3.5">
+                <div><label className="block text-xs font-medium text-emerald-200 mb-1.5">Email</label><input type="email" required value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm outline-none focus:ring-2 focus:ring-emerald-400" placeholder="admin@email.com" /></div>
+                {error && <p className="text-red-300 text-xs text-center">{error}</p>}
+                {success && <p className="text-emerald-300 text-xs text-center break-all">{success}</p>}
+                <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-stone-900 font-bold text-sm transition disabled:opacity-50">{loading ? "Sending..." : "Send Reset Link"}</button>
+                <p className="text-center text-xs text-emerald-200/60"><button type="button" onClick={() => { setView("login"); setError(""); setSuccess(""); }} className="text-emerald-300 font-semibold underline">Back to Login</button></p>
+              </form>
+            </div>
+          </div>
+        </div>
       );
     }
 
     if (view === "reset") {
       return (
-        <AuthCard title="Reset Password" subtitle="Enter your new password">
-          <form onSubmit={handleResetPassword} className="space-y-3.5">
-            <Input label="New Password (min 6 characters)" type="password" value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} placeholder="••••••••" icon={<KeyRound className="w-4 h-4" />} />
-            {error && <p className="text-red-300 text-xs text-center">{error}</p>}
-            {success && <p className="text-emerald-300 text-xs text-center">{success}</p>}
-            <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-stone-900 font-bold text-sm transition disabled:opacity-50">{loading ? "Resetting..." : "Reset Password"}</button>
-          </form>
-        </AuthCard>
+        <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-800 to-stone-900 flex items-center justify-center p-4">
+          <div className="w-full max-w-sm">
+            <div className="text-center mb-6">
+              <div className="w-14 h-14 bg-white/10 backdrop-blur rounded-2xl flex items-center justify-center mx-auto mb-3"><Store className="w-7 h-7 text-emerald-300" /></div>
+              <h1 className="text-xl font-bold text-white">Reset Password</h1>
+              <p className="text-emerald-200/70 text-xs mt-1">Enter your new password</p>
+            </div>
+            <div className="bg-white/10 backdrop-blur-md rounded-3xl p-5 border border-white/10">
+              <form onSubmit={handleResetPassword} className="space-y-3.5">
+                <div><label className="block text-xs font-medium text-emerald-200 mb-1.5">New Password (min 6 characters)</label><input type="password" required value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm outline-none focus:ring-2 focus:ring-emerald-400" placeholder="••••••••" /></div>
+                {error && <p className="text-red-300 text-xs text-center">{error}</p>}
+                {success && <p className="text-emerald-300 text-xs text-center">{success}</p>}
+                <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-stone-900 font-bold text-sm transition disabled:opacity-50">{loading ? "Resetting..." : "Reset Password"}</button>
+              </form>
+            </div>
+          </div>
+        </div>
       );
     }
 
     // Login view (default)
     return (
-      <AuthCard title="Admin App" subtitle="Kerala Super Store">
-        <form onSubmit={login} className="space-y-3.5">
-          <Input label="Email" type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder="admin@keralasuperstore.com" icon={<Mail className="w-4 h-4" />} />
-          <Input label="Password" type="password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} placeholder="••••••••" icon={<Lock className="w-4 h-4" />} />
-          {error && <p className="text-red-300 text-xs text-center">{error}</p>}
-          <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-stone-900 font-bold text-sm transition disabled:opacity-50">{loading ? "Logging in..." : "Login"}</button>
-          <div className="flex justify-between text-xs text-emerald-200/60">
-            <button type="button" onClick={() => { setView("signup"); setError(""); }} className="text-emerald-300 font-semibold underline">Sign Up</button>
-            <button type="button" onClick={() => { setView("forgot"); setError(""); }} className="text-emerald-300 font-semibold underline">Forgot Password?</button>
+      <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-800 to-stone-900 flex items-center justify-center p-4">
+        <div className="w-full max-w-sm">
+          <div className="text-center mb-6">
+            <div className="w-14 h-14 bg-white/10 backdrop-blur rounded-2xl flex items-center justify-center mx-auto mb-3"><Store className="w-7 h-7 text-emerald-300" /></div>
+            <h1 className="text-xl font-bold text-white">Admin App</h1>
+            <p className="text-emerald-200/70 text-xs mt-1">Kerala Super Store</p>
           </div>
-        </form>
-      </AuthCard>
+          <div className="bg-white/10 backdrop-blur-md rounded-3xl p-5 border border-white/10">
+            <form onSubmit={login} className="space-y-3.5">
+              <div><label className="block text-xs font-medium text-emerald-200 mb-1.5">Email</label><input type="email" required value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm outline-none focus:ring-2 focus:ring-emerald-400" placeholder="admin@keralasuperstore.com" /></div>
+              <div><label className="block text-xs font-medium text-emerald-200 mb-1.5">Password</label><input type="password" required value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm outline-none focus:ring-2 focus:ring-emerald-400" placeholder="••••••••" /></div>
+              {error && <p className="text-red-300 text-xs text-center">{error}</p>}
+              <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-stone-900 font-bold text-sm transition disabled:opacity-50">{loading ? "Logging in..." : "Login"}</button>
+              <div className="flex justify-between text-xs text-emerald-200/60">
+                <button type="button" onClick={() => { setView("signup"); setError(""); }} className="text-emerald-300 font-semibold underline">Sign Up</button>
+                <button type="button" onClick={() => { setView("forgot"); setError(""); }} className="text-emerald-300 font-semibold underline">Forgot Password?</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     );
   }
 
