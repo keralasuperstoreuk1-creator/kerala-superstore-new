@@ -24,11 +24,30 @@ export async function GET(req: NextRequest) {
   }
 }
 
+function extractDressData(body: any) {
+  return {
+    name: body.name,
+    type: body.type,
+    description: body.description || null,
+    price: body.price,
+    compareAtPrice: body.compareAtPrice || null,
+    collectionId: body.collectionId || null,
+    images: body.images || null,
+    sizes: body.sizes || null,
+    colors: body.colors || null,
+    colorVariants: body.colorVariants || null,
+    orderType: body.orderType || "add_to_bag",
+    stock: body.stock ?? 50,
+    sortOrder: body.sortOrder ?? 0,
+    isActive: body.isActive ?? true,
+  };
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { id, ...cleanData } = body;
-    const result = await db.insert(dresses).values(cleanData as any).returning();
+    const data = extractDressData(body);
+    const result = await db.insert(dresses).values(data).returning();
     return NextResponse.json(result[0]);
   } catch (error) {
     console.error("Dress create error:", error);
@@ -39,8 +58,9 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     const body = await req.json();
-    const { id, ...data } = body;
-    const result = await db.update(dresses).set(data as any).where(eq(dresses.id, id)).returning();
+    const { id, ...rawData } = body;
+    const data = extractDressData(rawData);
+    const result = await db.update(dresses).set(data).where(eq(dresses.id, id)).returning();
     return NextResponse.json(result[0]);
   } catch (error) {
     console.error("Dress update error:", error);
