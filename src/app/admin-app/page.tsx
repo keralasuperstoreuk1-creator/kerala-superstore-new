@@ -190,7 +190,6 @@ export default function AdminAppPage() {
                       <p className="text-[10px] text-stone-500 flex flex-wrap gap-1">
                         {item.color && <span className="inline-flex items-center gap-0.5 bg-green-100 text-green-800 px-1.5 py-0.5 rounded-md text-[10px] font-medium"><span className="w-2 h-2 rounded-full bg-green-500 inline-block" />{item.color}</span>}
                         {item.size && <span className="inline-flex items-center gap-0.5 bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded-md text-[10px] font-medium">{item.size}</span>}
-                        {item.variantName && <span className="text-stone-500">{item.variantName}</span>}
                         <span className="text-stone-500">× {item.quantity}</span>
                       </p>
                     </div>
@@ -279,7 +278,6 @@ export default function AdminAppPage() {
                       <p className="text-xs text-stone-500 flex flex-wrap gap-1">
                         {item.color && <span className="inline-flex items-center gap-0.5 bg-green-100 text-green-800 px-1.5 py-0.5 rounded-md text-[10px] font-medium"><span className="w-2 h-2 rounded-full bg-green-500 inline-block" />{item.color}</span>}
                         {item.size && <span className="inline-flex items-center gap-0.5 bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded-md text-[10px] font-medium">{item.size}</span>}
-                        {item.variantName && <span className="text-stone-500">{item.variantName}</span>}
                       </p>
                       <p className="text-xs text-stone-500">Qty: {item.quantity} × £{item.price}</p>
                     </div>
