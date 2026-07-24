@@ -36,7 +36,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
   const [dressFilter, setDressFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [catFilter, setCatFilter] = useState("all");
-  const [checkoutForm, setCheckoutForm] = useState({ name: "", phone: "", address: "", postcode: "", notes: "" });
+  const [checkoutForm, setCheckoutForm] = useState({ name: "", phone: "", email: "", address: "", postcode: "", notes: "" });
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
 
@@ -46,6 +46,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
         ...prev,
         name: loggedInUser.name || prev.name,
         phone: loggedInUser.phone || prev.phone,
+        email: loggedInUser.email || prev.email,
         address: loggedInUser.address || prev.address,
         postcode: loggedInUser.postcode || prev.postcode,
       }));
@@ -308,7 +309,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
     const res = await fetch("/api/orders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...checkoutForm, customerName: checkoutForm.name, customerPhone: checkoutForm.phone, totalAmount: cartTotal.toFixed(2), paymentMethod: "cod", items: cartData }),
+      body: JSON.stringify({ ...checkoutForm, customerName: checkoutForm.name, customerPhone: checkoutForm.phone, customerEmail: checkoutForm.email || loggedInUser?.email || "", totalAmount: cartTotal.toFixed(2), paymentMethod: "cod", items: cartData }),
     });
     const data = await res.json();
     if (data.orderNumber) {
@@ -1200,6 +1201,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
                 <form onSubmit={handleCheckout} className="space-y-4">
                   <div><label className="block text-sm font-medium text-slate-700 mb-1">Full Name *</label><input required value={checkoutForm.name} onChange={(e) => setCheckoutForm({...checkoutForm,name:e.target.value})} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none" /></div>
                   <div><label className="block text-sm font-medium text-slate-700 mb-1">Phone Number *</label><input required type="tel" value={checkoutForm.phone} onChange={(e) => setCheckoutForm({...checkoutForm,phone:e.target.value})} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none" /></div>
+                  <div><label className="block text-sm font-medium text-slate-700 mb-1">Email (for order tracking)</label><input type="email" value={checkoutForm.email} onChange={(e) => setCheckoutForm({...checkoutForm,email:e.target.value})} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none" /></div>
                   <div><label className="block text-sm font-medium text-slate-700 mb-1">Delivery Address *</label><textarea required value={checkoutForm.address} onChange={(e) => setCheckoutForm({...checkoutForm,address:e.target.value})} rows={3} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none" /></div>
                   <div><label className="block text-sm font-medium text-slate-700 mb-1">Postcode *</label><input required value={checkoutForm.postcode} onChange={(e) => setCheckoutForm({...checkoutForm,postcode:e.target.value})} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none" /></div>
                   <div><label className="block text-sm font-medium text-slate-700 mb-1">Order Notes</label><textarea value={checkoutForm.notes} onChange={(e) => setCheckoutForm({...checkoutForm,notes:e.target.value})} rows={2} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none" /></div>
