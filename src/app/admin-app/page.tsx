@@ -167,6 +167,10 @@ export default function AdminAppPage() {
             </select>
           </div>
 
+          {filteredOrders.length > 0 && (
+            <button onClick={async () => { if (confirm(`Delete all ${filteredOrders.length} order(s) permanently?`)) { setUpdating(true); try { const ids = filteredOrders.map((o) => o.id); await fetch("/api/orders", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ids }) }); fetchOrders(); } catch {} setUpdating(false); } }} disabled={updating} className="w-full py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-sm transition disabled:opacity-50 flex items-center justify-center gap-2"><Trash2 className="w-4 h-4" /> Clear All Orders</button>
+          )}
+
           {filteredOrders.length === 0 ? (
             <div className="text-center py-12 text-stone-400"><Package className="w-12 h-12 mx-auto mb-3 opacity-30" /><p className="text-sm">No orders found</p></div>
           ) : filteredOrders.map((order) => (
