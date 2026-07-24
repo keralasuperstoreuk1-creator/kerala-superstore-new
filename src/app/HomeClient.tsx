@@ -38,6 +38,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
   const [detailProduct, setDetailProduct] = useState<any | null>(null);
   const [selectedImage, setSelectedImage] = useState<string>("");
   const [selectedColor, setSelectedColor] = useState<string>("");
+  const [selectedSize, setSelectedSize] = useState<string>("");
   const [detailQty, setDetailQty] = useState<number>(1);
   const [zoomOpen, setZoomOpen] = useState<boolean>(false);
 
@@ -90,6 +91,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
     const thumbs = getProductThumbnails(prod);
     setSelectedImage(thumbs[0]?.url || prod.images?.[0] || "");
     setSelectedColor(thumbs[0]?.color || prod.colors?.[0] || "");
+    setSelectedSize("");
     setDetailQty(1);
   }
 
@@ -1337,9 +1339,18 @@ export default function HomeClient({ data }: { data: HomeData }) {
                     <label className="block text-xs font-mono uppercase tracking-wider text-stone-500 mb-2">Available Sizes:</label>
                     <div className="flex flex-wrap gap-2">
                       {parseSizes(detailProduct.sizes).map((size) => (
-                        <span key={size} className="px-3 py-1.5 bg-stone-100 border border-stone-200 rounded-lg text-xs font-semibold text-stone-700">
+                        <button
+                          key={size}
+                          type="button"
+                          onClick={() => setSelectedSize(size)}
+                          className={`px-3 py-1.5 border rounded-lg text-xs font-semibold transition ${
+                            selectedSize === size
+                              ? "bg-blue-600 text-white border-blue-600"
+                              : "bg-stone-100 text-stone-700 border-stone-200 hover:border-blue-400"
+                          }`}
+                        >
                           {size}
-                        </span>
+                        </button>
                       ))}
                     </div>
                   </div>
@@ -1365,7 +1376,8 @@ export default function HomeClient({ data }: { data: HomeData }) {
                   <button
                     type="button"
                     onClick={() => {
-                      addToCart(detailProduct.id, `${detailProduct.name} (${selectedColor || 'Default'})`, detailProduct.price, detailQty, detailProduct.isDress ? "dress" : "item", selectedColor);
+                      const sizeLabel = selectedSize ? ` - Size: ${selectedSize}` : "";
+                      addToCart(detailProduct.id, `${detailProduct.name} (${selectedColor || 'Default'}${sizeLabel})`, detailProduct.price, detailQty, detailProduct.isDress ? "dress" : "item", selectedColor);
                       setDetailProduct(null);
                     }}
                     className={`w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition shadow-lg uppercase tracking-wider ${
@@ -1385,7 +1397,8 @@ export default function HomeClient({ data }: { data: HomeData }) {
                     type="button"
                     onClick={() => {
                       const prefix = isPreOrder(detailProduct) ? "PRE-ORDER INQUIRY" : "BUY NOW";
-                      const msg = `Hi! ${prefix}: ${detailProduct.name} (${selectedColor ? 'Selected Color: ' + selectedColor : ''}) - Qty: ${detailQty} - Price: £${detailProduct.price}`;
+                      const sizeLabel = selectedSize ? ` - Size: ${selectedSize}` : "";
+                      const msg = `Hi! ${prefix}: ${detailProduct.name} (${selectedColor ? 'Selected Color: ' + selectedColor : ''}${sizeLabel}) - Qty: ${detailQty} - Price: £${detailProduct.price}`;
                       window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, "_blank");
                     }}
                     className="w-full bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition uppercase tracking-wider"
