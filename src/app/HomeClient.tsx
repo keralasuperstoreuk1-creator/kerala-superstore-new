@@ -1260,9 +1260,8 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
                       <>
                         <CheckCircle className="w-4 h-4" /> Place Order
                       </>
-                    )}
-                  </button>
-                  </button>
+)}
+                    </button>
                 </form>
               </div>
             )}
