@@ -86,6 +86,7 @@ export const slides = pgTable("slides", {
 export const orders = pgTable("orders", {
   id: serial("id").primaryKey(),
   orderNumber: varchar("order_number", { length: 50 }).notNull().unique(),
+  userId: integer("user_id"),
   customerName: varchar("customer_name", { length: 255 }).notNull(),
   customerPhone: varchar("customer_phone", { length: 50 }).notNull(),
   customerEmail: varchar("customer_email", { length: 255 }),
@@ -118,6 +119,19 @@ export const settings = pgTable("settings", {
   id: serial("id").primaryKey(),
   key: varchar("key", { length: 100 }).notNull().unique(),
   value: text("value"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  passwordHash: varchar("password_hash", { length: 255 }).notNull(),
+  name: varchar("name", { length: 255 }),
+  phone: varchar("phone", { length: 50 }),
+  address: text("address"),
+  postcode: varchar("postcode", { length: 20 }),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 

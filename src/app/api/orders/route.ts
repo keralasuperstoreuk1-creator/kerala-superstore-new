@@ -1,18 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { orders, orderItems, items, itemVariants, settings } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, like } from "drizzle-orm";
 import { generateOrderNumber } from "@/lib/utils";
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
+    const email = searchParams.get("email");
 
     if (id) {
       const order = await db.select().from(orders).where(eq(orders.id, parseInt(id)));
       const items = await db.select().from(orderItems).where(eq(orderItems.orderId, parseInt(id)));
       return NextResponse.json({ ...order[0], items });
+    }
+
+    if (email) {
+      const data = await db.select().from(orders).where(eq(orders.customerEmail, email)).orderBy(desc(orders.createdAt));
+      const withItems = await Promise.all(data.map(async (o) => {
+        const items = await db.select().from(orderItems).where(eq(orderItems.orderId, o.id));
+        return { ...o, items };
+      }));
+      return NextResponse.json(withItems);
     }
 
     const data = await db.select().from(orders).orderBy(desc(orders.createdAt));

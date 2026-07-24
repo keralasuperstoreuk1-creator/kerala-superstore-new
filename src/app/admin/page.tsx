@@ -12,6 +12,7 @@ export default function AdminDashboard() {
     collections: 0, categories: 0, items: 0, slides: 0,
     orders: 0, revenue: 0, offers: 0, dresses: 0, winners: 0,
   });
+  const [allOrders, setAllOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => { fetchStats(); }, []);
@@ -29,6 +30,7 @@ export default function AdminDashboard() {
         fetch("/api/winners").then((r) => r.json()),
       ]);
       const revenue = orders.reduce((sum: number, o: any) => sum + parseFloat(o.totalAmount || 0), 0);
+      setAllOrders(orders);
       setStats({
         collections: collections.length || 0, categories: categories.length || 0,
         items: items.length || 0, slides: slides.length || 0, orders: orders.length || 0,
@@ -176,6 +178,49 @@ export default function AdminDashboard() {
           </div>
         </div>
       </section>
+
+      {/* Monthly Sales Report */}
+      {!loading && allOrders.length > 0 && (
+        <section className="bg-white rounded-2xl border border-stone-200 p-6 shadow-sm">
+          <h2 className="font-bold text-stone-900 text-lg mb-4 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-emerald-700" /> Monthly Sales Report
+          </h2>
+          {(() => {
+            const months: Record<string, { orders: number; revenue: number }> = {};
+            allOrders.forEach((o: any) => {
+              if (!o.createdAt) return;
+              const m = new Date(o.createdAt).toLocaleString("en-GB", { month: "short", year: "numeric" });
+              if (!months[m]) months[m] = { orders: 0, revenue: 0 };
+              months[m].orders++;
+              months[m].revenue += parseFloat(o.totalAmount || 0);
+            });
+            return (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-stone-200 text-left text-stone-500 text-xs uppercase tracking-wider">
+                      <th className="pb-3 font-semibold">Month</th>
+                      <th className="pb-3 font-semibold">Orders</th>
+                      <th className="pb-3 font-semibold">Revenue</th>
+                      <th className="pb-3 font-semibold">Avg Order</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(months).reverse().map(([month, data]) => (
+                      <tr key={month} className="border-b border-stone-100">
+                        <td className="py-3 font-medium text-stone-900">{month}</td>
+                        <td className="py-3">{data.orders}</td>
+                        <td className="py-3 font-semibold text-emerald-700">£{data.revenue.toFixed(2)}</td>
+                        <td className="py-3 text-stone-500">£{(data.revenue / data.orders).toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            );
+          })()}
+        </section>
+      )}
 
       {/* Catalog Tiles */}
       <section className="space-y-3">

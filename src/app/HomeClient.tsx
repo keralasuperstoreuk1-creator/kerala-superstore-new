@@ -24,6 +24,12 @@ export default function HomeClient({ data }: { data: HomeData }) {
   const [cartOpen, setCartOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState<any>(null);
+
+  useEffect(() => {
+    const u = localStorage.getItem("kerala_user");
+    if (u) try { setLoggedInUser(JSON.parse(u)); } catch {}
+  }, []);
   const [cart, setCart] = useState<any[]>([]);
   const [heroIndex, setHeroIndex] = useState(0);
   const [offerIndex, setOfferIndex] = useState(0);
@@ -33,6 +39,18 @@ export default function HomeClient({ data }: { data: HomeData }) {
   const [checkoutForm, setCheckoutForm] = useState({ name: "", phone: "", address: "", postcode: "", notes: "" });
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
+
+  useEffect(() => {
+    if (checkoutOpen && loggedInUser) {
+      setCheckoutForm((prev) => ({
+        ...prev,
+        name: loggedInUser.name || prev.name,
+        phone: loggedInUser.phone || prev.phone,
+        address: loggedInUser.address || prev.address,
+        postcode: loggedInUser.postcode || prev.postcode,
+      }));
+    }
+  }, [checkoutOpen, loggedInUser]);
 
   // Product detail modal state (Shopify style color thumbnail viewer)
   const [detailProduct, setDetailProduct] = useState<any | null>(null);
@@ -431,6 +449,9 @@ export default function HomeClient({ data }: { data: HomeData }) {
               <a href={whatsappLink} target="_blank" className="hidden md:flex items-center gap-1 text-sm text-green-600 font-medium">
                 <Phone className="w-4 h-4" /> +44 7749 132122
               </a>
+              <Link href={loggedInUser ? "/account" : "/login"} className="hidden md:flex items-center gap-1 text-sm text-stone-600 font-medium hover:text-emerald-700">
+                {loggedInUser ? "My Account" : "Login"}
+              </Link>
               <button onClick={() => setCartOpen(true)} className="relative p-2 hover:bg-slate-100 rounded-lg">
                 <ShoppingCart className="w-5 h-5" />
                 {cart.length > 0 && <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{cart.length}</span>}
@@ -1197,34 +1218,10 @@ export default function HomeClient({ data }: { data: HomeData }) {
                     <p className="text-sm text-slate-500 mt-2">💰 Payment: Cash on Delivery</p>
                   </div>
                   <button
-                    type="button"
-                    onClick={() => {
-                      const custName = checkoutForm.name?.trim();
-                      const custPhone = checkoutForm.phone?.trim();
-                      const custAddress = checkoutForm.address?.trim();
-                      const custPostcode = checkoutForm.postcode?.trim();
-                      const custNotes = checkoutForm.notes?.trim();
-
-                      if (!custName) return alert("⚠️ Please enter your full name");
-                      if (!custPhone) return alert("⚠️ Please enter your phone number");
-                      if (!custAddress) return alert("⚠️ Please enter your delivery address");
-                      const itemsMsg = cart
-                        .map((item, idx) => {
-                          const name = item.item?.name ?? '';
-                          const img = item.item?.images?.[0] || '';
-                          const clr = item.variantName || '-';
-                          const sz = item.variantSize || '-';
-                          const qty = item.quantity;
-                          const price = item.item?.price ?? '0';
-                          return `${idx + 1}. ${name}\n   Colour: ${clr} | Size: ${sz} | Qty: ${qty} | Price: £${price}\n   Image: ${img}`;
-                        })
-                        .join('\n\n');
-                      const msg = `NEW ORDER\n\nCUSTOMER\nName: ${custName}\nPhone: ${custPhone}\nAddress: ${custAddress}${custPostcode ? `\nPostcode: ${custPostcode}` : ''}${custNotes ? `\nNotes: ${custNotes}` : ''}\n\nITEMS\n${itemsMsg}\n\nTOTAL: £${cartTotal.toFixed(2)}`;
-                      window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, "_blank");
-                    }}
-                    className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2"
+                    type="submit"
+                    className="w-full bg-emerald-700 text-white py-3 rounded-lg font-semibold hover:bg-emerald-800 transition flex items-center justify-center gap-2"
                   >
-                    <Phone className="w-4 h-4" /> Order via WhatsApp (All Items)
+                    <CheckCircle className="w-4 h-4" /> Place Order
                   </button>
                 </form>
               </div>
