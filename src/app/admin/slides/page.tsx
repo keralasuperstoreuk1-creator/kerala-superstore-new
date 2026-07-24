@@ -359,13 +359,16 @@ export default function SlidesPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Slide Photo *</label>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 mb-2">
                 <label className="flex items-center gap-2 px-4 py-2.5 bg-stone-50 border border-stone-300 rounded-xl cursor-pointer hover:bg-stone-100 text-xs font-semibold text-stone-700">
                   <ImageIcon className="w-4 h-4 text-forest-700" />
                   <span>{uploading ? "Uploading..." : "Upload Slide Photo"}</span>
                   <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
                 </label>
                 {form.image && <img src={form.image} alt="" className="w-16 h-10 object-cover rounded-xl border border-stone-200" />}
+              </div>
+              <div className="text-[11px] font-mono text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2 rounded-lg">
+                <span className="font-bold">Desktop:</span> 1920 x 600 px &nbsp;|&nbsp; <span className="font-bold">Mobile:</span> 800 x 600 px
               </div>
             </div>
             <div>

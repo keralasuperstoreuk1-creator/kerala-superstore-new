@@ -198,7 +198,10 @@ export default function PromoBannerPage() {
               </div>
             </div>
             <div className="flex-1">
-              <p className="text-sm text-slate-500 mb-3">Upload a banner background image. Recommended size: 1200x400px.</p>
+              <p className="text-sm text-slate-500 mb-3">Upload a banner background image.</p>
+              <div className="text-xs font-mono text-orange-700 bg-orange-50 border border-orange-200 px-3 py-2 rounded-lg mb-3">
+                <span className="font-bold">Desktop:</span> 1400 x 500 px &nbsp;|&nbsp; <span className="font-bold">Mobile:</span> 600 x 400 px
+              </div>
               <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleImageUpload} />
               <button 
                 onClick={() => fileInputRef.current?.click()} 
