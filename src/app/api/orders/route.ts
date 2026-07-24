@@ -115,6 +115,15 @@ export async function PUT(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
+    const body = await req.json();
+    const { ids } = body;
+    if (ids && Array.isArray(ids)) {
+      for (const id of ids) {
+        await db.delete(orderItems).where(eq(orderItems.orderId, id));
+        await db.delete(orders).where(eq(orders.id, id));
+      }
+      return NextResponse.json({ deleted: ids.length });
+    }
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
     if (!id) {
