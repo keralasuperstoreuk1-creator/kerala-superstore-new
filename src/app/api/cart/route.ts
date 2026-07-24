@@ -85,10 +85,11 @@ export async function POST(req: NextRequest) {
       )
     );
 
-    // Find if there's an exact match including variantId or variantName
+    // Find if there's an exact match including variantId, variantName, and variantSize
     const exactMatch = existing.find(c => 
       c.variantId === (body.variantId || null) && 
-      c.variantName === (body.variantName || null)
+      c.variantName === (body.variantName || null) &&
+      c.variantSize === (body.variantSize || null)
     );
 
     if (exactMatch) {

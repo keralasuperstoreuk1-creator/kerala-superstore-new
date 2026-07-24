@@ -160,11 +160,11 @@ export default function HomeClient({ data }: { data: HomeData }) {
     setCart(data);
   }
 
-  async function addToCart(itemId: number, name: string, price: string, quantity = 1, itemType = "item", variantName: string | null = null) {
+  async function addToCart(itemId: number, name: string, price: string, quantity = 1, itemType = "item", variantName: string | null = null, variantSize: string | null = null) {
     await fetch("/api/cart", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ itemId, quantity, itemType, variantName }),
+      body: JSON.stringify({ itemId, quantity, itemType, variantName, variantSize }),
     });
     fetchCart();
     setCartOpen(true);
@@ -1121,7 +1121,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sm text-slate-900 truncate">
-                        {item.item?.name} {item.variantName ? `(${item.variantName})` : ""}
+                        {item.item?.name} {item.variantName ? `(${item.variantName})` : ""}{item.variantSize ? ` - Size: ${item.variantSize}` : ""}
                       </p>
                       <p className="text-xs text-slate-500">£{item.item?.price}</p>
                     </div>
@@ -1212,9 +1212,10 @@ export default function HomeClient({ data }: { data: HomeData }) {
                         .map((item) => {
                           const name = item.item?.name ?? '';
                           const variant = item.variantName ? ` (${item.variantName})` : '';
+                          const sz = item.variantSize ? ` - Size: ${item.variantSize}` : '';
                           const qty = item.quantity;
                           const price = item.item?.price ?? '';
-                          return `${name}${variant} x${qty} - £${price}`;
+                          return `${name}${variant}${sz} x${qty} - £${price}`;
                         })
                         .join('%0A');
                       const msg = `Hi! I want to place an order:%0A${itemsMsg}%0ATotal: £${cartTotal.toFixed(2)}`;
@@ -1376,8 +1377,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
                   <button
                     type="button"
                     onClick={() => {
-                      const sizeLabel = selectedSize ? ` - Size: ${selectedSize}` : "";
-                      addToCart(detailProduct.id, `${detailProduct.name} (${selectedColor || 'Default'}${sizeLabel})`, detailProduct.price, detailQty, detailProduct.isDress ? "dress" : "item", selectedColor);
+                      addToCart(detailProduct.id, `${detailProduct.name} (${selectedColor || 'Default'})`, detailProduct.price, detailQty, detailProduct.isDress ? "dress" : "item", selectedColor, selectedSize);
                       setDetailProduct(null);
                     }}
                     className={`w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition shadow-lg uppercase tracking-wider ${
