@@ -1205,6 +1205,10 @@ export default function HomeClient({ data }: { data: HomeData }) {
                       const custAddress = checkoutForm.address?.trim();
                       const custPostcode = checkoutForm.postcode?.trim();
                       const custNotes = checkoutForm.notes?.trim();
+
+                      if (!custName) return alert("⚠️ Please enter your full name");
+                      if (!custPhone) return alert("⚠️ Please enter your phone number");
+                      if (!custAddress) return alert("⚠️ Please enter your delivery address");
                       const itemsMsg = cart
                         .map((item) => {
                           const name = item.item?.name ?? '';
@@ -1375,6 +1379,9 @@ export default function HomeClient({ data }: { data: HomeData }) {
                   <button
                     type="button"
                     onClick={() => {
+                      if (parseSizes(detailProduct.sizes).length > 0 && !selectedSize) {
+                        return alert("⚠️ Please select a size before adding to bag");
+                      }
                       addToCart(detailProduct.id, `${detailProduct.name} (${selectedColor || 'Default'})`, detailProduct.price, detailQty, detailProduct.isDress ? "dress" : "item", selectedColor, selectedSize);
                       setDetailProduct(null);
                     }}
@@ -1394,6 +1401,9 @@ export default function HomeClient({ data }: { data: HomeData }) {
                   <button
                     type="button"
                     onClick={() => {
+                      if (parseSizes(detailProduct.sizes).length > 0 && !selectedSize) {
+                        return alert("⚠️ Please select a size before ordering");
+                      }
                       const prefix = isPreOrder(detailProduct) ? "PRE-ORDER INQUIRY" : "BUY NOW";
                       const name = detailProduct.name;
                       const img = selectedImage || detailProduct.images?.[0] || '';
