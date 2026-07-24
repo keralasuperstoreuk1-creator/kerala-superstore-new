@@ -296,9 +296,12 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
     window.location.href = target;
   }
 
-  async function handleCheckout(e: React.FormEvent) {
+async function handleCheckout(e: React.FormEvent) {
     e.preventDefault();
-    if (cart.length === 0) return;
+    if (cart.length === 0) {
+      alert("Cart is empty! Please add items before placing order.");
+      return;
+    }
     if (checkoutLoading) return;
     
     // Validate required fields
@@ -309,25 +312,25 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
     
     setCheckoutLoading(true);
     try {
-const cartData = cart.map((item) => ({
-      itemId: item.itemId,
-      variantId: item.variantId,
-      name: item.item?.name,
-      variantName: item.variant ? `${item.variant.color || ""} ${item.variant.size || ""}`.trim() : null,
-      // color: item.variant?.color || null,  // Temporarily disabled
-      // size: item.variant?.size || null,     // Temporarily disabled
-      quantity: item.quantity,
-      price: item.item?.price,
-      imageUrl: item.item?.images?.[0] || item.variant?.images?.[0] || null,
-    }));
+      const cartData = cart.map((item) => ({
+        itemId: item.itemId,
+        variantId: item.variantId,
+        name: item.item?.name,
+        variantName: item.variant ? `${item.variant.color || ""} ${item.variant.size || ""}`.trim() : null,
+        quantity: item.quantity,
+        price: item.item?.price,
+        imageUrl: item.item?.images?.[0] || item.variant?.images?.[0] || null,
+      }));
+      console.log("Submitting order:", { checkoutForm, cartData, cartTotal });
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...checkoutForm, customerName: checkoutForm.name, customerPhone: checkoutForm.phone, customerEmail: checkoutForm.email, totalAmount: cartTotal.toFixed(2), paymentMethod: "cod", items: cartData }),
       });
       const data = await res.json();
+      console.log("Order response:", data);
       if (!res.ok) {
-        alert(data.error || "Order failed. Please try again.");
+        alert(data.error || "Order failed: " + JSON.stringify(data));
         return;
       }
       if (data.orderNumber) {
@@ -339,7 +342,7 @@ const cartData = cart.map((item) => ({
         fetchCart();
       }
     } catch (err) {
-      alert("Order failed. Please check console for details.");
+      alert("Order failed: " + err.message);
       console.error("Order error:", err);
     } finally {
       setCheckoutLoading(false);

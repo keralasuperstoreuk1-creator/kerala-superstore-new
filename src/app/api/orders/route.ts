@@ -37,6 +37,10 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { items: cartItems, ...orderData } = body;
 
+    if (!cartItems || cartItems.length === 0) {
+      return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
+    }
+
     const orderNumber = generateOrderNumber();
     const result = await db.insert(orders).values({
       customerName: orderData.customerName,
@@ -53,20 +57,30 @@ export async function POST(req: NextRequest) {
     const orderId = result[0].id;
 
     for (const cartItem of cartItems) {
+      if (!cartItem.name || !cartItem.price || !cartItem.quantity) {
+        return NextResponse.json({ error: "Invalid item data" }, { status: 400 });
+      }
       await db.insert(orderItems).values({
         orderId,
         itemId: cartItem.itemId,
         variantId: cartItem.variantId,
         itemName: cartItem.name,
         variantName: cartItem.variantName,
-        // color: cartItem.color,  // Temporarily disabled - run db:push to enable
-        // size: cartItem.size,     // Temporarily disabled - run db:push to enable
+        color: cartItem.color,
+        size: cartItem.size,
         quantity: cartItem.quantity,
         price: cartItem.price,
         imageUrl: cartItem.imageUrl,
         total: (parseFloat(cartItem.price) * cartItem.quantity).toFixed(2),
       });
     }
+
+    return NextResponse.json(result[0]);
+  } catch (error) {
+    console.error("Order creation error:", error);
+    return NextResponse.json({ error: "Failed to create order: " + (error instanceof Error ? error.message : "Unknown error") }, { status: 500 });
+  }
+}
 
     // Send WhatsApp
     try {
