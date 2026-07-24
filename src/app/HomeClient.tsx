@@ -342,7 +342,8 @@ async function handleCheckout(e: React.FormEvent) {
         fetchCart();
       }
     } catch (err) {
-      alert("Order failed: " + err.message);
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      alert("Order failed: " + msg);
       console.error("Order error:", err);
     } finally {
       setCheckoutLoading(false);
