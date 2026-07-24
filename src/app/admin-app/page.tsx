@@ -180,7 +180,7 @@ export default function AdminAppPage() {
       </div>
     );
 
-    const Input = ({ label, type, value, onChange, placeholder, icon }: any) => (
+    const Input = ({ label, type, value, onChange, placeholder, icon }: { label: string; type: string; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; placeholder: string; icon?: React.ReactNode }) => (
       <div>
         <label className="block text-xs font-medium text-emerald-200 mb-1.5">{label}</label>
         <div className="relative">
