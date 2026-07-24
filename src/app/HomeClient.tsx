@@ -1216,10 +1216,10 @@ export default function HomeClient({ data }: { data: HomeData }) {
                           const sz = item.variantSize || '-';
                           const qty = item.quantity;
                           const price = item.item?.price ?? '0';
-                          return `[${idx + 1}] ${name}\n     Colour: ${clr} | Size: ${sz} | Qty: ${qty}\n     Price: £${price}\n     Image: ${img}`;
+                          return `${idx + 1}. ${name}\n   Colour: ${clr} | Size: ${sz} | Qty: ${qty} | Price: £${price}\n   Image: ${img}`;
                         })
-                        .join('\n');
-                      const msg = `--- NEW ORDER ---\n\n*CUSTOMER*\nName: ${custName}\nPhone: ${custPhone}\nAddress: ${custAddress}${custPostcode ? `\nPostcode: ${custPostcode}` : ''}${custNotes ? `\nNotes: ${custNotes}` : ''}\n\n*ITEMS*\n${itemsMsg}\n\n*TOTAL: £${cartTotal.toFixed(2)}*`;
+                        .join('\n\n');
+                      const msg = `NEW ORDER\n\nCUSTOMER\nName: ${custName}\nPhone: ${custPhone}\nAddress: ${custAddress}${custPostcode ? `\nPostcode: ${custPostcode}` : ''}${custNotes ? `\nNotes: ${custNotes}` : ''}\n\nITEMS\n${itemsMsg}\n\nTOTAL: £${cartTotal.toFixed(2)}`;
                       window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, "_blank");
                     }}
                     className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2"
@@ -1408,7 +1408,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
                       const img = selectedImage || detailProduct.images?.[0] || '';
                       const clr = selectedColor || '-';
                       const sz = selectedSize || '-';
-                      const msg = `--- ${prefix} ---\n\n*Item:* ${name}\n*Colour:* ${clr}\n*Size:* ${sz}\n*Qty:* ${detailQty}\n*Price:* £${detailProduct.price}\n*Image:* ${img}`;
+                      const msg = `${prefix}\n\nItem: ${name}\nColour: ${clr}\nSize: ${sz}\nQty: ${detailQty}\nPrice: £${detailProduct.price}\nImage: ${img}`;
                       window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, "_blank");
                     }}
                     className="w-full bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition uppercase tracking-wider"
