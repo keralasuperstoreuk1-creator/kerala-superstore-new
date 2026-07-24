@@ -193,6 +193,16 @@ export const winners = pgTable("winners", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const adminUsers = pgTable("admin_users", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  passwordHash: varchar("password_hash", { length: 255 }).notNull(),
+  phone: varchar("phone", { length: 50 }),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const promoBanners = pgTable("promo_banners", {
   id: serial("id").primaryKey(),
   image: text("image").notNull(),

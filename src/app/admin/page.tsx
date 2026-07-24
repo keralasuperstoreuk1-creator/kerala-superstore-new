@@ -42,6 +42,15 @@ export default function AdminDashboard() {
 
   const primaryActions = [
     {
+      title: "📱 Admin App (Mobile)",
+      malayalam: "അഡ്മിൻ ആപ്പ്",
+      desc: "Order notifications, confirm/deliver, reports",
+      href: "/admin-app",
+      icon: ShoppingBag,
+      btnText: "Open Admin App",
+      bgTone: "bg-emerald-900 text-white hover:bg-emerald-800",
+    },
+    {
       title: "Add Grocery Product",
       malayalam: "പുതിയ സാധനം ചേർക്കുക",
       desc: "Rice, Spices, Oils & Grocery Items",

@@ -50,6 +50,7 @@ export async function POST(req: NextRequest) {
         variantName: cartItem.variantName,
         quantity: cartItem.quantity,
         price: cartItem.price,
+        imageUrl: cartItem.imageUrl,
         total: (parseFloat(cartItem.price) * cartItem.quantity).toFixed(2),
       });
     }
