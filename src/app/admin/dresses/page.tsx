@@ -278,14 +278,14 @@ export default function DressesPage() {
           {/* Sizes Section */}
           <div className="bg-blue-50/50 border border-blue-200 p-5 rounded-2xl space-y-3">
             <h3 className="font-display text-base font-bold text-blue-950 flex items-center gap-2">
-              📏 Available Sizes
+              📏 Available Sizes {form.sizes.length > 0 && <span className="text-xs font-normal text-blue-600">({form.sizes.length} selected)</span>}
             </h3>
             {form.sizes.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {form.sizes.map((size, idx) => (
-                  <span key={idx} className="inline-flex items-center gap-1 bg-white border border-blue-300 text-blue-800 text-xs font-bold px-3 py-1.5 rounded-lg">
-                    {size}
-                    <button type="button" onClick={() => toggleSize(size)} className="ml-1 text-blue-400 hover:text-red-500 font-bold">×</button>
+                  <span key={idx} className="inline-flex items-center gap-1 bg-blue-100 border border-blue-400 text-blue-800 text-xs font-bold px-3 py-1.5 rounded-lg">
+                    ✓ {size}
+                    <button type="button" onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); toggleSize(size); }} className="ml-1 text-blue-500 hover:text-red-500 font-bold">×</button>
                   </span>
                 ))}
               </div>
@@ -299,7 +299,7 @@ export default function DressesPage() {
                       <button
                         key={size}
                         type="button"
-                        onClick={() => toggleSize(size)}
+                        onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); toggleSize(size); }}
                         className={`px-3 py-1.5 rounded-lg text-xs font-bold transition border ${
                           form.sizes.includes(size)
                             ? "bg-blue-100 border-blue-400 text-blue-800"
@@ -331,7 +331,9 @@ export default function DressesPage() {
               />
               <button
                 type="button"
-                onClick={() => {
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   const input = document.getElementById("dressCustomSizeInput") as HTMLInputElement;
                   const val = input?.value?.trim();
                   if (val && !form.sizes.includes(val)) {
