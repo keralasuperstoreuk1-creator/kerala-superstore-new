@@ -1210,6 +1210,11 @@ export default function HomeClient({ data }: { data: HomeData }) {
                   <button
                     type="button"
                     onClick={() => {
+                      const custName = checkoutForm.name?.trim();
+                      const custPhone = checkoutForm.phone?.trim();
+                      const custAddress = checkoutForm.address?.trim();
+                      const custPostcode = checkoutForm.postcode?.trim();
+                      const custNotes = checkoutForm.notes?.trim();
                       const itemsMsg = cart
                         .map((item) => {
                           const name = item.item?.name ?? '';
@@ -1221,7 +1226,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
                           return `*${name}*${img ? `%0A📷 ${img}` : ''}${clr ? `%0A${clr}` : ''}${sz ? `%0A${sz}` : ''}%0A×${qty} - £${price}`;
                         })
                         .join('%0A---%0A');
-                      const msg = `Hi! I want to place an order:%0A%0A${itemsMsg}%0A%0ATotal: £${cartTotal.toFixed(2)}`;
+                      const msg = `🛍️ *NEW ORDER* 🛍️%0A%0A👤 *Name:* ${custName}%0A📞 *Phone:* ${custPhone}%0A📍 *Address:* ${custAddress}${custPostcode ? `%0A📮 *Postcode:* ${custPostcode}` : ''}${custNotes ? `%0A📝 *Notes:* ${custNotes}` : ''}%0A%0A📦 *ORDER ITEMS:*%0A${itemsMsg}%0A%0A💰 *Total: £${cartTotal.toFixed(2)}*`;
                       window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, "_blank");
                     }}
                     className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2"
