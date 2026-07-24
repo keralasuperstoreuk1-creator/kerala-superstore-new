@@ -51,6 +51,15 @@ export default function AdminDashboard() {
       bgTone: "bg-emerald-900 text-white hover:bg-emerald-800",
     },
     {
+      title: "👥 Admin App Users",
+      malayalam: "അഡ്മിൻ ഉപയോക്താക്കൾ",
+      desc: "Create/manage login credentials for staff",
+      href: "/admin/admin-users",
+      icon: ShoppingBag,
+      btnText: "Manage Users",
+      bgTone: "bg-blue-800 text-white hover:bg-blue-700",
+    },
+    {
       title: "Add Grocery Product",
       malayalam: "പുതിയ സാധനം ചേർക്കുക",
       desc: "Rice, Spices, Oils & Grocery Items",

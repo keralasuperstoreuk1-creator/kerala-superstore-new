@@ -9,28 +9,10 @@ type Stats = { totalOrders: number; totalRevenue: number; pendingOrders: number;
 
 export default function AdminAppPage() {
   const [admin, setAdmin] = useState<AdminUser | null>(null);
-  const [view, setView] = useState<"login" | "signup" | "forgot" | "reset">("login");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-
-  // Login fields
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
-
-  // Signup fields
-  const [signupName, setSignupName] = useState("");
-  const [signupEmail, setSignupEmail] = useState("");
-  const [signupPassword, setSignupPassword] = useState("");
-
-  // Forgot password fields
-  const [forgotEmail, setForgotEmail] = useState("");
-
-  // Reset password fields
-  const [resetToken, setResetToken] = useState("");
-  const [resetPassword, setResetPassword] = useState("");
-
-  // Dashboard fields
   const [orders, setOrders] = useState<Order[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [activeTab, setActiveTab] = useState<"orders" | "stats">("orders");
@@ -43,9 +25,6 @@ export default function AdminAppPage() {
   useEffect(() => {
     const stored = localStorage.getItem("admin_app_user");
     if (stored) setAdmin(JSON.parse(stored));
-    const params = new URLSearchParams(window.location.search);
-    const reset = params.get("reset");
-    if (reset) { setResetToken(reset); setView("reset"); }
   }, []);
 
   const login = async (e: React.FormEvent) => {
@@ -61,57 +40,6 @@ export default function AdminAppPage() {
       localStorage.setItem("admin_app_user", JSON.stringify(data));
       setAdmin(data);
     } catch { setError("Login failed"); }
-    setLoading(false);
-  };
-
-  const signup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true); setError(""); setSuccess("");
-    try {
-      const res = await fetch("/api/admin-app/register", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: signupName, email: signupEmail, password: signupPassword }),
-      });
-      const data = await res.json();
-      if (data.error) { setError(data.error); return; }
-      setSuccess("Account created! Please login.");
-      setTimeout(() => setView("login"), 1500);
-    } catch { setError("Registration failed"); }
-    setLoading(false);
-  };
-
-  const forgotPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true); setError(""); setSuccess("");
-    try {
-      const res = await fetch("/api/admin-app/forgot-password", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: forgotEmail }),
-      });
-      const data = await res.json();
-      if (data.error) { setError(data.error); return; }
-      if (data.devMode && data.resetUrl) {
-        setSuccess(`Reset link: ${data.resetUrl}`);
-      } else {
-        setSuccess(data.message || "If the email exists, a reset link has been sent.");
-      }
-    } catch { setError("Failed to process"); }
-    setLoading(false);
-  };
-
-  const handleResetPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true); setError(""); setSuccess("");
-    try {
-      const res = await fetch("/api/admin-app/reset-password", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: resetToken, password: resetPassword }),
-      });
-      const data = await res.json();
-      if (data.error) { setError(data.error); return; }
-      setSuccess("Password reset! Please login.");
-      setTimeout(() => { setView("login"); window.history.replaceState({}, "", "/admin-app"); }, 1500);
-    } catch { setError("Failed to reset"); }
     setLoading(false);
   };
 
@@ -135,7 +63,6 @@ export default function AdminAppPage() {
 
   useEffect(() => { if (admin) { fetchOrders(); fetchStats(); } }, [admin, fetchOrders, fetchStats]);
   useEffect(() => { if (!admin) return; setNewOrdersCount(orders.filter((o) => o.status === "pending").length); }, [orders, admin]);
-
   useEffect(() => {
     if (!admin) return;
     const interval = setInterval(() => { fetchOrders(); fetchStats(); }, 30000);
@@ -165,79 +92,8 @@ export default function AdminAppPage() {
     return s[status] || "bg-stone-100 text-stone-800";
   };
 
-  // Auth screens (login/signup/forgot/reset)
+  // Login screen
   if (!admin) {
-    if (view === "signup") {
-      return (
-        <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-800 to-stone-900 flex items-center justify-center p-4">
-          <div className="w-full max-w-sm">
-            <div className="text-center mb-6">
-              <div className="w-14 h-14 bg-white/10 backdrop-blur rounded-2xl flex items-center justify-center mx-auto mb-3"><Store className="w-7 h-7 text-emerald-300" /></div>
-              <h1 className="text-xl font-bold text-white">Create Account</h1>
-              <p className="text-emerald-200/70 text-xs mt-1">Register as an admin</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-md rounded-3xl p-5 border border-white/10">
-              <form onSubmit={signup} className="space-y-3.5">
-                <div><label className="block text-xs font-medium text-emerald-200 mb-1.5">Full Name</label><input type="text" required value={signupName} onChange={(e) => setSignupName(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm outline-none focus:ring-2 focus:ring-emerald-400" placeholder="Your name" /></div>
-                <div><label className="block text-xs font-medium text-emerald-200 mb-1.5">Email</label><input type="email" required value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm outline-none focus:ring-2 focus:ring-emerald-400" placeholder="admin@email.com" /></div>
-                <div><label className="block text-xs font-medium text-emerald-200 mb-1.5">Password (min 6 characters)</label><input type="password" required value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm outline-none focus:ring-2 focus:ring-emerald-400" placeholder="••••••••" /></div>
-                {error && <p className="text-red-300 text-xs text-center">{error}</p>}
-                {success && <p className="text-emerald-300 text-xs text-center">{success}</p>}
-                <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-stone-900 font-bold text-sm transition disabled:opacity-50">{loading ? "Creating..." : "Sign Up"}</button>
-                <p className="text-center text-xs text-emerald-200/60">Already have an account? <button type="button" onClick={() => { setView("login"); setError(""); setSuccess(""); }} className="text-emerald-300 font-semibold underline">Login</button></p>
-              </form>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    if (view === "forgot") {
-      return (
-        <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-800 to-stone-900 flex items-center justify-center p-4">
-          <div className="w-full max-w-sm">
-            <div className="text-center mb-6">
-              <div className="w-14 h-14 bg-white/10 backdrop-blur rounded-2xl flex items-center justify-center mx-auto mb-3"><Store className="w-7 h-7 text-emerald-300" /></div>
-              <h1 className="text-xl font-bold text-white">Forgot Password</h1>
-              <p className="text-emerald-200/70 text-xs mt-1">Enter your email to reset</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-md rounded-3xl p-5 border border-white/10">
-              <form onSubmit={forgotPassword} className="space-y-3.5">
-                <div><label className="block text-xs font-medium text-emerald-200 mb-1.5">Email</label><input type="email" required value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm outline-none focus:ring-2 focus:ring-emerald-400" placeholder="admin@email.com" /></div>
-                {error && <p className="text-red-300 text-xs text-center">{error}</p>}
-                {success && <p className="text-emerald-300 text-xs text-center break-all">{success}</p>}
-                <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-stone-900 font-bold text-sm transition disabled:opacity-50">{loading ? "Sending..." : "Send Reset Link"}</button>
-                <p className="text-center text-xs text-emerald-200/60"><button type="button" onClick={() => { setView("login"); setError(""); setSuccess(""); }} className="text-emerald-300 font-semibold underline">Back to Login</button></p>
-              </form>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    if (view === "reset") {
-      return (
-        <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-800 to-stone-900 flex items-center justify-center p-4">
-          <div className="w-full max-w-sm">
-            <div className="text-center mb-6">
-              <div className="w-14 h-14 bg-white/10 backdrop-blur rounded-2xl flex items-center justify-center mx-auto mb-3"><Store className="w-7 h-7 text-emerald-300" /></div>
-              <h1 className="text-xl font-bold text-white">Reset Password</h1>
-              <p className="text-emerald-200/70 text-xs mt-1">Enter your new password</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-md rounded-3xl p-5 border border-white/10">
-              <form onSubmit={handleResetPassword} className="space-y-3.5">
-                <div><label className="block text-xs font-medium text-emerald-200 mb-1.5">New Password (min 6 characters)</label><input type="password" required value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm outline-none focus:ring-2 focus:ring-emerald-400" placeholder="••••••••" /></div>
-                {error && <p className="text-red-300 text-xs text-center">{error}</p>}
-                {success && <p className="text-emerald-300 text-xs text-center">{success}</p>}
-                <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-stone-900 font-bold text-sm transition disabled:opacity-50">{loading ? "Resetting..." : "Reset Password"}</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    // Login view (default)
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-800 to-stone-900 flex items-center justify-center p-4">
         <div className="w-full max-w-sm">
@@ -252,10 +108,7 @@ export default function AdminAppPage() {
               <div><label className="block text-xs font-medium text-emerald-200 mb-1.5">Password</label><input type="password" required value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm outline-none focus:ring-2 focus:ring-emerald-400" placeholder="••••••••" /></div>
               {error && <p className="text-red-300 text-xs text-center">{error}</p>}
               <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-stone-900 font-bold text-sm transition disabled:opacity-50">{loading ? "Logging in..." : "Login"}</button>
-              <div className="flex justify-between text-xs text-emerald-200/60">
-                <button type="button" onClick={() => { setView("signup"); setError(""); }} className="text-emerald-300 font-semibold underline">Sign Up</button>
-                <button type="button" onClick={() => { setView("forgot"); setError(""); }} className="text-emerald-300 font-semibold underline">Forgot Password?</button>
-              </div>
+              <p className="text-center text-[10px] text-emerald-200/40">Credentials provided by store admin</p>
             </form>
           </div>
         </div>
