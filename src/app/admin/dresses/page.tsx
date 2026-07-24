@@ -133,6 +133,7 @@ export default function DressesPage() {
     const autoColors = form.colorVariants.map((cv) => cv.color).filter(Boolean);
     const payload = {
       ...form,
+      sizes: form.sizes || [],
       colors: autoColors.length > 0 ? autoColors : form.colors,
       price: form.price,
       compareAtPrice: form.compareAtPrice || null,
@@ -331,8 +332,7 @@ export default function DressesPage() {
               />
               <button
                 type="button"
-                onMouseDown={(e) => {
-                  e.preventDefault();
+                onClick={(e) => {
                   e.stopPropagation();
                   const input = document.getElementById("dressCustomSizeInput") as HTMLInputElement;
                   const val = input?.value?.trim();

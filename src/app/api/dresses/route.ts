@@ -27,21 +27,38 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const result = await db.insert(dresses).values(body).returning();
+    const cleanData: Record<string, any> = {};
+    for (const key of Object.keys(body)) {
+      if (key === "id") continue;
+      const val = body[key];
+      if (val !== undefined && val !== null) {
+        cleanData[key] = val;
+      }
+    }
+    const result = await db.insert(dresses).values(cleanData).returning();
     return NextResponse.json(result[0]);
   } catch (error) {
-    return NextResponse.json({ error: "Failed to create dress" }, { status: 500 });
+    console.error("Dress create error:", error);
+    return NextResponse.json({ error: "Failed to create dress", details: String(error) }, { status: 500 });
   }
 }
 
 export async function PUT(req: NextRequest) {
   try {
     const body = await req.json();
-    const { id, ...data } = body;
-    const result = await db.update(dresses).set(data).where(eq(dresses.id, id)).returning();
+    const { id, ...rawData } = body;
+    const cleanData: Record<string, any> = {};
+    for (const key of Object.keys(rawData)) {
+      const val = rawData[key];
+      if (val !== undefined) {
+        cleanData[key] = val;
+      }
+    }
+    const result = await db.update(dresses).set(cleanData).where(eq(dresses.id, id)).returning();
     return NextResponse.json(result[0]);
   } catch (error) {
-    return NextResponse.json({ error: "Failed to update dress" }, { status: 500 });
+    console.error("Dress update error:", error);
+    return NextResponse.json({ error: "Failed to update dress", details: String(error) }, { status: 500 });
   }
 }
 
