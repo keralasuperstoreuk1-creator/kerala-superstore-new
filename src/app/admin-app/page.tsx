@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { Store, Bell, Package, TrendingUp, CheckCircle, Truck, Search, LogOut, Clock, ChevronLeft } from "lucide-react";
 
 type AdminUser = { id: number; name: string; email: string; phone: string | null };
-type OrderItem = { id: number; itemName: string; variantName: string | null; quantity: number; price: string; imageUrl: string | null; total: string };
+type OrderItem = { id: number; itemName: string; variantName: string | null; color: string | null; size: string | null; quantity: number; price: string; imageUrl: string | null; total: string };
 type Order = { id: number; orderNumber: string; customerName: string; customerPhone: string; customerEmail: string | null; address: string; totalAmount: string; status: string; createdAt: string; items: OrderItem[] };
 type Stats = { totalOrders: number; totalRevenue: number; pendingOrders: number; deliveredOrders: number; todayOrders: number; todayRevenue: number; daily: Record<string, { orders: number; revenue: number }>; monthly: Record<string, { orders: number; revenue: number }> };
 
@@ -188,6 +188,8 @@ export default function AdminAppPage() {
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-medium text-stone-900 truncate">{item.itemName}</p>
                       <p className="text-[10px] text-stone-500 flex flex-wrap gap-1">
+                        {item.color && <span className="inline-flex items-center gap-0.5 bg-green-100 text-green-800 px-1.5 py-0.5 rounded-md text-[10px] font-medium"><span className="w-2 h-2 rounded-full bg-green-500 inline-block" />{item.color}</span>}
+                        {item.size && <span className="inline-flex items-center gap-0.5 bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded-md text-[10px] font-medium">{item.size}</span>}
                         {item.variantName && <span className="text-stone-500">{item.variantName}</span>}
                         <span className="text-stone-500">× {item.quantity}</span>
                       </p>
@@ -275,6 +277,8 @@ export default function AdminAppPage() {
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-stone-900 text-sm">{item.itemName}</p>
                       <p className="text-xs text-stone-500 flex flex-wrap gap-1">
+                        {item.color && <span className="inline-flex items-center gap-0.5 bg-green-100 text-green-800 px-1.5 py-0.5 rounded-md text-[10px] font-medium"><span className="w-2 h-2 rounded-full bg-green-500 inline-block" />{item.color}</span>}
+                        {item.size && <span className="inline-flex items-center gap-0.5 bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded-md text-[10px] font-medium">{item.size}</span>}
                         {item.variantName && <span className="text-stone-500">{item.variantName}</span>}
                       </p>
                       <p className="text-xs text-stone-500">Qty: {item.quantity} × £{item.price}</p>
