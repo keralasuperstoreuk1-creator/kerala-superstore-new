@@ -1,11 +1,25 @@
 "use client";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { Store, Bell, Package, TrendingUp, CheckCircle, Truck, Search, LogOut, Clock, ChevronLeft } from "lucide-react";
 
 type AdminUser = { id: number; name: string; email: string; phone: string | null };
 type OrderItem = { id: number; itemName: string; variantName: string | null; quantity: number; price: string; imageUrl: string | null; total: string };
 type Order = { id: number; orderNumber: string; customerName: string; customerPhone: string; customerEmail: string | null; address: string; totalAmount: string; status: string; createdAt: string; items: OrderItem[] };
 type Stats = { totalOrders: number; totalRevenue: number; pendingOrders: number; deliveredOrders: number; todayOrders: number; todayRevenue: number; daily: Record<string, { orders: number; revenue: number }>; monthly: Record<string, { orders: number; revenue: number }> };
+
+function ItemImage({ imageUrl, itemName }: { imageUrl: string | null; itemName: string }) {
+  const [broken, setBroken] = useState(false);
+  if (!imageUrl || broken) {
+    return (
+      <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm flex-shrink-0">
+        {(itemName || "?").charAt(0).toUpperCase()}
+      </div>
+    );
+  }
+  return (
+    <img src={imageUrl} alt={itemName} className="w-12 h-12 rounded-xl object-cover flex-shrink-0" onError={() => setBroken(true)} />
+  );
+}
 
 export default function AdminAppPage() {
   const [admin, setAdmin] = useState<AdminUser | null>(null);
@@ -82,17 +96,17 @@ export default function AdminAppPage() {
     setUpdating(false);
   };
 
-  const filteredOrders = orders.filter((o) => {
-    if (searchQuery) { const q = searchQuery.toLowerCase(); return o.customerName.toLowerCase().includes(q) || o.orderNumber.toLowerCase().includes(q) || o.customerPhone.includes(q); }
-    return true;
-  });
+  const filteredOrders = useMemo(() => {
+    if (!searchQuery) return orders;
+    const q = searchQuery.toLowerCase();
+    return orders.filter((o) => o.customerName.toLowerCase().includes(q) || o.orderNumber.toLowerCase().includes(q) || o.customerPhone.includes(q));
+  }, [orders, searchQuery]);
 
   const statusBadge = (status: string) => {
     const s: Record<string, string> = { pending: "bg-amber-100 text-amber-800", confirmed: "bg-blue-100 text-blue-800", processing: "bg-purple-100 text-purple-800", delivered: "bg-emerald-100 text-emerald-800", cancelled: "bg-red-100 text-red-800" };
     return s[status] || "bg-stone-100 text-stone-800";
   };
 
-  // Login screen
   if (!admin) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-800 to-stone-900 flex items-center justify-center p-4">
@@ -116,7 +130,6 @@ export default function AdminAppPage() {
     );
   }
 
-  // Dashboard
   return (
     <div className="min-h-screen bg-stone-50 pb-24">
       <div className="sticky top-0 z-50 bg-white border-b border-stone-200 px-4 py-3 flex items-center justify-between shadow-sm">
@@ -166,16 +179,24 @@ export default function AdminAppPage() {
                 <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-bold">{order.customerName.charAt(0)}</div>
                 <div><p className="font-medium text-stone-900 text-sm">{order.customerName}</p><p className="text-xs text-stone-500">{order.customerPhone}</p></div>
               </div>
-{order.items?.map((item) => (
+
+              {/* All products with images */}
+              <div className="space-y-1.5">
+                {order.items.map((item) => (
                   <div key={item.id} className="flex items-center gap-2.5 bg-stone-50 rounded-xl p-2">
-                    {item.imageUrl ? (
-                      <img src={item.imageUrl} alt="" className="w-10 h-10 rounded-lg object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                    ) : null}
-                    <div className={`w-10 h-10 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-bold ${item.imageUrl ? '' : ''}`}>{(item.itemName || '?').charAt(0)}</div>
-                    <div className="flex-1 min-w-0"><p className="text-xs font-medium text-stone-900 truncate">{item.itemName}</p><p className="text-[10px] text-stone-500">{item.variantName} x{item.quantity}</p></div>
+                    <ItemImage imageUrl={item.imageUrl} itemName={item.itemName} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-stone-900 truncate">{item.itemName}</p>
+                      <p className="text-[10px] text-stone-500">
+                        {item.variantName && <span>{item.variantName}</span>}
+                        <span> × {item.quantity}</span>
+                      </p>
+                    </div>
                     <p className="text-xs font-bold text-stone-900">£{item.price}</p>
                   </div>
                 ))}
+              </div>
+
               <div className="flex justify-between items-center pt-1 border-t border-stone-100"><span className="text-xs text-stone-500">Total</span><span className="font-bold text-stone-900">£{parseFloat(order.totalAmount).toFixed(2)}</span></div>
             </div>
           ))}
@@ -245,25 +266,27 @@ export default function AdminAppPage() {
                 <p className="text-sm text-stone-600">{selectedOrder.address}</p>
                 <p className="text-xs text-stone-500">{new Date(selectedOrder.createdAt).toLocaleString()}</p>
               </div>
-              <div><p className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Items ({selectedOrder.items.length})</p></div>
+
+              <div><p className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Products ({selectedOrder.items.length})</p></div>
+              <div className="space-y-2">
                 {selectedOrder.items.map((item) => (
                   <div key={item.id} className="flex items-center gap-3 bg-white border border-stone-200 rounded-xl p-3">
-                    {item.imageUrl ? (
-                      <img src={item.imageUrl} alt="" className="w-14 h-14 rounded-xl object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                    ) : null}
-                    <div className={`w-14 h-14 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-sm font-bold ${item.imageUrl ? '' : ''}`}>{(item.itemName || '?').charAt(0)}</div>
+                    <ItemImage imageUrl={item.imageUrl} itemName={item.itemName} />
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-stone-900 text-sm">{item.itemName}</p>
                       <p className="text-xs text-stone-500">{item.variantName || ""}</p>
                       <p className="text-xs text-stone-500">Qty: {item.quantity} × £{item.price}</p>
                     </div>
-                    <p className="font-bold text-stone-900">£{parseFloat(item.total || item.price).toFixed(2)}</p>
+                    <p className="font-bold text-stone-900 text-sm">£{parseFloat(item.total || item.price).toFixed(2)}</p>
                   </div>
                 ))}
+              </div>
+
               <div className="flex justify-between items-center py-2 border-t border-stone-200">
                 <span className="font-bold text-stone-900">Total</span>
                 <span className="text-lg font-bold text-emerald-800">£{parseFloat(selectedOrder.totalAmount).toFixed(2)}</span>
               </div>
+
               <div className="space-y-2 pt-2">
                 {selectedOrder.status === "pending" && <button onClick={() => updateStatus(selectedOrder.id, "confirmed")} disabled={updating} className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm transition disabled:opacity-50 flex items-center justify-center gap-2"><CheckCircle className="w-4 h-4" /> Confirm Order</button>}
                 {selectedOrder.status === "confirmed" && <button onClick={() => updateStatus(selectedOrder.id, "processing")} disabled={updating} className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition disabled:opacity-50 flex items-center justify-center gap-2"><Clock className="w-4 h-4" /> Mark Processing</button>}
