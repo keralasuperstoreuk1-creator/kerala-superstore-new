@@ -43,6 +43,17 @@ export default function HomeClient({ data }: { data: HomeData }) {
 
 
 
+  function parseSizes(sizes: any): string[] {
+    if (Array.isArray(sizes)) return sizes;
+    if (typeof sizes === "string" && sizes.length > 0) {
+      try { return JSON.parse(sizes); } catch {}
+      const m = sizes.match(/\{(.+)\}/);
+      if (m) return m[1].split(",").map((s: string) => s.trim());
+      return sizes.split(",").map((s: string) => s.trim()).filter(Boolean);
+    }
+    return [];
+  }
+
   function getProductThumbnails(prod: any) {
     const list: { url: string; color?: string }[] = [];
     // First add default color variant image(s) if any
@@ -704,7 +715,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
                       <span className="font-bold text-slate-900">£{dress.price}</span>
                       {dress.compareAtPrice && <span className="text-sm text-slate-400 line-through">£{dress.compareAtPrice}</span>}
                     </div>
-                    {dress.sizes?.length > 0 && <p className="text-xs text-slate-500 mt-1">Sizes: {dress.sizes.join(", ")}</p>}
+                    {parseSizes(dress.sizes).length > 0 && <p className="text-xs text-slate-500 mt-1">Sizes: {parseSizes(dress.sizes).join(", ")}</p>}
                     <button onClick={(e) => { e.stopPropagation(); openDetailModal(dress); }} className="mt-3 w-full bg-[#fdd835] hover:bg-[#fbc02d] text-stone-900 py-2 rounded-lg text-sm font-bold transition flex items-center justify-center gap-1 shadow-sm uppercase tracking-wider">
                       Select Colors & Options
                     </button>
@@ -1319,6 +1330,20 @@ export default function HomeClient({ data }: { data: HomeData }) {
                     cotton
                   </span>
                 </div>
+
+                {/* Available Sizes */}
+                {parseSizes(detailProduct.sizes).length > 0 && (
+                  <div>
+                    <label className="block text-xs font-mono uppercase tracking-wider text-stone-500 mb-2">Available Sizes:</label>
+                    <div className="flex flex-wrap gap-2">
+                      {parseSizes(detailProduct.sizes).map((size) => (
+                        <span key={size} className="px-3 py-1.5 bg-stone-100 border border-stone-200 rounded-lg text-xs font-semibold text-stone-700">
+                          {size}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Stock info */}
                 <div className="text-xs font-semibold text-rose-600 flex items-center gap-1">

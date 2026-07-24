@@ -32,9 +32,9 @@ function extractDressData(body: any) {
     price: body.price,
     compareAtPrice: body.compareAtPrice || null,
     collectionId: body.collectionId || null,
-    images: body.images || null,
-    sizes: body.sizes || null,
-    colors: body.colors || null,
+    images: Array.isArray(body.images) ? body.images : null,
+    sizes: Array.isArray(body.sizes) ? body.sizes : null,
+    colors: Array.isArray(body.colors) ? body.colors : null,
     colorVariants: body.colorVariants || null,
     orderType: body.orderType || "add_to_bag",
     stock: body.stock ?? 50,
@@ -47,11 +47,14 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const data = extractDressData(body);
+    console.log("Dress create payload:", JSON.stringify(data, null, 2));
     const result = await db.insert(dresses).values(data).returning();
+    console.log("Dress created:", JSON.stringify(result[0], null, 2));
     return NextResponse.json(result[0]);
-  } catch (error) {
-    console.error("Dress create error:", error);
-    return NextResponse.json({ error: "Failed to create dress", details: String(error) }, { status: 500 });
+  } catch (error: any) {
+    console.error("Dress create error:", error?.message || error);
+    console.error("Dress create error detail:", error?.cause || "no cause");
+    return NextResponse.json({ error: "Failed to create dress", details: String(error?.message || error) }, { status: 500 });
   }
 }
 
@@ -60,11 +63,14 @@ export async function PUT(req: NextRequest) {
     const body = await req.json();
     const { id, ...rawData } = body;
     const data = extractDressData(rawData);
+    console.log("Dress update payload:", JSON.stringify({ id, ...data }, null, 2));
     const result = await db.update(dresses).set(data).where(eq(dresses.id, id)).returning();
+    console.log("Dress updated:", JSON.stringify(result[0], null, 2));
     return NextResponse.json(result[0]);
-  } catch (error) {
-    console.error("Dress update error:", error);
-    return NextResponse.json({ error: "Failed to update dress", details: String(error) }, { status: 500 });
+  } catch (error: any) {
+    console.error("Dress update error:", error?.message || error);
+    console.error("Dress update error detail:", error?.cause || "no cause");
+    return NextResponse.json({ error: "Failed to update dress", details: String(error?.message || error) }, { status: 500 });
   }
 }
 

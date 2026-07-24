@@ -132,18 +132,35 @@ export default function DressesPage() {
     e.preventDefault();
     const autoColors = form.colorVariants.map((cv) => cv.color).filter(Boolean);
     const payload = {
-      ...form,
-      sizes: form.sizes || [],
-      colors: autoColors.length > 0 ? autoColors : form.colors,
+      name: form.name,
+      type: form.type,
+      description: form.description,
       price: form.price,
       compareAtPrice: form.compareAtPrice || null,
-      images: form.images.length > 0 ? form.images : null,
-      colorVariants: form.colorVariants.length > 0 ? form.colorVariants : null,
+      images: form.images.length > 0 ? form.images : [],
+      sizes: form.sizes || [],
+      colors: autoColors.length > 0 ? autoColors : form.colors,
+      colorVariants: form.colorVariants.length > 0 ? form.colorVariants : [],
+      orderType: form.orderType,
+      stock: form.stock,
+      sortOrder: form.sortOrder,
+      isActive: form.isActive,
     };
-    if (editing) {
-      await fetch("/api/dresses", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...payload, id: editing.id }) });
-    } else {
-      await fetch("/api/dresses", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    try {
+      let res;
+      if (editing) {
+        res = await fetch("/api/dresses", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...payload, id: editing.id }) });
+      } else {
+        res = await fetch("/api/dresses", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      }
+      const data = await res.json();
+      if (!res.ok) {
+        alert("Save failed: " + (data.error || data.details || "Unknown error"));
+        return;
+      }
+    } catch (err: any) {
+      alert("Save failed: " + (err?.message || "Network error"));
+      return;
     }
     setShowForm(false);
     setEditing(null);
