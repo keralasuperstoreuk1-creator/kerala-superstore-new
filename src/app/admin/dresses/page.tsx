@@ -275,6 +275,75 @@ export default function DressesPage() {
             </div>
           </div>
 
+          {/* Sizes Section */}
+          <div className="bg-blue-50/50 border border-blue-200 p-5 rounded-2xl space-y-3">
+            <h3 className="font-display text-base font-bold text-blue-950 flex items-center gap-2">
+              📏 Available Sizes
+            </h3>
+            {form.sizes.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {form.sizes.map((size, idx) => (
+                  <span key={idx} className="inline-flex items-center gap-1 bg-white border border-blue-300 text-blue-800 text-xs font-bold px-3 py-1.5 rounded-lg">
+                    {size}
+                    <button type="button" onClick={() => toggleSize(size)} className="ml-1 text-blue-400 hover:text-red-500 font-bold">×</button>
+                  </span>
+                ))}
+              </div>
+            )}
+            <div className="space-y-2">
+              {availableSizes.map((group) => (
+                <div key={group.category}>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500">{group.category}:</span>
+                  <div className="flex flex-wrap gap-1.5 mt-1">
+                    {group.sizes.map((size) => (
+                      <button
+                        key={size}
+                        type="button"
+                        onClick={() => toggleSize(size)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition border ${
+                          form.sizes.includes(size)
+                            ? "bg-blue-100 border-blue-400 text-blue-800"
+                            : "bg-white border-stone-200 text-stone-600 hover:bg-blue-50 hover:border-blue-300"
+                        }`}
+                      >
+                        {form.sizes.includes(size) ? "✓ " : "+ "}{size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input
+                id="dressCustomSizeInput"
+                placeholder="Add custom size (e.g. 24, 26, 28, 30)"
+                className="flex-1 px-3 py-2 bg-white border border-blue-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-blue-400"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    const val = (e.target as HTMLInputElement).value.trim();
+                    if (val && !form.sizes.includes(val)) {
+                      toggleSize(val);
+                      (e.target as HTMLInputElement).value = "";
+                    }
+                  }
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  const input = document.getElementById("dressCustomSizeInput") as HTMLInputElement;
+                  const val = input?.value?.trim();
+                  if (val && !form.sizes.includes(val)) {
+                    toggleSize(val);
+                    input.value = "";
+                  }
+                }}
+                className="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition"
+              >Add</button>
+            </div>
+          </div>
+
           {/* Color Image Variants Section */}
           <div className="border border-amber-200 bg-amber-50/50 p-5 rounded-2xl space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
