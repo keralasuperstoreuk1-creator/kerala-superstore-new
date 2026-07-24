@@ -309,17 +309,17 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
     
     setCheckoutLoading(true);
     try {
-      const cartData = cart.map((item) => ({
-        itemId: item.itemId,
-        variantId: item.variantId,
-        name: item.item?.name,
-        variantName: item.variant ? `${item.variant.color || ""} ${item.variant.size || ""}`.trim() : null,
-        color: item.variant?.color || null,
-        size: item.variant?.size || null,
-        quantity: item.quantity,
-        price: item.item?.price,
-        imageUrl: item.item?.images?.[0] || item.variant?.images?.[0] || null,
-      }));
+const cartData = cart.map((item) => ({
+      itemId: item.itemId,
+      variantId: item.variantId,
+      name: item.item?.name,
+      variantName: item.variant ? `${item.variant.color || ""} ${item.variant.size || ""}`.trim() : null,
+      // color: item.variant?.color || null,  // Temporarily disabled
+      // size: item.variant?.size || null,     // Temporarily disabled
+      quantity: item.quantity,
+      price: item.item?.price,
+      imageUrl: item.item?.images?.[0] || item.variant?.images?.[0] || null,
+    }));
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
