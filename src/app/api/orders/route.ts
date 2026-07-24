@@ -75,13 +75,6 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    return NextResponse.json(result[0]);
-  } catch (error) {
-    console.error("Order creation error:", error);
-    return NextResponse.json({ error: "Failed to create order: " + (error instanceof Error ? error.message : "Unknown error") }, { status: 500 });
-  }
-}
-
     // Send WhatsApp
     try {
       const whatsappSetting = await db.select().from(settings).where(eq(settings.key, "whatsapp_number"));
@@ -104,7 +97,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(result[0]);
   } catch (error) {
-    return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
+    console.error("Order creation error:", error);
+    return NextResponse.json({ error: "Failed to create order: " + (error instanceof Error ? error.message : "Unknown error") }, { status: 500 });
   }
 }
 
