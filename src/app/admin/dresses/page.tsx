@@ -14,6 +14,10 @@ export default function DressesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
 
+  // Remember last used sizes & sizePrices for quick re-use
+  const [lastSizes, setLastSizes] = useState<string[]>([]);
+  const [lastSizePrices, setLastSizePrices] = useState<Record<string, string>>({});
+
   const [form, setForm] = useState({
     name: "", type: "ladies", description: "", price: "", compareAtPrice: "",
     images: [] as string[], sizes: [] as string[], colors: [] as string[],
@@ -164,6 +168,8 @@ export default function DressesPage() {
       alert("Save failed: " + (err?.message || "Network error"));
       return;
     }
+    setLastSizes(form.sizes);
+    setLastSizePrices(form.sizePrices);
     setShowForm(false);
     setEditing(null);
     setForm({ name: "", type: "ladies", description: "", price: "", compareAtPrice: "", images: [], sizes: [], colors: [], colorVariants: [], sizePrices: {}, orderType: "add_to_bag", stock: 50, sortOrder: 0, isActive: true });
@@ -258,7 +264,7 @@ export default function DressesPage() {
               <Trash2 className="w-4 h-4" /> Delete Selected ({selectedIds.length})
             </button>
           )}
-          <button onClick={() => { setShowForm(true); setEditing(null); setForm({ name: "", type: "ladies", description: "", price: "", compareAtPrice: "", images: [], sizes: [], colors: [], colorVariants: [], sizePrices: {}, orderType: "add_to_bag", stock: 50, sortOrder: 0, isActive: true }); }} className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-stone-950 px-5 py-2.5 rounded-xl transition font-bold text-xs shadow-md">
+          <button onClick={() => { setShowForm(true); setEditing(null); setForm({ name: "", type: "ladies", description: "", price: "", compareAtPrice: "", images: [], sizes: [...lastSizes], colors: [], colorVariants: [{ color: "", image: "", isDefault: true }], sizePrices: { ...lastSizePrices }, orderType: "add_to_bag", stock: 50, sortOrder: 0, isActive: true }); }} className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-stone-950 px-5 py-2.5 rounded-xl transition font-bold text-xs shadow-md">
             <Plus className="w-4 h-4" /> Add Dress Outfit
           </button>
         </div>
