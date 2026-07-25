@@ -933,8 +933,16 @@ async function handleCheckout(e: React.FormEvent) {
         return (
           <section id="onam-sadhya" className="py-16 bg-gradient-to-b from-amber-50 via-orange-50/30 to-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="reveal relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 mb-10 shadow-xl">
-                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }} />
+              <div className="reveal relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 mb-10 shadow-xl min-h-[200px] md:min-h-[300px]">
+                {settings.onam_sadhya_banner_image && (
+                  <img src={settings.onam_sadhya_banner_image} alt="" className="hidden md:block absolute inset-0 w-full h-full object-cover" />
+                )}
+                {settings.onam_sadhya_banner_mobile_image ? (
+                  <img src={settings.onam_sadhya_banner_mobile_image} alt="" className="block md:hidden absolute inset-0 w-full h-full object-cover" />
+                ) : settings.onam_sadhya_banner_image ? (
+                  <img src={settings.onam_sadhya_banner_image} alt="" className="block md:hidden absolute inset-0 w-full h-full object-cover" />
+                ) : null}
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-900/70 via-amber-800/50 to-transparent" />
                 <div className="relative px-6 py-12 md:px-12 md:py-16 text-center text-white">
                   <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.25em] text-amber-200 bg-white/15 border border-white/20 rounded-full px-4 py-1.5 mb-4">
                     🍛 Onam 2026
