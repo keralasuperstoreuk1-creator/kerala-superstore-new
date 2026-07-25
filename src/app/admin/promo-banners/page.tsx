@@ -79,6 +79,9 @@ export default function PromoBannersPage() {
           <h2 className="font-bold text-lg">{editing ? "Edit Banner" : "New Banner"}</h2>
           <div>
             <label className="block text-xs font-semibold text-stone-600 mb-1">Banner Image *</label>
+            <div className="text-[10px] font-mono text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg mb-2">
+              📱 <span className="font-bold">Mobile:</span> 600×400px · <span className="font-bold">Desktop:</span> 1400×500px
+            </div>
             {form.image ? (
               <div className="relative w-full h-40 bg-stone-100 rounded-xl overflow-hidden border mb-2">
                 <img src={form.image} alt="Banner" className="w-full h-full object-cover" />
