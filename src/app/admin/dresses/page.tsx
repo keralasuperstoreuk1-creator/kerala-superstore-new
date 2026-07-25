@@ -19,6 +19,7 @@ export default function DressesPage() {
     images: [] as string[], sizes: [] as string[], colors: [] as string[],
     // Initialise with a single default colour variant so the radio button is always visible
     colorVariants: [{ color: "", image: "", isDefault: true }],
+    sizePrices: {} as Record<string, string>,
     orderType: "add_to_bag",
     stock: 50, sortOrder: 0, isActive: true,
   });
@@ -139,6 +140,7 @@ export default function DressesPage() {
       compareAtPrice: form.compareAtPrice || null,
       images: form.images.length > 0 ? form.images : [],
       sizes: form.sizes || [],
+      sizePrices: form.sizePrices || null,
       colors: autoColors.length > 0 ? autoColors : form.colors,
       colorVariants: form.colorVariants.length > 0 ? form.colorVariants : [],
       orderType: form.orderType,
@@ -164,7 +166,7 @@ export default function DressesPage() {
     }
     setShowForm(false);
     setEditing(null);
-    setForm({ name: "", type: "ladies", description: "", price: "", compareAtPrice: "", images: [], sizes: [], colors: [], colorVariants: [], orderType: "add_to_bag", stock: 50, sortOrder: 0, isActive: true });
+    setForm({ name: "", type: "ladies", description: "", price: "", compareAtPrice: "", images: [], sizes: [], colors: [], colorVariants: [], sizePrices: {}, orderType: "add_to_bag", stock: 50, sortOrder: 0, isActive: true });
     fetchDresses();
   }
 
@@ -201,7 +203,7 @@ export default function DressesPage() {
       name: d.name, type: d.type, description: d.description || "", price: String(d.price),
       compareAtPrice: d.compareAtPrice ? String(d.compareAtPrice) : "",
       images: d.images || [], sizes: d.sizes || [], colors: d.colors || [],
-      colorVariants: d.colorVariants || [],
+      colorVariants: d.colorVariants || [], sizePrices: d.sizePrices || {},
       orderType: d.orderType || "add_to_bag",
       stock: d.stock || 50, sortOrder: d.sortOrder || 0, isActive: d.isActive,
     });
@@ -209,7 +211,22 @@ export default function DressesPage() {
   }
 
   function toggleSize(size: string) {
-    setForm((f) => ({ ...f, sizes: f.sizes.includes(size) ? f.sizes.filter((s) => s !== size) : [...f.sizes, size] }));
+    setForm((f) => {
+      const newSizes = f.sizes.includes(size) ? f.sizes.filter((s) => s !== size) : [...f.sizes, size];
+      const newSizePrices = { ...f.sizePrices };
+      if (!f.sizes.includes(size)) {
+        // Adding a size: set default price from form.price if not already set
+        if (!newSizePrices[size]) newSizePrices[size] = f.price || "";
+      } else {
+        // Removing a size: remove its price entry
+        delete newSizePrices[size];
+      }
+      return { ...f, sizes: newSizes, sizePrices: newSizePrices };
+    });
+  }
+
+  function updateSizePrice(size: string, value: string) {
+    setForm((f) => ({ ...f, sizePrices: { ...f.sizePrices, [size]: value } }));
   }
 
   const filteredDresses = dressesList.filter((d) => {
@@ -241,7 +258,7 @@ export default function DressesPage() {
               <Trash2 className="w-4 h-4" /> Delete Selected ({selectedIds.length})
             </button>
           )}
-          <button onClick={() => { setShowForm(true); setEditing(null); setForm({ name: "", type: "ladies", description: "", price: "", compareAtPrice: "", images: [], sizes: [], colors: [], colorVariants: [], orderType: "add_to_bag", stock: 50, sortOrder: 0, isActive: true }); }} className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-stone-950 px-5 py-2.5 rounded-xl transition font-bold text-xs shadow-md">
+          <button onClick={() => { setShowForm(true); setEditing(null); setForm({ name: "", type: "ladies", description: "", price: "", compareAtPrice: "", images: [], sizes: [], colors: [], colorVariants: [], sizePrices: {}, orderType: "add_to_bag", stock: 50, sortOrder: 0, isActive: true }); }} className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-stone-950 px-5 py-2.5 rounded-xl transition font-bold text-xs shadow-md">
             <Plus className="w-4 h-4" /> Add Dress Outfit
           </button>
         </div>
@@ -301,10 +318,21 @@ export default function DressesPage() {
             {form.sizes.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {form.sizes.map((size, idx) => (
-                  <span key={idx} className="inline-flex items-center gap-1 bg-blue-100 border border-blue-400 text-blue-800 text-xs font-bold px-3 py-1.5 rounded-lg">
+                  <div key={idx} className="inline-flex items-center gap-1 bg-blue-100 border border-blue-400 text-blue-800 text-xs font-bold px-3 py-1.5 rounded-lg">
                     ✓ {size}
-                    <button type="button" onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); toggleSize(size); }} className="ml-1 text-blue-500 hover:text-red-500 font-bold">×</button>
-                  </span>
+                    <input
+                      type="number"
+                      step="0.01"
+                      placeholder="Price"
+                      value={form.sizePrices[size] || ""}
+                      onChange={(e) => updateSizePrice(size, e.target.value)}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      onClick={(e) => e.stopPropagation()}
+                      className="w-16 px-1 py-0.5 bg-white border border-blue-300 rounded text-center text-[10px] font-bold outline-none"
+                    />
+                    <span className="text-[9px] text-blue-500 font-mono">£</span>
+                    <button type="button" onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); toggleSize(size); }} className="ml-0.5 text-blue-500 hover:text-red-500 font-bold">×</button>
+                  </div>
                 ))}
               </div>
             )}

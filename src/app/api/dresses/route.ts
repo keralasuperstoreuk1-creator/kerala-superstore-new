@@ -36,6 +36,7 @@ function extractDressData(body: any) {
     sizes: Array.isArray(body.sizes) ? body.sizes : null,
     colors: Array.isArray(body.colors) ? body.colors : null,
     colorVariants: body.colorVariants || null,
+    sizePrices: body.sizePrices || null,
     orderType: body.orderType || "add_to_bag",
     stock: body.stock ?? 50,
     sortOrder: body.sortOrder ?? 0,

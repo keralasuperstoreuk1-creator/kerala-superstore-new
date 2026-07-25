@@ -75,6 +75,25 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
     return [];
   }
 
+  function getSizePrice(dress: any, size: string): string | null {
+    if (dress.sizePrices && dress.sizePrices[size]) {
+      return dress.sizePrices[size];
+    }
+    return null;
+  }
+
+  function getPriceRange(dress: any): { min: number; max: number } | null {
+    if (!dress.sizePrices || typeof dress.sizePrices !== "object") return null;
+    const prices = Object.values(dress.sizePrices).map(Number).filter((p) => !isNaN(p));
+    if (prices.length === 0) return null;
+    return { min: Math.min(...prices), max: Math.max(...prices) };
+  }
+
+  function getEffectivePrice(dress: any, size: string): string {
+    const sp = getSizePrice(dress, size);
+    return sp || dress.price;
+  }
+
   function getProductThumbnails(prod: any) {
     const list: { url: string; color?: string }[] = [];
     // First add default color variant image(s) if any
@@ -217,7 +236,11 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
     return col?.orderType === "pre_order";
   }
 
-  const cartTotal = cart.reduce((sum, item) => sum + parseFloat(item.item?.price || 0) * item.quantity, 0);
+  const cartTotal = cart.reduce((sum, item) => {
+    const sizeKey = item.variantSize || item.variant?.size || null;
+    const sizePrice = sizeKey && item.item?.sizePrices?.[sizeKey] ? item.item.sizePrices[sizeKey] : null;
+    return sum + parseFloat(sizePrice || item.item?.price || 0) * item.quantity;
+  }, 0);
 
   const filteredDresses = dresses.filter((d) => {
     const matchesFilter = dressFilter === "all" || d.type === dressFilter;
@@ -312,17 +335,21 @@ async function handleCheckout(e: React.FormEvent) {
     
     setCheckoutLoading(true);
     try {
-      const cartData = cart.map((item) => ({
-        itemId: item.itemId,
-        variantId: item.variantId,
-        name: item.item?.name,
-        variantName: item.variant ? `${item.variant.color || ""} ${item.variant.size || ""}`.trim() : null,
-        color: item.variant?.color || item.variantName || null,
-        size: item.variant?.size || item.variantSize || null,
-        quantity: item.quantity,
-        price: item.item?.price,
-        imageUrl: item.item?.images?.[0] || item.variant?.images?.[0] || null,
-      }));
+      const cartData = cart.map((item) => {
+        const sizeKey = item.variantSize || item.variant?.size || null;
+        const sizePrice = sizeKey && item.item?.sizePrices?.[sizeKey] ? item.item.sizePrices[sizeKey] : null;
+        return {
+          itemId: item.itemId,
+          variantId: item.variantId,
+          name: item.item?.name,
+          variantName: item.variant ? `${item.variant.color || ""} ${item.variant.size || ""}`.trim() : null,
+          color: item.variant?.color || item.variantName || null,
+          size: sizeKey,
+          quantity: item.quantity,
+          price: sizePrice || item.item?.price,
+          imageUrl: item.item?.images?.[0] || item.variant?.images?.[0] || null,
+        };
+      });
       console.log("Submitting order:", { checkoutForm, cartData, cartTotal });
       const res = await fetch("/api/orders", {
         method: "POST",
@@ -766,7 +793,13 @@ async function handleCheckout(e: React.FormEvent) {
                   <div className="p-4">
                     <h3 className="font-semibold text-slate-900 text-sm group-hover:text-emerald-700 transition">{dress.name}</h3>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="font-bold text-slate-900">£{dress.price}</span>
+                      {(() => {
+                        const range = getPriceRange(dress);
+                        if (range && range.min !== range.max) {
+                          return <span className="font-bold text-slate-900">£{range.min.toFixed(2)} – £{range.max.toFixed(2)}</span>;
+                        }
+                        return <span className="font-bold text-slate-900">£{dress.price}</span>;
+                      })()}
                       {dress.compareAtPrice && <span className="text-sm text-slate-400 line-through">£{dress.compareAtPrice}</span>}
                     </div>
                     {parseSizes(dress.sizes).length > 0 && <p className="text-xs text-slate-500 mt-1">Sizes: {parseSizes(dress.sizes).join(", ")}</p>}
@@ -1361,11 +1394,21 @@ async function handleCheckout(e: React.FormEvent) {
                 {/* Price */}
                 <div className="flex items-baseline gap-3 pt-1">
                   <span className="font-editorial text-3xl font-bold text-stone-900">
-                    £{detailProduct.price}
+                    £{selectedSize && getSizePrice(detailProduct, selectedSize) ? getSizePrice(detailProduct, selectedSize) : detailProduct.price}
                   </span>
-                  {detailProduct.compareAtPrice && (
+                  {selectedSize && getSizePrice(detailProduct, selectedSize) && detailProduct.compareAtPrice && (
                     <span className="text-base text-stone-400 line-through">
                       £{detailProduct.compareAtPrice}
+                    </span>
+                  )}
+                  {(!selectedSize || !getSizePrice(detailProduct, selectedSize)) && detailProduct.compareAtPrice && (
+                    <span className="text-base text-stone-400 line-through">
+                      £{detailProduct.compareAtPrice}
+                    </span>
+                  )}
+                  {selectedSize && getSizePrice(detailProduct, selectedSize) && (
+                    <span className="text-[10px] text-emerald-600 font-semibold font-mono bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                      Size: {selectedSize}
                     </span>
                   )}
                 </div>
@@ -1382,20 +1425,28 @@ async function handleCheckout(e: React.FormEvent) {
                   <div>
                     <label className="block text-xs font-mono uppercase tracking-wider text-stone-500 mb-2">Available Sizes:</label>
                     <div className="flex flex-wrap gap-2">
-                      {parseSizes(detailProduct.sizes).map((size) => (
-                        <button
-                          key={size}
-                          type="button"
-                          onClick={() => setSelectedSize(size)}
-                          className={`px-3 py-1.5 border rounded-lg text-xs font-semibold transition ${
-                            selectedSize === size
-                              ? "bg-blue-600 text-white border-blue-600"
-                              : "bg-stone-100 text-stone-700 border-stone-200 hover:border-blue-400"
-                          }`}
-                        >
-                          {size}
-                        </button>
-                      ))}
+                      {parseSizes(detailProduct.sizes).map((size) => {
+                        const sp = getSizePrice(detailProduct, size);
+                        return (
+                          <button
+                            key={size}
+                            type="button"
+                            onClick={() => setSelectedSize(size)}
+                            className={`px-3 py-1.5 border rounded-lg text-xs font-semibold transition flex flex-col items-center ${
+                              selectedSize === size
+                                ? "bg-blue-600 text-white border-blue-600"
+                                : "bg-stone-100 text-stone-700 border-stone-200 hover:border-blue-400"
+                            }`}
+                          >
+                            <span>{size}</span>
+                            {sp && (
+                              <span className={`text-[9px] font-mono ${selectedSize === size ? "text-blue-200" : "text-emerald-600"}`}>
+                                £{sp}
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
@@ -1423,7 +1474,8 @@ async function handleCheckout(e: React.FormEvent) {
                       if (parseSizes(detailProduct.sizes).length > 0 && !selectedSize) {
                         return alert("⚠️ Please select a size before adding to bag");
                       }
-                      addToCart(detailProduct.id, `${detailProduct.name} (${selectedColor || 'Default'})`, detailProduct.price, detailQty, detailProduct.isDress ? "dress" : "item", selectedColor, selectedSize);
+                      const effPrice = getEffectivePrice(detailProduct, selectedSize);
+                      addToCart(detailProduct.id, `${detailProduct.name} (${selectedColor || 'Default'})`, effPrice, detailQty, detailProduct.isDress ? "dress" : "item", selectedColor, selectedSize);
                       setDetailProduct(null);
                     }}
                     className={`w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition shadow-lg uppercase tracking-wider ${
@@ -1450,7 +1502,8 @@ async function handleCheckout(e: React.FormEvent) {
                       const img = selectedImage || detailProduct.images?.[0] || '';
                       const clr = selectedColor || '-';
                       const sz = selectedSize || '-';
-                      const msg = `${prefix}\n\nItem: ${name}\nColour: ${clr}\nSize: ${sz}\nQty: ${detailQty}\nPrice: £${detailProduct.price}\nImage: ${img}`;
+                      const effPrice2 = getEffectivePrice(detailProduct, selectedSize);
+                      const msg = `${prefix}\n\nItem: ${name}\nColour: ${clr}\nSize: ${sz}\nQty: ${detailQty}\nPrice: £${effPrice2}\nImage: ${img}`;
                       window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, "_blank");
                     }}
                     className="w-full bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition uppercase tracking-wider"
