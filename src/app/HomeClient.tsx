@@ -228,6 +228,25 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
     window.open(waUrl, "_blank");
   }
 
+  function shareCollection(collectionName: string, collectionType: string) {
+    const url = `${window.location.origin}?collection=${collectionType}`;
+    const text = `🛍️ ${collectionName} Collection — Kerala Super Store\n\nBrowse our ${collectionName} collection for Onam 2026!\n${url}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+  }
+
+  function getTypeDisplayName(type: string): string {
+    const map: Record<string, string> = {
+      "all": "All",
+      "ladies": "Ladies",
+      "gents": "Gents",
+      "kids": "Kids",
+      "kids-boys": "Kids Boys",
+      "kids-girls": "Kids Girls",
+      "combo": "Combo",
+    };
+    return map[type] || type;
+  }
+
   function isPreOrderCategory(categoryId?: number) {
     if (!categoryId) return false;
     const cat = categories.find((c) => c.id === categoryId);
@@ -759,6 +778,63 @@ async function handleCheckout(e: React.FormEvent) {
         </section>
       )}
 
+      {/* Shop by Collection */}
+      {dresses.length > 0 && (
+        <section className="py-16 bg-gradient-to-b from-amber-50/60 to-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="reveal text-center mb-10 max-w-3xl mx-auto">
+              <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.22em] text-amber-700/80 mb-3">
+                <span className="w-8 h-px bg-amber-700/40" /> Onam 2026 <span className="w-8 h-px bg-amber-700/40" />
+              </div>
+              <h2 className="font-editorial text-4xl md:text-5xl font-bold text-[#0b2416] leading-[0.95]">
+                Shop by <span className="italic text-amber-700">Collection.</span>
+              </h2>
+              <p className="text-stone-600 mt-4">Choose your festive look — curated collections for the whole family.</p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {[
+                { type: "ladies", name: "Ladies Kasavu", emoji: "👩", desc: "Sarees & Set Mundu", bg: "bg-rose-50", border: "border-rose-200", hover: "hover:bg-rose-100", iconBg: "bg-rose-100", iconText: "text-rose-600" },
+                { type: "gents", name: "Gents Jubba", emoji: "👨", desc: "Shirt & Kasavu Mundu", bg: "bg-blue-50", border: "border-blue-200", hover: "hover:bg-blue-100", iconBg: "bg-blue-100", iconText: "text-blue-600" },
+                { type: "kids-boys", name: "Kids Boys", emoji: "👦", desc: "Boys Festival Attire", bg: "bg-sky-50", border: "border-sky-200", hover: "hover:bg-sky-100", iconBg: "bg-sky-100", iconText: "text-sky-600" },
+                { type: "kids-girls", name: "Kids Girls", emoji: "👧", desc: "Girls Festival Attire", bg: "bg-pink-50", border: "border-pink-200", hover: "hover:bg-pink-100", iconBg: "bg-pink-100", iconText: "text-pink-600" },
+                { type: "combo", name: "Family Combo", emoji: "👪", desc: "Complete Family Sets", bg: "bg-amber-50", border: "border-amber-200", hover: "hover:bg-amber-100", iconBg: "bg-amber-100", iconText: "text-amber-600" },
+              ].map((col) => {
+                const count = dresses.filter((d) => d.type === col.type).length;
+                return (
+                  <div
+                    key={col.type}
+                    className={`${col.bg} ${col.border} ${col.hover} border-2 rounded-2xl p-5 text-center cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1 group`}
+                    onClick={() => { setDressFilter(col.type); document.getElementById("dresses")?.scrollIntoView({ behavior: "smooth" }); }}
+                  >
+                    <div className={`w-16 h-16 mx-auto ${col.iconBg} rounded-full flex items-center justify-center text-3xl mb-3 ${col.iconText} group-hover:scale-110 transition-transform`}>
+                      {col.emoji}
+                    </div>
+                    <h3 className="font-bold text-stone-900 text-sm">{col.name}</h3>
+                    <p className="text-[10px] text-stone-500 mt-0.5">{col.desc}</p>
+                    <p className="text-[10px] font-mono text-stone-400 mt-1">{count} items</p>
+                    <div className="flex gap-1.5 mt-3 justify-center">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setDressFilter(col.type); document.getElementById("dresses")?.scrollIntoView({ behavior: "smooth" }); }}
+                        className="flex-1 bg-stone-900 hover:bg-stone-800 text-white text-[10px] font-bold py-2 rounded-xl transition"
+                      >
+                        Explore →
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); shareCollection(col.name, col.type); }}
+                        className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition"
+                        title={`Share ${col.name} on WhatsApp`}
+                      >
+                        <Share2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Dress Collections */}
       {dresses.length > 0 && (
         <section id="dresses" className="py-16 bg-white">
@@ -773,9 +849,9 @@ async function handleCheckout(e: React.FormEvent) {
               <p className="text-stone-600 mt-4">Pre-order traditional Kerala attire for ladies, gents and kids — reserved and delivered before the festivities begin.</p>
             </div>
             <div className="flex gap-2 justify-center mb-8 flex-wrap">
-              {["all","ladies","gents","kids","combo"].map((type) => (
-                <button key={type} onClick={() => setDressFilter(type)} className={`px-5 py-2 rounded-full text-sm font-medium capitalize transition ${dressFilter === type ? "bg-green-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>
-                  {type}
+              {["all","ladies","gents","kids","kids-boys","kids-girls","combo"].map((type) => (
+                <button key={type} onClick={() => setDressFilter(type)} className={`px-5 py-2 rounded-full text-sm font-medium transition ${dressFilter === type ? "bg-green-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>
+                  {getTypeDisplayName(type)}
                 </button>
               ))}
             </div>
@@ -803,9 +879,14 @@ async function handleCheckout(e: React.FormEvent) {
                       {dress.compareAtPrice && <span className="text-sm text-slate-400 line-through">£{dress.compareAtPrice}</span>}
                     </div>
                     {parseSizes(dress.sizes).length > 0 && <p className="text-xs text-slate-500 mt-1">Sizes: {parseSizes(dress.sizes).join(", ")}</p>}
-                    <button onClick={(e) => { e.stopPropagation(); openDetailModal(dress); }} className="mt-3 w-full bg-[#fdd835] hover:bg-[#fbc02d] text-stone-900 py-2 rounded-lg text-sm font-bold transition flex items-center justify-center gap-1 shadow-sm uppercase tracking-wider">
-                      Add to Cart
-                    </button>
+                    <div className="mt-3 flex gap-2">
+                      <button onClick={(e) => { e.stopPropagation(); openDetailModal(dress); }} className="flex-1 bg-[#fdd835] hover:bg-[#fbc02d] text-stone-900 py-2 rounded-lg text-sm font-bold transition flex items-center justify-center gap-1 shadow-sm uppercase tracking-wider">
+                        Add to Cart
+                      </button>
+                      <button onClick={(e) => { e.stopPropagation(); shareOnWhatsApp(dress.name, dress.price); }} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition shadow-sm" title="Share on WhatsApp">
+                        <Share2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}

@@ -279,12 +279,14 @@ export default function DressesPage() {
             </div>
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Category Group *</label>
-              <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm font-semibold">
-                <option value="ladies">👩 Women's Kasavu Saree & Set Mundu</option>
-                <option value="gents">👨 Men's Jubba & Kasavu Mundu</option>
-                <option value="kids">👶 Kids Festive Attire</option>
-                <option value="combo">👪 Family Combo Set</option>
-              </select>
+                <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm font-semibold">
+                  <option value="ladies">👩 Women's Kasavu Saree & Set Mundu</option>
+                  <option value="gents">👨 Men's Jubba & Kasavu Mundu</option>
+                  <option value="kids">👶 Kids Festive Attire (All)</option>
+                  <option value="kids-boys">👦 Kids Boys Festival Attire</option>
+                  <option value="kids-girls">👧 Kids Girls Festival Attire</option>
+                  <option value="combo">👪 Family Combo Set</option>
+                </select>
             </div>
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Price (£) *</label>
@@ -525,7 +527,9 @@ export default function DressesPage() {
             <option value="">All Groups ({dressesList.length})</option>
             <option value="ladies">Ladies Kasavu & Saree</option>
             <option value="gents">Gents Shirt & Mundu</option>
-            <option value="kids">Kids Festive Attire</option>
+            <option value="kids">Kids Festive Attire (All)</option>
+            <option value="kids-boys">👦 Kids Boys</option>
+            <option value="kids-girls">👧 Kids Girls</option>
             <option value="combo">Family Combo Set</option>
           </select>
         </div>
