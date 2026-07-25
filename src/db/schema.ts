@@ -174,8 +174,9 @@ export const dresses = pgTable("dresses", {
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   compareAtPrice: decimal("compare_at_price", { precision: 10, scale: 2 }),
   images: text("images").array(),
-  sizes: text("sizes").array(),
-  colors: text("colors").array(),
+sizes: text("sizes").array(),
+    sizePrices: jsonb("size_prices"),
+    colors: text("colors").array(),
   colorVariants: jsonb("color_variants"), // Array of { color: string, image: string, stock?: number }
   orderType: varchar("order_type", { length: 20 }).default("add_to_bag"), // "add_to_bag" | "pre_order"
   stock: integer("stock").default(0),
