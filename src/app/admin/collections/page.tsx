@@ -609,7 +609,18 @@ function CollectionsContent() {
                     onClick={() => router.push(`/admin/collections?id=${col.id}`)}
                     className="flex-1 flex items-center justify-center gap-1.5 bg-[#0b2416] text-white hover:bg-emerald-950 py-2.5 rounded-xl text-xs font-bold transition shadow-xs"
                   >
-                    <Eye className="w-4 h-4" /> Manage Items & Edit ({totalCount})
+                    <Eye className="w-4 h-4" /> Manage ({totalCount})
+                  </button>
+                  <button
+                    onClick={() => {
+                      const url = `${window.location.origin}?collection=${col.slug || col.id}`;
+                      const text = `🛍️ ${col.name} — Kerala Super Store\n\nBrowse our ${col.name} collection for Onam 2026!\n${url}`;
+                      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+                    }}
+                    className="p-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition"
+                    title={`Share ${col.name} on WhatsApp`}
+                  >
+                    <Share2 className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleDeleteCollection(col.id)}
