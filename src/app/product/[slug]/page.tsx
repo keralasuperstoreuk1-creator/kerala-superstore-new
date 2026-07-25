@@ -2,6 +2,7 @@ import { db } from "@/db";
 import { items, itemVariants, categories } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import Link from "next/link";
+import { headers } from "next/headers";
 import { ShoppingCart, ArrowLeft, Share2 } from "lucide-react";
 import { notFound } from "next/navigation";
 import AddToCartButton from "./AddToCartButton";
@@ -17,8 +18,12 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const cat = await db.select().from(categories).where(eq(categories.id, item[0].categoryId));
 
   const product = item[0];
-  const shareUrl = typeof window !== "undefined" ? window.location.href : "";
-  const whatsappShare = `https://wa.me/?text=Check%20out%20this%20product:%20${encodeURIComponent(product.name)}%20-%20£${product.price}`;
+
+  const headersList = await headers();
+  const host = headersList.get("host") || "keralasuperstore.co.uk";
+  const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+  const productUrl = `${protocol}://${host}/product/${slug}`;
+  const whatsappShare = `https://wa.me/?text=${encodeURIComponent(`Check out ${product.name} (£${product.price}) on Kerala Super Store! ${productUrl}`)}`;
 
   return (
     <div className="min-h-screen">
