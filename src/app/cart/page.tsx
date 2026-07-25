@@ -59,11 +59,7 @@ export default function CartPage() {
             {cartItems.map((cartItem) => (
               <div key={cartItem.id} className="flex items-center gap-4 bg-white border border-slate-200 rounded-xl p-4">
                 <div className="w-20 h-20 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0">
-                    {cartItem.item?.images?.[0] ? (
-                      <img src={cartItem.item.images[0]} alt={cartItem.item?.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <img src="https://via.placeholder.com/150" alt="Placeholder" className="w-full h-full object-cover" />
-                    )}
+                    {(() => { const img = Array.isArray(cartItem.item?.images) ? cartItem.item.images[0] : (typeof cartItem.item?.images === "string" && (cartItem.item.images.startsWith("http") || cartItem.item.images.startsWith("/")) ? cartItem.item.images : null); return img ? <img src={img} alt={cartItem.item?.name} className="w-full h-full object-cover" /> : <img src="https://via.placeholder.com/150" alt="Placeholder" className="w-full h-full object-cover" />; })()}
                 </div>
                 <div className="flex-1 min-w-0 space-y-1">
                   <Link href={`/product/${cartItem.item?.slug}`} className="font-semibold text-slate-900 hover:text-blue-600 truncate block">{cartItem.item?.name}</Link>

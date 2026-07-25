@@ -144,7 +144,7 @@ export default function CheckoutPage() {
                 <div key={item.id} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-slate-200 rounded-lg overflow-hidden">
-                      {item.item?.images?.[0] && <img src={item.item.images[0]} alt="" className="w-full h-full object-cover" />}
+                      {(Array.isArray(item.item?.images) ? item.item.images[0] : (typeof item.item?.images === "string" && (item.item.images.startsWith("http") || item.item.images.startsWith("/")) ? item.item.images : null)) && <img src={Array.isArray(item.item?.images) ? item.item.images[0] : (typeof item.item?.images === "string" && (item.item.images.startsWith("http") || item.item.images.startsWith("/")) ? item.item.images : "")} alt="" className="w-full h-full object-cover" />}
                     </div>
                     <div>
                       <p className="text-sm font-medium text-slate-900">{item.item?.name}</p>

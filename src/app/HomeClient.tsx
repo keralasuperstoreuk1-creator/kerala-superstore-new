@@ -66,6 +66,19 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
 
 
 
+  function getFirstImage(item: any): string | null {
+    if (!item) return null;
+    const raw = item.images ?? item.image ?? null;
+    if (Array.isArray(raw)) return raw[0] || null;
+    if (typeof raw === "string" && raw.length > 0) {
+      if (raw.startsWith("http") || raw.startsWith("/")) return raw;
+      const pgMatch = raw.match(/^\{(.+)\}$/);
+      if (pgMatch) return pgMatch[1].split(",")[0]?.trim() || null;
+      try { const p = JSON.parse(raw); if (Array.isArray(p)) return p[0] || null; } catch {}
+    }
+    return null;
+  }
+
   function parseSizes(sizes: any): string[] {
     if (Array.isArray(sizes)) return sizes;
     if (typeof sizes === "string" && sizes.length > 0) {
@@ -165,6 +178,12 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   useEffect(() => {
     fetchCart();
+    const params = new URLSearchParams(window.location.search);
+    const collectionParam = params.get("collection");
+    if (collectionParam) {
+      setDressFilter(collectionParam);
+      setTimeout(() => document.getElementById("dresses")?.scrollIntoView({ behavior: "smooth" }), 600);
+    }
     const interval = setInterval(() => setHeroIndex((i) => (i + 1) % Math.max(slides.length, 1)), 5500);
     const offerInterval = setInterval(() => setOfferIndex((i) => (i + 1) % Math.max(offers.length, 1)), 2000);
     const promoInterval = setInterval(() => {
@@ -371,7 +390,7 @@ async function handleCheckout(e: React.FormEvent) {
           size: sizeKey,
           quantity: item.quantity,
           price: sizePrice || item.item?.price,
-          imageUrl: item.item?.images?.[0] || item.variant?.images?.[0] || null,
+          imageUrl: getFirstImage(item.item) || item.variant?.images?.[0] || item.item?.image || null,
         };
       });
       console.log("Submitting order:", { checkoutForm, cartData, cartTotal });
@@ -1402,7 +1421,7 @@ async function handleCheckout(e: React.FormEvent) {
                 cart.map((item) => (
                   <div key={item.id} className="flex items-center gap-3 bg-slate-50 rounded-lg p-3">
                     <div className="w-14 h-14 bg-slate-200 rounded-lg overflow-hidden flex-shrink-0">
-                      {item.item?.images?.[0] ? <img src={item.item.images[0]} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xl">📦</div>}
+                      {getFirstImage(item.item) ? <img src={getFirstImage(item.item)!} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xl">📦</div>}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sm text-slate-900 truncate">
