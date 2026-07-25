@@ -57,7 +57,7 @@ export default function AccountPage() {
                   {item.imageUrl && <img src={item.imageUrl} alt="" className="w-12 h-12 object-cover rounded-lg" />}
                   <div className="flex-1 text-sm">
                     <p className="font-medium text-stone-900">{item.itemName}</p>
-                    <p className="text-xs text-stone-500">{item.variantName} x{item.quantity} - £{item.price}</p>
+                    <p className="text-xs text-stone-500">{item.variantName} {item.size ? `(Size: ${item.size})` : ""} x{item.quantity} - £{item.price}</p>
                   </div>
                 </div>
               ))}
