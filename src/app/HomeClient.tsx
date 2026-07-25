@@ -762,7 +762,10 @@ async function handleCheckout(e: React.FormEvent) {
                 className={`absolute inset-0 transition-opacity duration-700 ${i === promoBannerIndex ? "opacity-100 z-10" : "opacity-0 z-0"}`}
               >
                 <a href={banner.link || "#dresses"} className="block w-full h-full">
-                  <img src={banner.image} alt="" className="w-full h-full object-cover md:object-cover object-center" />
+                  {/* Desktop image (hidden on mobile) */}
+                  <img src={banner.image} alt="" className="hidden md:block w-full h-full object-cover object-center" />
+                  {/* Mobile image if available, otherwise fallback to desktop image */}
+                  <img src={banner.mobileImage || banner.image} alt="" className="block md:hidden w-full h-full object-cover object-center" />
                 </a>
               </div>
             ))}

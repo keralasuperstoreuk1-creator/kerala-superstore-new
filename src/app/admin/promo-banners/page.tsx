@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Trash2, ImageIcon, ArrowUp, ArrowDown } from "lucide-react";
+import { Plus, Trash2, ImageIcon, Monitor, Smartphone } from "lucide-react";
 
 export default function PromoBannersPage() {
   const [banners, setBanners] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<any>(null);
-  const [form, setForm] = useState({ image: "", link: "", sortOrder: 0 });
-  const [uploading, setUploading] = useState(false);
+  const [form, setForm] = useState({ image: "", mobileImage: "", link: "", sortOrder: 0 });
+  const [uploadingDesktop, setUploadingDesktop] = useState(false);
+  const [uploadingMobile, setUploadingMobile] = useState(false);
 
   useEffect(() => { fetchBanners(); }, []);
 
@@ -18,22 +19,34 @@ export default function PromoBannersPage() {
     if (Array.isArray(data)) setBanners(data);
   }
 
-  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
+  async function handleUpload(file: File, folder: string, field: "image" | "mobileImage") {
     const fd = new FormData();
     fd.append("file", file);
-    fd.append("folder", "promo-banners");
+    fd.append("folder", folder);
     const res = await fetch("/api/upload", { method: "POST", body: fd });
     const data = await res.json();
-    if (data.url) setForm((f) => ({ ...f, image: data.url }));
-    setUploading(false);
+    if (data.url) setForm((f) => ({ ...f, [field]: data.url }));
+  }
+
+  async function handleDesktopUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingDesktop(true);
+    await handleUpload(file, "promo-banners/desktop", "image");
+    setUploadingDesktop(false);
+  }
+
+  async function handleMobileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingMobile(true);
+    await handleUpload(file, "promo-banners/mobile", "mobileImage");
+    setUploadingMobile(false);
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.image) { alert("Please upload a banner image"); return; }
+    if (!form.image) { alert("Please upload a Desktop banner image"); return; }
     const payload = { ...form, sortOrder: banners.length };
     try {
       let res;
@@ -46,7 +59,7 @@ export default function PromoBannersPage() {
     } catch { alert("Network error"); return; }
     setShowForm(false);
     setEditing(null);
-    setForm({ image: "", link: "", sortOrder: 0 });
+    setForm({ image: "", mobileImage: "", link: "", sortOrder: 0 });
     fetchBanners();
   }
 
@@ -58,7 +71,7 @@ export default function PromoBannersPage() {
 
   function openEdit(b: any) {
     setEditing(b);
-    setForm({ image: b.image, link: b.link || "", sortOrder: b.sortOrder || 0 });
+    setForm({ image: b.image, mobileImage: b.mobileImage || "", link: b.link || "", sortOrder: b.sortOrder || 0 });
     setShowForm(true);
   }
 
@@ -69,7 +82,7 @@ export default function PromoBannersPage() {
           <h1 className="text-2xl font-bold text-stone-900">Promo Banners ({banners.length})</h1>
           <p className="text-sm text-stone-500 mt-1">Auto-sliding banners above Onam Collection</p>
         </div>
-        <button onClick={() => { setShowForm(true); setEditing(null); setForm({ image: "", link: "", sortOrder: 0 }); }} className="flex items-center gap-2 bg-amber-500 text-stone-950 px-4 py-2 rounded-xl hover:bg-amber-400 font-bold text-xs transition shadow-sm">
+        <button onClick={() => { setShowForm(true); setEditing(null); setForm({ image: "", mobileImage: "", link: "", sortOrder: 0 }); }} className="flex items-center gap-2 bg-amber-500 text-stone-950 px-4 py-2 rounded-xl hover:bg-amber-400 font-bold text-xs transition shadow-sm">
           <Plus className="w-4 h-4" /> Add Banner
         </button>
       </div>
@@ -77,24 +90,46 @@ export default function PromoBannersPage() {
       {showForm && (
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-stone-200 p-6 space-y-4 animate-slide-up">
           <h2 className="font-bold text-lg">{editing ? "Edit Banner" : "New Banner"}</h2>
+
+          {/* Desktop Image */}
           <div>
-            <label className="block text-xs font-semibold text-stone-600 mb-1">Banner Image *</label>
-            <div className="text-[10px] font-mono text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg mb-2">
-              📱 <span className="font-bold">Mobile:</span> 600×400px · <span className="font-bold">Desktop:</span> 1400×500px
-            </div>
+            <label className="block text-xs font-semibold text-stone-600 mb-1 flex items-center gap-1.5">
+              <Monitor className="w-4 h-4 text-blue-600" /> Desktop Image (1400×500px) *
+            </label>
             {form.image ? (
               <div className="relative w-full h-40 bg-stone-100 rounded-xl overflow-hidden border mb-2">
-                <img src={form.image} alt="Banner" className="w-full h-full object-cover" />
+                <img src={form.image} alt="Desktop" className="w-full h-full object-cover" />
                 <button type="button" onClick={() => setForm({ ...form, image: "" })} className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded-lg text-xs font-bold">Remove</button>
               </div>
             ) : (
-              <label className="flex flex-col items-center justify-center w-full h-40 bg-stone-50 border-2 border-dashed border-stone-300 rounded-xl cursor-pointer hover:bg-stone-100">
-                <ImageIcon className="w-8 h-8 text-stone-400 mb-2" />
-                <span className="text-xs text-stone-500">{uploading ? "Uploading..." : "Click to upload image"}</span>
-                <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading} />
+              <label className="flex flex-col items-center justify-center w-full h-40 bg-stone-50 border-2 border-dashed border-blue-300 rounded-xl cursor-pointer hover:bg-blue-50">
+                <Monitor className="w-8 h-8 text-blue-400 mb-2" />
+                <span className="text-xs text-stone-500">{uploadingDesktop ? "Uploading..." : "Upload Desktop Image"}</span>
+                <input type="file" accept="image/*" className="hidden" onChange={handleDesktopUpload} disabled={uploadingDesktop} />
               </label>
             )}
           </div>
+
+          {/* Mobile Image */}
+          <div>
+            <label className="block text-xs font-semibold text-stone-600 mb-1 flex items-center gap-1.5">
+              <Smartphone className="w-4 h-4 text-emerald-600" /> Mobile Image (600×400px)
+            </label>
+            <p className="text-[10px] text-stone-400 mb-2">Mobile-ൽ മാത്രം കാണിക്കേണ്ട image. ഇല്ലെങ്കിൽ Desktop image auto ആയി കാണിക്കും.</p>
+            {form.mobileImage ? (
+              <div className="relative w-full h-40 bg-stone-100 rounded-xl overflow-hidden border mb-2">
+                <img src={form.mobileImage} alt="Mobile" className="w-full h-full object-cover" />
+                <button type="button" onClick={() => setForm({ ...form, mobileImage: "" })} className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded-lg text-xs font-bold">Remove</button>
+              </div>
+            ) : (
+              <label className="flex flex-col items-center justify-center w-full h-40 bg-stone-50 border-2 border-dashed border-emerald-300 rounded-xl cursor-pointer hover:bg-emerald-50">
+                <Smartphone className="w-8 h-8 text-emerald-400 mb-2" />
+                <span className="text-xs text-stone-500">{uploadingMobile ? "Uploading..." : "Upload Mobile Image"}</span>
+                <input type="file" accept="image/*" className="hidden" onChange={handleMobileUpload} disabled={uploadingMobile} />
+              </label>
+            )}
+          </div>
+
           <div>
             <label className="block text-xs font-semibold text-stone-600 mb-1">Link URL (optional)</label>
             <input value={form.link} onChange={(e) => setForm({ ...form, link: e.target.value })} placeholder="e.g. #dresses or /products/something" className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm outline-none" />
@@ -112,6 +147,11 @@ export default function PromoBannersPage() {
           <div key={b.id} className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm group">
             <div className="aspect-[3/1] bg-stone-100 relative">
               <img src={b.image} alt="" className="w-full h-full object-cover" />
+              {b.mobileImage && (
+                <span className="absolute top-2 left-2 bg-emerald-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <Smartphone className="w-3 h-3" /> Mobile
+                </span>
+              )}
             </div>
             <div className="p-3 flex items-center justify-between">
               <div className="text-xs text-stone-500">#{idx + 1}{b.link ? ` • ${b.link}` : ""}</div>

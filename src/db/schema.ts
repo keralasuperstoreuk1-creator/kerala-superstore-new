@@ -218,6 +218,7 @@ export const passwordResetTokens = pgTable("password_reset_tokens", {
 export const promoBanners = pgTable("promo_banners", {
   id: serial("id").primaryKey(),
   image: text("image").notNull(),
+  mobileImage: text("mobile_image"),
   link: text("link"),
   sortOrder: integer("sort_order").default(0),
   isActive: boolean("is_active").default(true),
