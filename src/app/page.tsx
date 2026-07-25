@@ -1,12 +1,12 @@
 import { db } from "@/db";
-import { slides, offers, dresses, categories, items, winners, settings, collections } from "@/db/schema";
+import { slides, offers, dresses, categories, items, winners, settings, collections, promoBanners } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import HomeClient from "./HomeClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [allSlides, allOffers, allDresses, allCategories, allItems, allWinners, allSettings, allCollections] = await Promise.all([
+  const [allSlides, allOffers, allDresses, allCategories, allItems, allWinners, allSettings, allCollections, allPromoBanners] = await Promise.all([
     db.select().from(slides).where(eq(slides.isActive, true)).orderBy(slides.sortOrder),
     db.select().from(offers).where(eq(offers.isActive, true)).orderBy(offers.sortOrder),
     db.select().from(dresses).where(eq(dresses.isActive, true)).orderBy(dresses.sortOrder),
@@ -15,6 +15,7 @@ export default async function HomePage() {
     db.select().from(winners).where(eq(winners.isActive, true)).orderBy(winners.sortOrder),
     db.select().from(settings),
     db.select().from(collections).where(eq(collections.isActive, true)).orderBy(collections.sortOrder),
+    db.select().from(promoBanners).where(eq(promoBanners.isActive, true)).orderBy(promoBanners.sortOrder),
   ]);
 
   const settingsMap: Record<string, string> = {};
@@ -31,6 +32,7 @@ export default async function HomePage() {
         winners: allWinners,
         settings: settingsMap,
         collections: allCollections,
+        promoBanners: allPromoBanners,
       }}
     />
   );

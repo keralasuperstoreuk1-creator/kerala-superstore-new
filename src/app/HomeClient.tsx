@@ -17,6 +17,7 @@ interface HomeData {
   winners: any[];
   settings: Record<string, string>;
   collections?: any[];
+  promoBanners?: any[];
 }
 
 
@@ -33,6 +34,7 @@ export default function HomeClient({ data }: { data: HomeData }) {
   const [cart, setCart] = useState<any[]>([]);
   const [heroIndex, setHeroIndex] = useState(0);
   const [offerIndex, setOfferIndex] = useState(0);
+  const [promoBannerIndex, setPromoBannerIndex] = useState(0);
   const [dressFilter, setDressFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [catFilter, setCatFilter] = useState("all");
@@ -153,7 +155,7 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
     return false;
   }
 
-  const { slides, offers, dresses, categories, items, winners, settings, collections = [] } = data;
+  const { slides, offers, dresses, categories, items, winners, settings, collections = [], promoBanners: allPromoBanners = [] } = data;
   const whatsappNumber = settings.whatsapp_number || "447749132122";
 
   // Live viewers counter (ambient, purely decorative)
@@ -165,13 +167,16 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
     fetchCart();
     const interval = setInterval(() => setHeroIndex((i) => (i + 1) % Math.max(slides.length, 1)), 5500);
     const offerInterval = setInterval(() => setOfferIndex((i) => (i + 1) % Math.max(offers.length, 1)), 2000);
+    const promoInterval = setInterval(() => {
+      setPromoBannerIndex((i) => (i + 1) % Math.max(allPromoBanners.length, 1));
+    }, 4000);
     const viewerTick = setInterval(() => {
       setViewers((v) => {
         const next = v + Math.floor(Math.random() * 7) - 3;
         return Math.max(28, Math.min(96, next));
       });
     }, 4000);
-    return () => { clearInterval(interval); clearInterval(offerInterval); clearInterval(viewerTick); };
+    return () => { clearInterval(interval); clearInterval(offerInterval); clearInterval(promoInterval); clearInterval(viewerTick); };
   }, [slides.length, offers.length]);
 
   // Scroll reveal
@@ -747,36 +752,59 @@ async function handleCheckout(e: React.FormEvent) {
         </section>
       )}
 
-      {/* Promo Banner */}
-      {settings.promo_banner_active !== "false" && (settings.promo_banner_tag || settings.promo_banner_title || settings.promo_banner_image) && (
-        <section id="promo-banner" className="relative overflow-hidden" style={{ minHeight: settings.promo_banner_image ? '400px' : undefined }}>
-          <div 
-            className="absolute inset-0" 
-            style={{ background: `linear-gradient(to right, ${settings.promo_banner_color1 || '#f97316'}, ${settings.promo_banner_color2 || '#fbbf24'}, ${settings.promo_banner_color3 || '#eab308'})` }} 
-          />
-          {settings.promo_banner_image && (
-            <img src={settings.promo_banner_image} alt="Promo Banner" className="absolute inset-0 w-full h-full object-cover" />
+      {/* Promo Banners Auto-Slide Carousel */}
+      {allPromoBanners.length > 0 ? (
+        <section id="promo-banner" className="relative overflow-hidden bg-stone-900">
+          <div className="relative h-[200px] sm:h-[280px] md:h-[400px]">
+            {allPromoBanners.map((banner, i) => (
+              <div
+                key={banner.id}
+                className={`absolute inset-0 transition-opacity duration-700 ${i === promoBannerIndex ? "opacity-100 z-10" : "opacity-0 z-0"}`}
+              >
+                <a href={banner.link || "#dresses"} className="block w-full h-full">
+                  <img src={banner.image} alt="" className="w-full h-full object-cover md:object-cover object-center" />
+                </a>
+              </div>
+            ))}
+          </div>
+          {allPromoBanners.length > 1 && (
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+              {allPromoBanners.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setPromoBannerIndex(i)}
+                  className={`w-2 h-2 rounded-full transition-all ${i === promoBannerIndex ? "bg-white w-6" : "bg-white/50 hover:bg-white/80"}`}
+                />
+              ))}
+            </div>
           )}
-          <div className={`relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center ${settings.promo_banner_image ? 'py-24' : 'py-20'}`}>
-            {settings.promo_banner_tag && (
-              <span style={{ color: settings.promo_banner_tag_color || "#ffffff" }} className="inline-block bg-white/20 px-4 py-1 rounded-full text-sm font-medium mb-4">{settings.promo_banner_tag}</span>
+        </section>
+      ) : settings.promo_banner_active !== "false" && (settings.promo_banner_tag || settings.promo_banner_title || settings.promo_banner_image) ? (
+        <section id="promo-banner" className="relative overflow-hidden">
+          <div className="relative h-[200px] sm:h-[280px] md:h-[400px]">
+            <div className="absolute inset-0" style={{ background: `linear-gradient(to right, ${settings.promo_banner_color1 || '#f97316'}, ${settings.promo_banner_color2 || '#fbbf24'}, ${settings.promo_banner_color3 || '#eab308'})` }} />
+            {settings.promo_banner_image && (
+              <img src={settings.promo_banner_image} alt="Promo Banner" className="absolute inset-0 w-full h-full object-cover object-center" />
             )}
-            {settings.promo_banner_title && (
-              <h2 style={{ color: settings.promo_banner_title_color || "#ffffff" }} className="text-4xl md:text-5xl font-bold mb-4">
-                {settings.promo_banner_title}
-              </h2>
-            )}
-            {settings.promo_banner_subtitle && (
-              <p style={{ color: settings.promo_banner_subtitle_color || "#ffffffcc" }} className="text-lg max-w-2xl mx-auto mb-8">{settings.promo_banner_subtitle}</p>
-            )}
-            {settings.promo_banner_btn_text && (
-              <a href={settings.promo_banner_btn_link || "#dresses"} style={{ backgroundColor: settings.promo_banner_btn_color || "#f97316", color: settings.promo_banner_btn_text_color || "#ffffff" }} className="inline-block px-8 py-3 rounded-lg font-bold hover:opacity-90 transition">
-                {settings.promo_banner_btn_text}
-              </a>
-            )}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="relative max-w-7xl mx-auto px-4 text-center">
+                {settings.promo_banner_tag && (
+                  <span style={{ color: settings.promo_banner_tag_color || "#ffffff" }} className="inline-block bg-white/20 px-4 py-1 rounded-full text-sm font-medium mb-4">{settings.promo_banner_tag}</span>
+                )}
+                {settings.promo_banner_title && (
+                  <h2 style={{ color: settings.promo_banner_title_color || "#ffffff" }} className="text-3xl md:text-5xl font-bold mb-4">{settings.promo_banner_title}</h2>
+                )}
+                {settings.promo_banner_subtitle && (
+                  <p style={{ color: settings.promo_banner_subtitle_color || "#ffffffcc" }} className="text-base md:text-lg max-w-2xl mx-auto mb-6">{settings.promo_banner_subtitle}</p>
+                )}
+                {settings.promo_banner_btn_text && (
+                  <a href={settings.promo_banner_btn_link || "#dresses"} style={{ backgroundColor: settings.promo_banner_btn_color || "#f97316", color: settings.promo_banner_btn_text_color || "#ffffff" }} className="inline-block px-8 py-3 rounded-lg font-bold hover:opacity-90 transition">{settings.promo_banner_btn_text}</a>
+                )}
+              </div>
+            </div>
           </div>
         </section>
-      )}
+      ) : null}
 
       {/* Shop by Collection */}
       {dresses.length > 0 && (
@@ -894,6 +922,86 @@ async function handleCheckout(e: React.FormEvent) {
           </div>
         </section>
       )}
+
+      {/* Onam Sadhya — Pre-Order Section */}
+      {(() => {
+        const sadhyaCat = categories.find((c) => c.name?.toLowerCase().includes("sadhya"));
+        const sadhyaItems = sadhyaCat ? items.filter((i) => i.categoryId === sadhyaCat.id) : [];
+        return (
+          <section id="onam-sadhya" className="py-16 bg-gradient-to-b from-amber-50 via-orange-50/30 to-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="reveal relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 mb-10 shadow-xl">
+                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }} />
+                <div className="relative px-6 py-12 md:px-12 md:py-16 text-center text-white">
+                  <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.25em] text-amber-200 bg-white/15 border border-white/20 rounded-full px-4 py-1.5 mb-4">
+                    🍛 Onam 2026
+                  </div>
+                  <h2 className="font-editorial text-4xl md:text-6xl font-bold leading-[0.95] mb-3">
+                    Onam <span className="italic text-amber-200">Sadhya.</span>
+                  </h2>
+                  <p className="text-amber-50/90 text-base md:text-lg max-w-2xl mx-auto mb-6">
+                    Pre-order your traditional Onam feast — banana chips, sambar powder, payasam mix & more.
+                    Freshly packed & delivered before Thiruvonam.
+                  </p>
+                  <a
+                    href={sadhyaItems.length > 0 ? `#cat-${sadhyaCat.id}` : "#products"}
+                    className="inline-flex items-center gap-2 bg-white text-amber-900 px-8 py-3.5 rounded-full font-bold text-sm hover:bg-amber-50 transition shadow-lg"
+                  >
+                    {sadhyaItems.length > 0 ? `Shop Sadhya (${sadhyaItems.length} items) →` : "Browse Sadhya Items →"}
+                  </a>
+                  <button
+                    onClick={() => shareCollection("Onam Sadhya", "onam-sadhya")}
+                    className="ml-3 inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 text-white border border-white/30 px-5 py-3.5 rounded-full font-bold text-sm transition"
+                  >
+                    <Share2 className="w-4 h-4" /> Share
+                  </button>
+                </div>
+              </div>
+
+              {sadhyaItems.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                  {sadhyaItems.slice(0, 8).map((item, idx) => {
+                    const discountPct = item.compareAtPrice ? Math.round((1 - parseFloat(item.price) / parseFloat(item.compareAtPrice)) * 100) : 0;
+                    return (
+                      <div key={item.id} className="reveal group bg-white rounded-2xl border border-amber-200/60 overflow-hidden hover:border-amber-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: `${Math.min(idx * 40, 400)}ms` }}>
+                        <div className="aspect-square bg-amber-50/50 relative overflow-hidden">
+                          {item.images?.[0] ? (
+                            <img src={item.images[0]} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-5xl">🍛</div>
+                          )}
+                          <div className="absolute top-3 left-3 flex flex-col gap-1">
+                            {discountPct > 0 && <div className="bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">-{discountPct}%</div>}
+                            <div className="bg-amber-700 text-white text-[9px] font-bold uppercase px-2 py-0.5 rounded-md flex items-center gap-1"><Clock className="w-3 h-3" /> Pre-Order</div>
+                          </div>
+                        </div>
+                        <div className="p-4">
+                          <h3 className="font-semibold text-stone-900 text-sm line-clamp-2">{item.name}</h3>
+                          <div className="flex items-baseline gap-2 mt-2">
+                            <span className="font-bold text-stone-900">£{item.price}</span>
+                            {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">£{item.compareAtPrice}</span>}
+                          </div>
+                          <div className="flex gap-2 mt-3">
+                            <button onClick={() => addToCart(item.id, item.name, item.price, 1, "item")} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Pre-Order</button>
+                            <button onClick={() => shareOnWhatsApp(item.name, item.price)} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              {sadhyaItems.length === 0 && (
+                <div className="text-center py-10">
+                  <div className="text-5xl mb-4">🍌</div>
+                  <p className="text-stone-600 font-medium">Onam Sadhya items coming soon!</p>
+                  <p className="text-sm text-stone-400 mt-1">Click the button above to browse all our products or check back later.</p>
+                </div>
+              )}
+            </div>
+          </section>
+        );
+      })()}
 
       {/* Categories */}
       <section id="categories" className="py-16 bg-slate-50">

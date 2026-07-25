@@ -31,7 +31,7 @@ const navGroups = [
     title: "Content & Marketing",
     items: [
       { href: "/admin/slides", label: "Hero Banners", icon: ImageIcon },
-      { href: "/admin/promo-banner", label: "Promo Banner", icon: Sparkles },
+      { href: "/admin/promo-banners", label: "Promo Banners", icon: Sparkles },
       { href: "/admin/winners", label: "Lucky Winners", icon: Trophy },
     ],
   },
