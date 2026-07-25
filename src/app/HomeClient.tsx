@@ -567,10 +567,42 @@ async function handleCheckout(e: React.FormEvent) {
 
       {/* Mobile Search */}
       <div className="md:hidden bg-white border-b border-slate-100 px-4 py-2 sticky top-16 z-30">
-        <div className="flex items-center bg-slate-100 rounded-full px-4 py-2">
+        <div className="flex items-center bg-slate-100 rounded-full px-4 py-2 relative">
           <Search className="w-4 h-4 text-slate-400" />
           <input type="text" placeholder="Search products..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="bg-transparent border-none outline-none ml-2 w-full text-sm" />
           {searchQuery && <button onClick={() => setSearchQuery("")}><X className="w-4 h-4 text-slate-400" /></button>}
+          {searchQuery.trim() && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setSearchQuery("")} />
+              <div className="absolute top-12 left-0 right-0 bg-white border border-stone-200 rounded-2xl shadow-2xl z-50 p-3 max-h-80 overflow-y-auto space-y-2 text-left">
+                <div className="flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-stone-500 px-2 font-bold border-b border-stone-100 pb-2">
+                  <span>Found {searchMatches.length} matching item(s)</span>
+                  <button onClick={() => setSearchQuery("")} className="text-stone-400 hover:text-stone-600">Close</button>
+                </div>
+                {searchMatches.length > 0 ? (
+                  <div className="divide-y divide-stone-100">
+                    {searchMatches.slice(0, 6).map((match: any) => (
+                      <div key={`${match.isDress ? "dress" : "item"}-${match.id}`} onClick={() => { openDetailModal(match); if (match.categoryId) setCatFilter(String(match.categoryId)); const el = match.isDress ? document.querySelector("#dresses") : document.querySelector("#products"); if (el) el.scrollIntoView({ behavior: "smooth" }); setSearchQuery(""); }} className="flex items-center justify-between p-2 hover:bg-emerald-50/60 rounded-xl cursor-pointer transition group">
+                        <div className="flex items-center gap-3">
+                          {match.images && match.images[0] ? <img src={match.images[0]} alt="" className="w-10 h-10 object-cover rounded-lg border border-stone-200 shrink-0" /> : <div className="w-10 h-10 bg-stone-100 rounded-lg flex items-center justify-center text-xs text-stone-400 shrink-0">{match.isDress ? "👗" : "📦"}</div>}
+                          <div>
+                            <div className="font-bold text-stone-900 text-xs group-hover:text-emerald-800 transition">{match.name}</div>
+                            <div className="text-[10px] text-stone-500">{match.isDress ? `👗 ${match.type || ""}` : "🛒 Grocery"}</div>
+                          </div>
+                        </div>
+                        <div className="font-bold text-stone-900 text-xs">£{match.price}</div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-4 text-center text-xs text-stone-500">No matching products found for "{searchQuery}".</div>
+                )}
+                {searchMatches.length > 0 && (
+                  <button onClick={() => { const el = document.querySelector("#dresses") || document.querySelector("#products"); if (el) el.scrollIntoView({ behavior: "smooth" }); setSearchQuery(""); }} className="w-full text-center py-2 bg-[#0b2416] hover:bg-emerald-950 text-white rounded-xl text-xs font-bold transition mt-2 shadow-sm">View all matching products below ↓</button>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </div>
 
