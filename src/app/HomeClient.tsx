@@ -244,12 +244,12 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
     fetchCart();
   }
 
-  function shareOnWhatsApp(name: string, price?: string) {
+  function shareOnWhatsApp(name: string, price: string | undefined, slug?: string) {
+    const url = slug ? `${window.location.origin}/product/${slug}` : window.location.href;
     const text = price
       ? `Check out ${name} (£${price}) on Kerala Super Store!`
       : `Check out ${name} on Kerala Super Store!`;
-    const waUrl = `https://wa.me/?text=${encodeURIComponent(text + " " + window.location.href)}`;
-    window.open(waUrl, "_blank");
+    window.open(`https://wa.me/?text=${encodeURIComponent(text + " " + url)}`, "_blank");
   }
 
   function shareCollection(collectionName: string, collectionType: string) {
@@ -933,7 +933,7 @@ async function handleCheckout(e: React.FormEvent) {
                       <button onClick={(e) => { e.stopPropagation(); openDetailModal(dress); }} className="flex-1 bg-[#fdd835] hover:bg-[#fbc02d] text-stone-900 py-2 rounded-lg text-sm font-bold transition flex items-center justify-center gap-1 shadow-sm uppercase tracking-wider">
                         Add to Cart
                       </button>
-                      <button onClick={(e) => { e.stopPropagation(); shareOnWhatsApp(dress.name, dress.price); }} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition shadow-sm" title="Share on WhatsApp">
+                      <button onClick={(e) => { e.stopPropagation(); shareOnWhatsApp(dress.name, dress.price, dress.slug); }} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition shadow-sm" title="Share on WhatsApp">
                         <Share2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
@@ -1013,7 +1013,7 @@ async function handleCheckout(e: React.FormEvent) {
                           </div>
                           <div className="flex gap-2 mt-3">
                             <button onClick={() => addToCart(item.id, item.name, item.price, 1, "item")} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Pre-Order</button>
-                            <button onClick={() => shareOnWhatsApp(item.name, item.price)} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
+                            <button onClick={() => shareOnWhatsApp(item.name, item.price, item.slug)} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
                           </div>
                         </div>
                       </div>
@@ -1202,7 +1202,7 @@ async function handleCheckout(e: React.FormEvent) {
                         {isPreOrder ? <Clock className="w-3.5 h-3.5" /> : <ShoppingCart className="w-3.5 h-3.5" />}
                         {isPreOrder ? "PRE-ORDER" : "ADD TO BAG"}
                       </button>
-                      <button onClick={() => shareOnWhatsApp(item.name, item.price)} title="Share on WhatsApp" className="p-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition shadow-xl">
+                      <button onClick={() => shareOnWhatsApp(item.name, item.price, item.slug)} title="Share on WhatsApp" className="p-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition shadow-xl">
                         <Share2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -1213,7 +1213,7 @@ async function handleCheckout(e: React.FormEvent) {
                         {[...Array(5)].map((_, i) => <Star key={i} className="w-3 h-3 fill-current" />)}
                         <span className="text-[10px] text-stone-400 font-mono ml-1">({(4.5 + (idx % 3) * 0.1).toFixed(1)})</span>
                       </div>
-                      <button onClick={() => shareOnWhatsApp(item.name, item.price)} title="Share" className="text-emerald-600 hover:text-emerald-700 p-1">
+                      <button onClick={() => shareOnWhatsApp(item.name, item.price, item.slug)} title="Share" className="text-emerald-600 hover:text-emerald-700 p-1">
                         <Share2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
@@ -1226,7 +1226,7 @@ async function handleCheckout(e: React.FormEvent) {
                       <button onClick={() => addToCart(item.id, item.name, item.price, 1, item.isDress ? "dress" : "item")} className={`flex-1 ${isPreOrder ? "bg-amber-600" : "bg-[#0b2416]"} text-white py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5`}>
                         {isPreOrder ? "PRE-ORDER" : "ADD TO BAG"}
                       </button>
-                      <button onClick={() => shareOnWhatsApp(item.name, item.price)} className="p-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-xs">
+                      <button onClick={() => shareOnWhatsApp(item.name, item.price, item.slug)} className="p-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-xs">
                         <Share2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
