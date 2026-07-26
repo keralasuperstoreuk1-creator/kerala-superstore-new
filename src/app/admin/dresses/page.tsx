@@ -617,7 +617,12 @@ export default function DressesPage() {
                       )}
                       <div>
                         <div className="font-bold text-stone-900 text-sm">{d.name}</div>
-                        <div className="text-[10px] text-stone-400 font-mono">/{d.type}</div>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <div className="text-[10px] text-stone-400 font-mono">/{d.type}</div>
+                          {d.orderType === "pre_order" && <span className="text-[9px] font-bold text-amber-700 bg-amber-100 rounded-full px-1.5 py-0.5">⏰ PRE-ORDER</span>}
+                          {d.gender && <span className="text-[9px] font-bold text-blue-700 bg-blue-100 rounded-full px-1.5 py-0.5">{d.gender}</span>}
+                          {d.ageGroup && <span className="text-[9px] font-bold text-purple-700 bg-purple-100 rounded-full px-1.5 py-0.5">{d.ageGroup}</span>}
+                        </div>
                       </div>
                     </div>
                   </td>
