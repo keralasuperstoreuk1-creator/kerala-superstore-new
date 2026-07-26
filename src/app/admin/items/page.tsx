@@ -17,7 +17,7 @@ export default function ItemsPage() {
 
   const [form, setForm] = useState({
     name: "", slug: "", description: "", price: "", compareAtPrice: "", sku: "", stock: 100,
-    images: [] as string[], categoryId: "", gender: "", ageGroup: "", sortOrder: 0, isActive: true,
+    images: [] as string[], categoryId: "", gender: "", ageGroup: "", buttonAction: "add_to_bag", sortOrder: 0, isActive: true,
   });
   const [variants, setVariants] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -130,7 +130,7 @@ export default function ItemsPage() {
   }
 
   function resetForm() {
-    setForm({ name: "", slug: "", description: "", price: "", compareAtPrice: "", sku: "", stock: 100, images: [], categoryId: String(categories[0]?.id || ""), gender: "", ageGroup: "", sortOrder: 0, isActive: true });
+    setForm({ name: "", slug: "", description: "", price: "", compareAtPrice: "", sku: "", stock: 100, images: [], categoryId: String(categories[0]?.id || ""), gender: "", ageGroup: "", buttonAction: "add_to_bag", sortOrder: 0, isActive: true });
     setVariants([]);
   }
 
@@ -140,7 +140,7 @@ export default function ItemsPage() {
       name: item.name, slug: item.slug, description: item.description || "", price: String(item.price),
       compareAtPrice: item.compareAtPrice ? String(item.compareAtPrice) : "", sku: item.sku || "",
       stock: item.stock || 0, images: item.images || [], categoryId: String(item.categoryId),
-      gender: item.gender || "", ageGroup: item.ageGroup || "", sortOrder: item.sortOrder || 0, isActive: item.isActive,
+      gender: item.gender || "", ageGroup: item.ageGroup || "", buttonAction: item.buttonAction || "add_to_bag", sortOrder: item.sortOrder || 0, isActive: item.isActive,
     });
     setVariants(item.variants || []);
     setShowForm(true);
@@ -202,10 +202,29 @@ export default function ItemsPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Category *</label>
-              <select required value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value })} className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm font-medium">
+              <select required value={form.categoryId} onChange={(e) => {
+                const catId = e.target.value;
+                const selectedCat = categories.find((c: any) => String(c.id) === catId);
+                setForm({ ...form, categoryId: catId, buttonAction: selectedCat?.orderType || form.buttonAction });
+              }} className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm font-medium">
                 <option value="">Select Category...</option>
-                {categories.map((c) => <option key={c.id} value={c.id}>🏷️ {c.name}</option>)}
+                {categories.map((c) => {
+                  const col = categories.find((cat: any) => cat.id === c.id);
+                  return <option key={c.id} value={c.id}>🏷️ {c.name}</option>;
+                })}
               </select>
+              {form.categoryId && (() => {
+                const cat = categories.find((c: any) => String(c.id) === form.categoryId);
+                if (!cat) return null;
+                return (
+                  <div className="mt-1.5 flex items-center gap-2">
+                    <span className="text-[10px] text-stone-400">Collection:</span>
+                    <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
+                      {cat.orderType === "pre_order" ? "⏳ Pre-Order" : "🛒 Add to Cart"}
+                    </span>
+                  </div>
+                );
+              })()}
             </div>
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Product Name *</label>
@@ -239,7 +258,15 @@ export default function ItemsPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Button Action</label>
+              <select value={form.buttonAction} onChange={(e) => setForm({ ...form, buttonAction: e.target.value })} className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm font-medium">
+                <option value="add_to_bag">🛒 Add to Cart</option>
+                <option value="pre_order">⏳ Pre-Order</option>
+                <option value="both">🔄 Both Buttons</option>
+              </select>
+            </div>
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Gender</label>
               <select value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })} className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm font-medium">
@@ -303,8 +330,21 @@ export default function ItemsPage() {
                   );
                 })}
               </div>
+              {form.categoryId === "17" && (
+                <div className="flex items-center gap-2 mt-2">
+                  <input id="customPookSize" type="text" placeholder="Custom size (e.g. 5 feet)" className="flex-1 px-3 py-1.5 border border-amber-300 rounded-lg text-xs outline-none bg-white" />
+                  <button type="button" onClick={() => {
+                    const inp = document.getElementById("customPookSize") as HTMLInputElement;
+                    const val = inp?.value?.trim();
+                    if (val && !variants.some((v: any) => v.size === val)) {
+                      setVariants([...variants, { size: val, price: form.price || "", stock: 50, color: "", colorCode: "" }]);
+                      inp.value = "";
+                    }
+                  }} className="px-3 py-1.5 bg-amber-500 text-white rounded-lg text-xs font-bold hover:bg-amber-600 transition">+ Add</button>
+                </div>
+              )}
               {variants.length > 0 && (
-                <div className="space-y-2">
+                <div className="space-y-2 mt-3">
                   {variants.map((v: any, idx: number) => (
                     <div key={idx} className="flex items-center gap-2 bg-white border border-amber-200 rounded-xl px-3 py-2">
                       <span className="text-xs font-bold text-amber-800 min-w-[80px]">✓ {v.size}</span>
@@ -323,7 +363,7 @@ export default function ItemsPage() {
             <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl space-y-3">
               <h3 className="text-sm font-bold text-emerald-900">🌿 Onam Fresh Pookkal — Grams</h3>
               <div className="flex flex-wrap gap-2">
-                {["50g", "100g", "200g", "250g", "500g", "750g", "1kg", "2kg", "5kg"].map((sz) => {
+                {["50g", "100g", "200g", "250g", "30cm", "500g", "750g", "1kg", "2kg", "5kg"].map((sz) => {
                   const exists = variants.some((v: any) => v.size === sz);
                   return (
                     <button
@@ -347,8 +387,19 @@ export default function ItemsPage() {
                   );
                 })}
               </div>
+              <div className="flex items-center gap-2">
+                <input id="customGramSize" type="text" placeholder="Custom gram (e.g. 150g, 1.5kg)" className="flex-1 px-3 py-1.5 border border-emerald-300 rounded-lg text-xs outline-none bg-white" />
+                <button type="button" onClick={() => {
+                  const inp = document.getElementById("customGramSize") as HTMLInputElement;
+                  const val = inp?.value?.trim();
+                  if (val && !variants.some((v: any) => v.size === val)) {
+                    setVariants([...variants, { size: val, price: form.price || "", stock: 50, color: "", colorCode: "" }]);
+                    inp.value = "";
+                  }
+                }} className="px-3 py-1.5 bg-emerald-500 text-white rounded-lg text-xs font-bold hover:bg-emerald-600 transition">+ Add</button>
+              </div>
               {variants.length > 0 && (
-                <div className="space-y-2">
+                <div className="space-y-2 mt-3">
                   {variants.map((v: any, idx: number) => (
                     <div key={idx} className="flex items-center gap-2 bg-white border border-emerald-200 rounded-xl px-3 py-2">
                       <span className="text-xs font-bold text-emerald-800 min-w-[60px]">✓ {v.size}</span>
@@ -451,7 +502,11 @@ export default function ItemsPage() {
                       )}
                       <div>
                         <div className="font-bold text-stone-900 text-sm">{item.name}</div>
-                        <div className="text-[10px] text-stone-400 font-mono">/{item.slug}</div>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <div className="text-[10px] text-stone-400 font-mono">/{item.slug}</div>
+                          {item.buttonAction === "pre_order" && <span className="px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded text-[9px] font-bold">⏰ PRE-ORDER</span>}
+                          {item.buttonAction === "both" && <span className="px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded text-[9px] font-bold">🔄 BOTH</span>}
+                        </div>
                       </div>
                     </div>
                   </td>

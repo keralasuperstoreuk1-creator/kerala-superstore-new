@@ -41,6 +41,7 @@ export const items = pgTable("items", {
   isActive: boolean("is_active").default(true),
   gender: varchar("gender", { length: 50 }),
   ageGroup: varchar("age_group", { length: 50 }),
+  buttonAction: varchar("button_action", { length: 50 }).default("add_to_bag"),
   sortOrder: integer("sort_order").default(0),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
