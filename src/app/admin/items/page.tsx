@@ -323,7 +323,7 @@ export default function ItemsPage() {
             <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl space-y-3">
               <h3 className="text-sm font-bold text-emerald-900">🌿 Onam Fresh Pookkal — Grams</h3>
               <div className="flex flex-wrap gap-2">
-                {["50g", "100g", "250g", "500g", "1kg", "2kg", "5kg"].map((sz) => {
+                {["50g", "100g", "200g", "250g", "500g", "750g", "1kg", "2kg", "5kg"].map((sz) => {
                   const exists = variants.some((v: any) => v.size === sz);
                   return (
                     <button
