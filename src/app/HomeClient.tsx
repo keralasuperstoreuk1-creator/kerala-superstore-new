@@ -1455,7 +1455,7 @@ async function handleCheckout(e: React.FormEvent) {
                     <div className="w-14 h-14 bg-slate-200 rounded-lg overflow-hidden flex-shrink-0">
                       {item.item?.images?.[0] ? <img src={item.item.images[0]} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xl">📦</div>}
                     </div>
-                    <div className="text-[8px] text-red-600 font-bold bg-red-50 border border-red-200 rounded px-0.5 whitespace-nowrap">{JSON.stringify({img: item.item?.images?.[0] || item.item?.image || item.variant?.images?.[0] || 'NONE', raw: typeof item.item?.images}).slice(0,40)}</div>
+                    <div className="text-[8px] text-red-600 font-bold bg-red-50 border border-red-200 rounded px-0.5 whitespace-nowrap">{JSON.stringify({id: item.itemId, type: item.itemType, img: item.item?.images?.[0] || item.item?.image || item.variant?.images?.[0] || 'NONE'}).slice(0,55)}</div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sm text-slate-900 truncate">
                         {item.item?.name} {item.variantName ? `(${item.variantName})` : ""}{item.variantSize ? ` - Size: ${item.variantSize}` : ""}
