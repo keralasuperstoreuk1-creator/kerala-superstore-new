@@ -1453,8 +1453,9 @@ async function handleCheckout(e: React.FormEvent) {
                 cart.map((item) => (
                   <div key={item.id} className="flex items-center gap-3 bg-slate-50 rounded-lg p-3">
                     <div className="w-14 h-14 bg-slate-200 rounded-lg overflow-hidden flex-shrink-0">
-                      {item.item?.images?.[0] ? <img src={item.item.images[0]} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xl" title={`item: ${JSON.stringify({ id: item.item?.id, name: item.item?.name, images: item.item?.images, image: item.item?.image, vImages: item.variant?.images })}`}>📦</div>}
+                      {item.item?.images?.[0] ? <img src={item.item.images[0]} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xl">📦</div>}
                     </div>
+                    {!item.item?.images?.[0] && <span className="text-[7px] text-red-500 leading-tight max-w-[40px] break-all">{JSON.stringify(item.item?.images || item.item?.image || item.variant?.images || 'null').slice(0,25)}</span>}
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sm text-slate-900 truncate">
                         {item.item?.name} {item.variantName ? `(${item.variantName})` : ""}{item.variantSize ? ` - Size: ${item.variantSize}` : ""}
