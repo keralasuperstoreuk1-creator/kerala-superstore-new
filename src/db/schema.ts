@@ -178,6 +178,8 @@ sizes: text("sizes").array(),
     sizePrices: jsonb("size_prices"),
     colors: text("colors").array(),
   colorVariants: jsonb("color_variants"), // Array of { color: string, image: string, stock?: number }
+  gender: varchar("gender", { length: 20 }),
+  ageGroup: varchar("age_group", { length: 20 }),
   orderType: varchar("order_type", { length: 20 }).default("add_to_bag"), // "add_to_bag" | "pre_order"
   stock: integer("stock").default(0),
   sortOrder: integer("sort_order").default(0),

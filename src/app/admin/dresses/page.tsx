@@ -21,9 +21,9 @@ export default function DressesPage() {
   const [form, setForm] = useState({
     name: "", type: "ladies", description: "", price: "", compareAtPrice: "",
     images: [] as string[], sizes: [] as string[], colors: [] as string[],
-    // Initialise with a single default colour variant so the radio button is always visible
     colorVariants: [{ color: "", image: "", isDefault: true }],
     sizePrices: {} as Record<string, string>,
+    gender: "", ageGroup: "",
     orderType: "add_to_bag",
     stock: 50, sortOrder: 0, isActive: true,
   });
@@ -147,6 +147,8 @@ export default function DressesPage() {
       sizePrices: form.sizePrices || null,
       colors: autoColors.length > 0 ? autoColors : form.colors,
       colorVariants: form.colorVariants.length > 0 ? form.colorVariants : [],
+      gender: form.gender || null,
+      ageGroup: form.ageGroup || null,
       orderType: form.orderType,
       stock: form.stock,
       sortOrder: form.sortOrder,
@@ -172,7 +174,7 @@ export default function DressesPage() {
     setLastSizePrices(form.sizePrices);
     setShowForm(false);
     setEditing(null);
-    setForm({ name: "", type: "ladies", description: "", price: "", compareAtPrice: "", images: [], sizes: [], colors: [], colorVariants: [], sizePrices: {}, orderType: "add_to_bag", stock: 50, sortOrder: 0, isActive: true });
+    setForm({ name: "", type: "ladies", description: "", price: "", compareAtPrice: "", images: [], sizes: [], colors: [], colorVariants: [], sizePrices: {}, gender: "", ageGroup: "", orderType: "add_to_bag", stock: 50, sortOrder: 0, isActive: true });
     fetchDresses();
   }
 
@@ -210,6 +212,7 @@ export default function DressesPage() {
       compareAtPrice: d.compareAtPrice ? String(d.compareAtPrice) : "",
       images: d.images || [], sizes: d.sizes || [], colors: d.colors || [],
       colorVariants: d.colorVariants || [], sizePrices: d.sizePrices || {},
+      gender: d.gender || "", ageGroup: d.ageGroup || "",
       orderType: d.orderType || "add_to_bag",
       stock: d.stock || 50, sortOrder: d.sortOrder || 0, isActive: d.isActive,
     });
@@ -264,7 +267,7 @@ export default function DressesPage() {
               <Trash2 className="w-4 h-4" /> Delete Selected ({selectedIds.length})
             </button>
           )}
-          <button onClick={() => { setShowForm(true); setEditing(null); setForm({ name: "", type: "ladies", description: "", price: "", compareAtPrice: "", images: [], sizes: [...lastSizes], colors: [], colorVariants: [{ color: "", image: "", isDefault: true }], sizePrices: { ...lastSizePrices }, orderType: "add_to_bag", stock: 50, sortOrder: 0, isActive: true }); }} className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-stone-950 px-5 py-2.5 rounded-xl transition font-bold text-xs shadow-md">
+          <button onClick={() => { setShowForm(true); setEditing(null); setForm({ name: "", type: "ladies", description: "", price: "", compareAtPrice: "", images: [], sizes: [...lastSizes], colors: [], colorVariants: [{ color: "", image: "", isDefault: true }], sizePrices: { ...lastSizePrices }, gender: "", ageGroup: "", orderType: "add_to_bag", stock: 50, sortOrder: 0, isActive: true }); }} className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-stone-950 px-5 py-2.5 rounded-xl transition font-bold text-xs shadow-md">
             <Plus className="w-4 h-4" /> Add Dress Outfit
           </button>
         </div>
@@ -314,6 +317,34 @@ export default function DressesPage() {
               <select value={form.orderType} onChange={(e) => setForm({ ...form, orderType: e.target.value })} className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm font-semibold">
                 <option value="add_to_bag">🛍️ ADD TO BAG (Instant Purchase)</option>
                 <option value="pre_order">⏳ PRE-ORDER NOW Badge</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Gender</label>
+              <select value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })} className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm font-medium">
+                <option value="">Select Gender...</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="unisex">Unisex</option>
+                <option value="kids">Kids</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Age Group</label>
+              <select value={form.ageGroup} onChange={(e) => setForm({ ...form, ageGroup: e.target.value })} className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm font-medium">
+                <option value="">Select Age Group...</option>
+                <option value="0-1">0-1 year</option>
+                <option value="1-2">1-2 year</option>
+                <option value="2-4">2-4 year</option>
+                <option value="4-6">4-6 year</option>
+                <option value="6-8">6-8 year</option>
+                <option value="7-8">7-8 year</option>
+                <option value="8-10">8-10 year</option>
+                <option value="10+">10+</option>
+                <option value="adult">Adult</option>
               </select>
             </div>
           </div>
