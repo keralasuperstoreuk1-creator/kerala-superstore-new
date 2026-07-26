@@ -75,6 +75,7 @@ export default function OnamPromosPage() {
       `${promoKey}_category_id`,
       `${promoKey}_btn_text`,
       `${promoKey}_btn_link`,
+      `${promoKey}_button_action`,
     ];
     for (const field of fields) {
       await saveSetting(field, settings[field] || "");
@@ -108,7 +109,7 @@ export default function OnamPromosPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Title</label>
                 <input
@@ -129,6 +130,17 @@ export default function OnamPromosPage() {
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
                   ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Button Action</label>
+                <select
+                  value={settings[`${promo.key}_button_action`] || "add_to_bag"}
+                  onChange={(e) => setSettings({ ...settings, [`${promo.key}_button_action`]: e.target.value })}
+                  className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-semibold focus:bg-white outline-none"
+                >
+                  <option value="add_to_bag">🛒 Add to Cart (Instant Purchase)</option>
+                  <option value="pre_order">⏳ Pre-Order Now</option>
                 </select>
               </div>
             </div>

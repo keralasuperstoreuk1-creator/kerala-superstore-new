@@ -1097,6 +1097,7 @@ async function handleCheckout(e: React.FormEvent) {
         const desc = settings.pookkalam_description || "Celebrate the vibrant floral traditions of Onam with our curated Pookkalam collection.";
         const btnText = settings.pookkalam_btn_text || "Shop Pookkalam";
         const btnLink = settings.pookkalam_btn_link || "#products";
+        const pookkalamAction = settings.pookkalam_button_action || "add_to_bag";
         const hasBanner = settings.pookkalam_banner_image;
         if (!hasBanner && pookkalamItems.length === 0) return null;
         return (
@@ -1153,7 +1154,7 @@ async function handleCheckout(e: React.FormEvent) {
                             {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">£{item.compareAtPrice}</span>}
                           </div>
                           <div className="flex gap-2 mt-3">
-                            <button onClick={() => addToCart(item.id, item.name, item.price, 1, "item")} className="flex-1 bg-pink-600 hover:bg-pink-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
+                            <button onClick={() => addToCart(item.id, item.name, item.price, 1, "item")} className={`flex-1 ${pookkalamAction === "pre_order" ? "bg-amber-600 hover:bg-amber-500" : "bg-pink-600 hover:bg-pink-500"} text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition`}>{pookkalamAction === "pre_order" ? "⏳ Pre-Order" : "Add to Cart"}</button>
                             <button onClick={() => shareOnWhatsApp(item.name, item.price, item.slug)} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
                           </div>
                         </div>
@@ -1182,6 +1183,7 @@ async function handleCheckout(e: React.FormEvent) {
         const desc = settings.fresh_pookkal_description || "Fresh flowers and floral arrangements to bring the spirit of Onam to your home.";
         const btnText = settings.fresh_pookkal_btn_text || "Shop Fresh Pookkal";
         const btnLink = settings.fresh_pookkal_btn_link || "#products";
+        const freshAction = settings.fresh_pookkal_button_action || "add_to_bag";
         const hasBanner = settings.fresh_pookkal_banner_image;
         if (!hasBanner && freshItems.length === 0) return null;
         return (
@@ -1238,7 +1240,7 @@ async function handleCheckout(e: React.FormEvent) {
                             {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">£{item.compareAtPrice}</span>}
                           </div>
                           <div className="flex gap-2 mt-3">
-                            <button onClick={() => addToCart(item.id, item.name, item.price, 1, "item")} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
+                            <button onClick={() => addToCart(item.id, item.name, item.price, 1, "item")} className={`flex-1 ${freshAction === "pre_order" ? "bg-amber-600 hover:bg-amber-500" : "bg-emerald-600 hover:bg-emerald-500"} text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition`}>{freshAction === "pre_order" ? "⏳ Pre-Order" : "Add to Cart"}</button>
                             <button onClick={() => shareOnWhatsApp(item.name, item.price, item.slug)} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
                           </div>
                         </div>
