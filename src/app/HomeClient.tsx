@@ -878,7 +878,7 @@ async function handleCheckout(e: React.FormEvent) {
                 { type: "ladies", name: "Ladies Kasavu", emoji: "👩", desc: "Sarees & Set Mundu", bg: "bg-rose-50", border: "border-rose-200", hover: "hover:bg-rose-100", iconBg: "bg-rose-100", iconText: "text-rose-600" },
                 { type: "gents", name: "Gents Jubba", emoji: "👨", desc: "Shirt & Kasavu Mundu", bg: "bg-blue-50", border: "border-blue-200", hover: "hover:bg-blue-100", iconBg: "bg-blue-100", iconText: "text-blue-600" },
                 { type: "kids-boys", name: "Kids Boys", emoji: "👦", desc: "Boys Festival Attire", bg: "bg-sky-50", border: "border-sky-200", hover: "hover:bg-sky-100", iconBg: "bg-sky-100", iconText: "text-sky-600" },
-                { type: "kids-girls", name: "Kids Girls", emoji: "👧", desc: "Girls Festival Attire", bg: "bg-pink-50", border: "border-pink-200", hover: "hover:bg-pink-100", iconBg: "bg-pink-100", iconText: "text-pink-600" },
+                { type: "kids-girls", name: "Kids Girls", emoji: "👧", desc: "Girls Festival Attire", bg: "bg-pink-50", border: "border-pink-200", hover: "hover:bg-pink-100", iconBg: "bg-pink-100", iconText: "text-pink-600", preOrder: "Pre-order before Aug 5" },
                 { type: "combo", name: "Family Combo", emoji: "👪", desc: "Complete Family Sets", bg: "bg-amber-50", border: "border-amber-200", hover: "hover:bg-amber-100", iconBg: "bg-amber-100", iconText: "text-amber-600" },
               ].map((col) => {
                 const count = dresses.filter((d) => d.type === col.type).length;
@@ -894,6 +894,7 @@ async function handleCheckout(e: React.FormEvent) {
                     <h3 className="font-bold text-stone-900 text-sm">{col.name}</h3>
                     <p className="text-[10px] text-stone-500 mt-0.5">{col.desc}</p>
                     <p className="text-[10px] font-mono text-stone-400 mt-1">{count} items</p>
+                    {col.preOrder && <p className="text-[8px] font-bold text-amber-700 bg-amber-100 rounded-full px-2 py-0.5 mt-1 inline-block">⏰ {col.preOrder}</p>}
                     <div className="flex gap-1.5 mt-3 justify-center">
                       <button
                         onClick={(e) => { e.stopPropagation(); setDressFilter(col.type); document.getElementById("dresses")?.scrollIntoView({ behavior: "smooth" }); }}
@@ -937,6 +938,15 @@ async function handleCheckout(e: React.FormEvent) {
                 </button>
               ))}
             </div>
+            {(dressFilter === "kids-girls" || dressFilter === "kids-boys" || dressFilter === "kids") && (
+              <div className="mb-6 flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-amber-900">
+                <span className="text-lg">⏰</span>
+                <div>
+                  <p className="font-bold text-sm">Pre-order before <span className="text-amber-700 underline decoration-dotted">August 5</span> for Onam delivery</p>
+                  <p className="text-[11px] text-amber-700/70">Order now to guarantee arrival before Thiruvonam</p>
+                </div>
+              </div>
+            )}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {filteredDresses.map((dress) => (
                 <div key={dress.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all group cursor-pointer" onClick={() => openDetailModal(dress)}>

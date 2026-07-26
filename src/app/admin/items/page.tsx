@@ -239,6 +239,37 @@ export default function ItemsPage() {
             </div>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Gender</label>
+              <select value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })} className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm font-medium">
+                <option value="">Select Gender...</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="unisex">Unisex</option>
+                <option value="kids">Kids</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Age Group</label>
+              <select value={form.ageGroup} onChange={(e) => setForm({ ...form, ageGroup: e.target.value })} className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm font-medium">
+                <option value="">Select Age Group...</option>
+                <option value="0-1">0-1</option>
+                <option value="1-2">1-2</option>
+                <option value="2-3">2-3</option>
+                <option value="3-4">3-4</option>
+                <option value="4-5">4-5</option>
+                <option value="5-6">5-6</option>
+                <option value="6-7">6-7</option>
+                <option value="7-8">7-8</option>
+                <option value="8-9">8-9</option>
+                <option value="9-10">9-10</option>
+                <option value="10+">10+</option>
+                <option value="adult">Adult</option>
+              </select>
+            </div>
+          </div>
+
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Description</label>
             <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm" rows={2} placeholder="Product description..." />
