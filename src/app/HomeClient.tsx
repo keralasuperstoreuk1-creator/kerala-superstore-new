@@ -1453,7 +1453,7 @@ async function handleCheckout(e: React.FormEvent) {
                 cart.map((item) => (
                   <div key={item.id} className="flex items-center gap-3 bg-slate-50 rounded-lg p-3">
                     <div className="w-14 h-14 bg-slate-200 rounded-lg overflow-hidden flex-shrink-0">
-                      {getFirstImage(item.item) ? <img src={getFirstImage(item.item)!} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xl">📦</div>}
+                      {(() => { const src = getFirstImage(item.item); const imagesRaw = item.item?.images; const imagesType = Array.isArray(imagesRaw) ? 'array' : typeof imagesRaw; return src ? <img src={src} alt="" className="w-full h-full object-cover" /> : (imagesRaw ? <img src={String(imagesRaw)} alt="" className="w-full h-full object-contain p-1" /> : <div className="w-full h-full flex items-center justify-center text-xl">📦</div>); })()}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sm text-slate-900 truncate">
