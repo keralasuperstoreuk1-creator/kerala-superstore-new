@@ -1453,7 +1453,7 @@ async function handleCheckout(e: React.FormEvent) {
                 cart.map((item) => (
                   <div key={item.id} className="flex items-center gap-3 bg-slate-50 rounded-lg p-3">
                     <div className="w-14 h-14 bg-slate-200 rounded-lg overflow-hidden flex-shrink-0">
-                      {(() => { const imgs = item.item?.images; const img = Array.isArray(imgs) ? imgs[0] : (typeof imgs === 'string' && imgs.startsWith('http') ? imgs : null) || item.item?.image || item.variant?.images?.[0]; return img ? <img src={img} alt="" className="w-full h-full object-cover" /> : <div title={`raw images: ${JSON.stringify(imgs)}`} className="w-full h-full flex items-center justify-center text-xl">📦</div>; })()}
+                      {item.item?.images?.[0] ? <img src={item.item.images[0]} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xl" title={`item: ${JSON.stringify({ id: item.item?.id, name: item.item?.name, images: item.item?.images, image: item.item?.image, vImages: item.variant?.images })}`}>📦</div>}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sm text-slate-900 truncate">
