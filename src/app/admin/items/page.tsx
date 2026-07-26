@@ -279,7 +279,7 @@ export default function ItemsPage() {
             <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl space-y-3">
               <h3 className="text-sm font-bold text-amber-900">🌸 Ona Pookkalam Sizes</h3>
               <div className="flex flex-wrap gap-2">
-                {["2 to 3 feet", "3 to 4 feet"].map((sz) => {
+                {["3 feet", "4 feet"].map((sz) => {
                   const exists = variants.some((v: any) => v.size === sz);
                   return (
                     <button

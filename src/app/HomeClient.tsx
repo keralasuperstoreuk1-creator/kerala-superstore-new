@@ -1157,7 +1157,8 @@ async function handleCheckout(e: React.FormEvent) {
                             {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">£{item.compareAtPrice}</span>}
                           </div>
                           <div className="flex gap-2 mt-3">
-                            <button onClick={() => addToCart(item.id, item.name, item.price, 1, "item")} className={`flex-1 ${pookkalamAction === "pre_order" ? "bg-amber-600 hover:bg-amber-500" : "bg-pink-600 hover:bg-pink-500"} text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition`}>{pookkalamAction === "pre_order" ? "⏳ Pre-Order" : "Add to Cart"}</button>
+                            <button onClick={() => addToCart(item.id, item.name, item.price, 1, "item")} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
+                            <button onClick={() => addToCart(item.id, item.name, item.price, 1, "item")} className="flex-1 bg-pink-600 hover:bg-pink-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
                             <button onClick={() => shareOnWhatsApp(item.name, item.price, item.slug)} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
                           </div>
                         </div>
@@ -1246,7 +1247,8 @@ async function handleCheckout(e: React.FormEvent) {
                             {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">£{item.compareAtPrice}</span>}
                           </div>
                           <div className="flex gap-2 mt-3">
-                            <button onClick={() => addToCart(item.id, item.name, item.price, 1, "item")} className={`flex-1 ${freshAction === "pre_order" ? "bg-amber-600 hover:bg-amber-500" : "bg-emerald-600 hover:bg-emerald-500"} text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition`}>{freshAction === "pre_order" ? "⏳ Pre-Order" : "Add to Cart"}</button>
+                            <button onClick={() => addToCart(item.id, item.name, item.price, 1, "item")} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
+                            <button onClick={() => addToCart(item.id, item.name, item.price, 1, "item")} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
                             <button onClick={() => shareOnWhatsApp(item.name, item.price, item.slug)} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
                           </div>
                         </div>
