@@ -73,6 +73,7 @@ export default function OnamPromosPage() {
       `${promoKey}_title`,
       `${promoKey}_description`,
       `${promoKey}_category_id`,
+      `${promoKey}_dress_types`,
       `${promoKey}_btn_text`,
       `${promoKey}_btn_link`,
       `${promoKey}_button_action`,
@@ -120,7 +121,7 @@ export default function OnamPromosPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Category (Products to show)</label>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Category (Items to show)</label>
                 <select
                   value={settings[`${promo.key}_category_id`] || ""}
                   onChange={(e) => setSettings({ ...settings, [`${promo.key}_category_id`]: e.target.value })}
@@ -131,6 +132,34 @@ export default function OnamPromosPage() {
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
                   ))}
                 </select>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Dress Types (to show)</label>
+                <div className="flex flex-wrap gap-1.5 mt-1">
+                  {["ladies", "gents", "kids", "kids-boys", "kids-girls", "combo"].map((t) => {
+                    const selected = (settings[`${promo.key}_dress_types`] || "").split(",").filter(Boolean);
+                    const isSelected = selected.includes(t);
+                    return (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => {
+                          const current = (settings[`${promo.key}_dress_types`] || "").split(",").filter(Boolean);
+                          const updated = isSelected ? current.filter((x) => x !== t) : [...current, t];
+                          setSettings({ ...settings, [`${promo.key}_dress_types`]: updated.join(",") });
+                        }}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition border ${
+                          isSelected
+                            ? "bg-blue-100 border-blue-400 text-blue-800"
+                            : "bg-white border-stone-200 text-stone-600 hover:bg-blue-50 hover:border-blue-300"
+                        }`}
+                      >
+                        {isSelected ? "✓ " : ""} {t}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-[10px] text-stone-400 mt-1">Select multiple dress types or use Category above for items</p>
               </div>
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Button Action</label>

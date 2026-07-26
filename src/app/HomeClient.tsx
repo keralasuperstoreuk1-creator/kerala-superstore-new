@@ -1092,14 +1092,17 @@ async function handleCheckout(e: React.FormEvent) {
       {/* Pookkalam Promo Section */}
       {(() => {
         const catId = settings.pookkalam_category_id;
-        const pookkalamItems = catId ? items.filter((i) => String(i.categoryId) === String(catId)) : [];
+        const dressTypes = (settings.pookkalam_dress_types || "").split(",").filter(Boolean);
+        let pookkalamProducts: any[] = [];
+        if (catId) pookkalamProducts = [...pookkalamProducts, ...items.filter((i) => String(i.categoryId) === String(catId))];
+        if (dressTypes.length > 0) pookkalamProducts = [...pookkalamProducts, ...dresses.filter((d) => dressTypes.includes(d.type))];
         const title = settings.pookkalam_title || "Onam Pookkalam";
         const desc = settings.pookkalam_description || "Celebrate the vibrant floral traditions of Onam with our curated Pookkalam collection.";
         const btnText = settings.pookkalam_btn_text || "Shop Pookkalam";
         const btnLink = settings.pookkalam_btn_link || "#products";
         const pookkalamAction = settings.pookkalam_button_action || "add_to_bag";
         const hasBanner = settings.pookkalam_banner_image;
-        if (!hasBanner && pookkalamItems.length === 0) return null;
+        if (!hasBanner && pookkalamProducts.length === 0) return null;
         return (
           <section id="pookkalam" className="py-16 bg-gradient-to-b from-pink-50 via-rose-50/30 to-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1123,7 +1126,7 @@ async function handleCheckout(e: React.FormEvent) {
                   <p className="text-pink-50/90 text-base md:text-lg max-w-2xl mx-auto mb-6">{desc}</p>
                   <div className="flex gap-3 justify-center flex-wrap">
                     <a href={btnLink} className="inline-flex items-center gap-2 bg-white text-pink-900 px-8 py-3.5 rounded-full font-bold text-sm hover:bg-pink-50 transition shadow-lg">
-                      {pookkalamItems.length > 0 ? `${btnText} (${pookkalamItems.length} items) →` : `${btnText} →`}
+                      {pookkalamProducts.length > 0 ? `${btnText} (${pookkalamProducts.length} items) →` : `${btnText} →`}
                     </a>
                     <button onClick={() => shareCollection(title, "pookkalam")} className="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 text-white border border-white/30 px-5 py-3.5 rounded-full font-bold text-sm transition">
                       <Share2 className="w-4 h-4" /> Share
@@ -1131,9 +1134,9 @@ async function handleCheckout(e: React.FormEvent) {
                   </div>
                 </div>
               </div>
-              {pookkalamItems.length > 0 && (
+              {pookkalamProducts.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                  {pookkalamItems.slice(0, 8).map((item, idx) => {
+                  {pookkalamProducts.slice(0, 8).map((item, idx) => {
                     const discountPct = item.compareAtPrice ? Math.round((1 - parseFloat(item.price) / parseFloat(item.compareAtPrice)) * 100) : 0;
                     return (
                       <div key={item.id} className="reveal group bg-white rounded-2xl border border-pink-200/60 overflow-hidden hover:border-pink-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: `${Math.min(idx * 40, 400)}ms` }}>
@@ -1163,7 +1166,7 @@ async function handleCheckout(e: React.FormEvent) {
                   })}
                 </div>
               )}
-              {pookkalamItems.length === 0 && hasBanner && (
+              {pookkalamProducts.length === 0 && hasBanner && (
                 <div className="text-center py-10">
                   <div className="text-5xl mb-4">🌸</div>
                   <p className="text-stone-600 font-medium">{title} items coming soon!</p>
@@ -1178,14 +1181,17 @@ async function handleCheckout(e: React.FormEvent) {
       {/* Onam Fresh Pookkal Promo Section */}
       {(() => {
         const catId = settings.fresh_pookkal_category_id;
-        const freshItems = catId ? items.filter((i) => String(i.categoryId) === String(catId)) : [];
+        const freshDressTypes = (settings.fresh_pookkal_dress_types || "").split(",").filter(Boolean);
+        let freshProducts: any[] = [];
+        if (catId) freshProducts = [...freshProducts, ...items.filter((i) => String(i.categoryId) === String(catId))];
+        if (freshDressTypes.length > 0) freshProducts = [...freshProducts, ...dresses.filter((d) => freshDressTypes.includes(d.type))];
         const title = settings.fresh_pookkal_title || "Onam Fresh Pookkal";
         const desc = settings.fresh_pookkal_description || "Fresh flowers and floral arrangements to bring the spirit of Onam to your home.";
         const btnText = settings.fresh_pookkal_btn_text || "Shop Fresh Pookkal";
         const btnLink = settings.fresh_pookkal_btn_link || "#products";
         const freshAction = settings.fresh_pookkal_button_action || "add_to_bag";
         const hasBanner = settings.fresh_pookkal_banner_image;
-        if (!hasBanner && freshItems.length === 0) return null;
+        if (!hasBanner && freshProducts.length === 0) return null;
         return (
           <section id="fresh-pookkal" className="py-16 bg-gradient-to-b from-emerald-50 via-green-50/30 to-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1209,7 +1215,7 @@ async function handleCheckout(e: React.FormEvent) {
                   <p className="text-emerald-50/90 text-base md:text-lg max-w-2xl mx-auto mb-6">{desc}</p>
                   <div className="flex gap-3 justify-center flex-wrap">
                     <a href={btnLink} className="inline-flex items-center gap-2 bg-white text-emerald-900 px-8 py-3.5 rounded-full font-bold text-sm hover:bg-emerald-50 transition shadow-lg">
-                      {freshItems.length > 0 ? `${btnText} (${freshItems.length} items) →` : `${btnText} →`}
+                      {freshProducts.length > 0 ? `${btnText} (${freshProducts.length} items) →` : `${btnText} →`}
                     </a>
                     <button onClick={() => shareCollection(title, "fresh-pookkal")} className="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 text-white border border-white/30 px-5 py-3.5 rounded-full font-bold text-sm transition">
                       <Share2 className="w-4 h-4" /> Share
@@ -1217,9 +1223,9 @@ async function handleCheckout(e: React.FormEvent) {
                   </div>
                 </div>
               </div>
-              {freshItems.length > 0 && (
+              {freshProducts.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                  {freshItems.slice(0, 8).map((item, idx) => {
+                  {freshProducts.slice(0, 8).map((item, idx) => {
                     const discountPct = item.compareAtPrice ? Math.round((1 - parseFloat(item.price) / parseFloat(item.compareAtPrice)) * 100) : 0;
                     return (
                       <div key={item.id} className="reveal group bg-white rounded-2xl border border-emerald-200/60 overflow-hidden hover:border-emerald-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: `${Math.min(idx * 40, 400)}ms` }}>
@@ -1249,7 +1255,7 @@ async function handleCheckout(e: React.FormEvent) {
                   })}
                 </div>
               )}
-              {freshItems.length === 0 && hasBanner && (
+              {freshProducts.length === 0 && hasBanner && (
                 <div className="text-center py-10">
                   <div className="text-5xl mb-4">🌿</div>
                   <p className="text-stone-600 font-medium">{title} items coming soon!</p>
