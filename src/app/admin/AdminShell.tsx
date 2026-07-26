@@ -33,6 +33,7 @@ const navGroups = [
       { href: "/admin/slides", label: "Hero Banners", icon: ImageIcon },
       { href: "/admin/promo-banners", label: "Promo Banners", icon: Sparkles },
       { href: "/admin/onam-sadhya", label: "Onam Sadhya Banner", icon: Sparkles },
+      { href: "/admin/onam-promos", label: "Pookkalam & Fresh Pookkal", icon: Sparkles },
       { href: "/admin/winners", label: "Lucky Winners", icon: Trophy },
     ],
   },

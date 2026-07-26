@@ -1089,6 +1089,176 @@ async function handleCheckout(e: React.FormEvent) {
         );
       })()}
 
+      {/* Pookkalam Promo Section */}
+      {(() => {
+        const catId = settings.pookkalam_category_id;
+        const pookkalamItems = catId ? items.filter((i) => String(i.categoryId) === String(catId)) : [];
+        const title = settings.pookkalam_title || "Onam Pookkalam";
+        const desc = settings.pookkalam_description || "Celebrate the vibrant floral traditions of Onam with our curated Pookkalam collection.";
+        const btnText = settings.pookkalam_btn_text || "Shop Pookkalam";
+        const btnLink = settings.pookkalam_btn_link || "#products";
+        const hasBanner = settings.pookkalam_banner_image;
+        if (!hasBanner && pookkalamItems.length === 0) return null;
+        return (
+          <section id="pookkalam" className="py-16 bg-gradient-to-b from-pink-50 via-rose-50/30 to-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="reveal relative overflow-hidden rounded-3xl bg-gradient-to-r from-pink-600 via-rose-500 to-pink-700 mb-10 shadow-xl min-h-[200px] md:min-h-[300px]">
+                {settings.pookkalam_banner_image && (
+                  <img src={settings.pookkalam_banner_image} alt="" className="hidden md:block absolute inset-0 w-full h-full object-cover" />
+                )}
+                {settings.pookkalam_banner_mobile_image ? (
+                  <img src={settings.pookkalam_banner_mobile_image} alt="" className="block md:hidden absolute inset-0 w-full h-full object-cover" />
+                ) : settings.pookkalam_banner_image ? (
+                  <img src={settings.pookkalam_banner_image} alt="" className="block md:hidden absolute inset-0 w-full h-full object-cover" />
+                ) : null}
+                <div className="absolute inset-0 bg-gradient-to-r from-pink-900/70 via-pink-800/50 to-transparent" />
+                <div className="relative px-6 py-12 md:px-12 md:py-16 text-center text-white">
+                  <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.25em] text-pink-200 bg-white/15 border border-white/20 rounded-full px-4 py-1.5 mb-4">
+                    🌸 Onam 2026
+                  </div>
+                  <h2 className="font-editorial text-4xl md:text-6xl font-bold leading-[0.95] mb-3">
+                    <span className="italic text-pink-200">{title}.</span>
+                  </h2>
+                  <p className="text-pink-50/90 text-base md:text-lg max-w-2xl mx-auto mb-6">{desc}</p>
+                  <div className="flex gap-3 justify-center flex-wrap">
+                    <a href={btnLink} className="inline-flex items-center gap-2 bg-white text-pink-900 px-8 py-3.5 rounded-full font-bold text-sm hover:bg-pink-50 transition shadow-lg">
+                      {pookkalamItems.length > 0 ? `${btnText} (${pookkalamItems.length} items) →` : `${btnText} →`}
+                    </a>
+                    <button onClick={() => shareCollection(title, "pookkalam")} className="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 text-white border border-white/30 px-5 py-3.5 rounded-full font-bold text-sm transition">
+                      <Share2 className="w-4 h-4" /> Share
+                    </button>
+                  </div>
+                </div>
+              </div>
+              {pookkalamItems.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                  {pookkalamItems.slice(0, 8).map((item, idx) => {
+                    const discountPct = item.compareAtPrice ? Math.round((1 - parseFloat(item.price) / parseFloat(item.compareAtPrice)) * 100) : 0;
+                    return (
+                      <div key={item.id} className="reveal group bg-white rounded-2xl border border-pink-200/60 overflow-hidden hover:border-pink-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: `${Math.min(idx * 40, 400)}ms` }}>
+                        <div className="aspect-square bg-pink-50/50 relative overflow-hidden">
+                          {item.images?.[0] ? (
+                            <img src={item.images[0]} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-5xl">🌸</div>
+                          )}
+                          <div className="absolute top-3 left-3 flex flex-col gap-1">
+                            {discountPct > 0 && <div className="bg-pink-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">-{discountPct}%</div>}
+                          </div>
+                        </div>
+                        <div className="p-4">
+                          <h3 className="font-semibold text-stone-900 text-sm line-clamp-2">{item.name}</h3>
+                          <div className="flex items-baseline gap-2 mt-2">
+                            <span className="font-bold text-stone-900">£{item.price}</span>
+                            {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">£{item.compareAtPrice}</span>}
+                          </div>
+                          <div className="flex gap-2 mt-3">
+                            <button onClick={() => addToCart(item.id, item.name, item.price, 1, "item")} className="flex-1 bg-pink-600 hover:bg-pink-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
+                            <button onClick={() => shareOnWhatsApp(item.name, item.price, item.slug)} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              {pookkalamItems.length === 0 && hasBanner && (
+                <div className="text-center py-10">
+                  <div className="text-5xl mb-4">🌸</div>
+                  <p className="text-stone-600 font-medium">{title} items coming soon!</p>
+                  <p className="text-sm text-stone-400 mt-1">Add products in Admin → Categories → link to this section.</p>
+                </div>
+              )}
+            </div>
+          </section>
+        );
+      })()}
+
+      {/* Onam Fresh Pookkal Promo Section */}
+      {(() => {
+        const catId = settings.fresh_pookkal_category_id;
+        const freshItems = catId ? items.filter((i) => String(i.categoryId) === String(catId)) : [];
+        const title = settings.fresh_pookkal_title || "Onam Fresh Pookkal";
+        const desc = settings.fresh_pookkal_description || "Fresh flowers and floral arrangements to bring the spirit of Onam to your home.";
+        const btnText = settings.fresh_pookkal_btn_text || "Shop Fresh Pookkal";
+        const btnLink = settings.fresh_pookkal_btn_link || "#products";
+        const hasBanner = settings.fresh_pookkal_banner_image;
+        if (!hasBanner && freshItems.length === 0) return null;
+        return (
+          <section id="fresh-pookkal" className="py-16 bg-gradient-to-b from-emerald-50 via-green-50/30 to-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="reveal relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-600 via-green-500 to-emerald-700 mb-10 shadow-xl min-h-[200px] md:min-h-[300px]">
+                {settings.fresh_pookkal_banner_image && (
+                  <img src={settings.fresh_pookkal_banner_image} alt="" className="hidden md:block absolute inset-0 w-full h-full object-cover" />
+                )}
+                {settings.fresh_pookkal_banner_mobile_image ? (
+                  <img src={settings.fresh_pookkal_banner_mobile_image} alt="" className="block md:hidden absolute inset-0 w-full h-full object-cover" />
+                ) : settings.fresh_pookkal_banner_image ? (
+                  <img src={settings.fresh_pookkal_banner_image} alt="" className="block md:hidden absolute inset-0 w-full h-full object-cover" />
+                ) : null}
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/70 via-emerald-800/50 to-transparent" />
+                <div className="relative px-6 py-12 md:px-12 md:py-16 text-center text-white">
+                  <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.25em] text-emerald-200 bg-white/15 border border-white/20 rounded-full px-4 py-1.5 mb-4">
+                    🌿 Onam 2026
+                  </div>
+                  <h2 className="font-editorial text-4xl md:text-6xl font-bold leading-[0.95] mb-3">
+                    <span className="italic text-emerald-200">{title}.</span>
+                  </h2>
+                  <p className="text-emerald-50/90 text-base md:text-lg max-w-2xl mx-auto mb-6">{desc}</p>
+                  <div className="flex gap-3 justify-center flex-wrap">
+                    <a href={btnLink} className="inline-flex items-center gap-2 bg-white text-emerald-900 px-8 py-3.5 rounded-full font-bold text-sm hover:bg-emerald-50 transition shadow-lg">
+                      {freshItems.length > 0 ? `${btnText} (${freshItems.length} items) →` : `${btnText} →`}
+                    </a>
+                    <button onClick={() => shareCollection(title, "fresh-pookkal")} className="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 text-white border border-white/30 px-5 py-3.5 rounded-full font-bold text-sm transition">
+                      <Share2 className="w-4 h-4" /> Share
+                    </button>
+                  </div>
+                </div>
+              </div>
+              {freshItems.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                  {freshItems.slice(0, 8).map((item, idx) => {
+                    const discountPct = item.compareAtPrice ? Math.round((1 - parseFloat(item.price) / parseFloat(item.compareAtPrice)) * 100) : 0;
+                    return (
+                      <div key={item.id} className="reveal group bg-white rounded-2xl border border-emerald-200/60 overflow-hidden hover:border-emerald-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: `${Math.min(idx * 40, 400)}ms` }}>
+                        <div className="aspect-square bg-emerald-50/50 relative overflow-hidden">
+                          {item.images?.[0] ? (
+                            <img src={item.images[0]} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-5xl">🌿</div>
+                          )}
+                          <div className="absolute top-3 left-3 flex flex-col gap-1">
+                            {discountPct > 0 && <div className="bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">-{discountPct}%</div>}
+                          </div>
+                        </div>
+                        <div className="p-4">
+                          <h3 className="font-semibold text-stone-900 text-sm line-clamp-2">{item.name}</h3>
+                          <div className="flex items-baseline gap-2 mt-2">
+                            <span className="font-bold text-stone-900">£{item.price}</span>
+                            {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">£{item.compareAtPrice}</span>}
+                          </div>
+                          <div className="flex gap-2 mt-3">
+                            <button onClick={() => addToCart(item.id, item.name, item.price, 1, "item")} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
+                            <button onClick={() => shareOnWhatsApp(item.name, item.price, item.slug)} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              {freshItems.length === 0 && hasBanner && (
+                <div className="text-center py-10">
+                  <div className="text-5xl mb-4">🌿</div>
+                  <p className="text-stone-600 font-medium">{title} items coming soon!</p>
+                  <p className="text-sm text-stone-400 mt-1">Add products in Admin → Categories → link to this section.</p>
+                </div>
+              )}
+            </div>
+          </section>
+        );
+      })()}
+
       {/* Categories */}
       <section id="categories" className="py-16 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
