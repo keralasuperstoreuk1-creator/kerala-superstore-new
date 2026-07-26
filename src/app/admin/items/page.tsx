@@ -275,6 +275,94 @@ export default function ItemsPage() {
             <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm" rows={2} placeholder="Product description..." />
           </div>
 
+          {form.categoryId === "17" && (
+            <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl space-y-3">
+              <h3 className="text-sm font-bold text-amber-900">🌸 Ona Pookkalam Sizes</h3>
+              <div className="flex flex-wrap gap-2">
+                {["2 to 3 feet", "3 to 4 feet"].map((sz) => {
+                  const exists = variants.some((v: any) => v.size === sz);
+                  return (
+                    <button
+                      key={sz}
+                      type="button"
+                      onClick={() => {
+                        if (exists) {
+                          setVariants(variants.filter((v: any) => v.size !== sz));
+                        } else {
+                          setVariants([...variants, { size: sz, price: form.price || "", stock: 50, color: "", colorCode: "" }]);
+                        }
+                      }}
+                      className={`px-4 py-2 rounded-xl text-xs font-bold transition border ${
+                        exists
+                          ? "bg-amber-100 border-amber-400 text-amber-800"
+                          : "bg-white border-stone-200 text-stone-600 hover:bg-amber-50 hover:border-amber-300"
+                      }`}
+                    >
+                      {exists ? "✓ " : "+ "}{sz}
+                    </button>
+                  );
+                })}
+              </div>
+              {variants.length > 0 && (
+                <div className="space-y-2">
+                  {variants.map((v: any, idx: number) => (
+                    <div key={idx} className="flex items-center gap-2 bg-white border border-amber-200 rounded-xl px-3 py-2">
+                      <span className="text-xs font-bold text-amber-800 min-w-[80px]">✓ {v.size}</span>
+                      <input type="number" step="0.01" placeholder="Price" value={v.price || ""} onChange={(e) => { const nv = [...variants]; nv[idx].price = e.target.value; setVariants(nv); }} className="w-24 px-2 py-1 border border-amber-300 rounded-lg text-xs font-bold outline-none" />
+                      <span className="text-[10px] text-amber-600">£</span>
+                      <input type="number" placeholder="Stock" value={v.stock || ""} onChange={(e) => { const nv = [...variants]; nv[idx].stock = parseInt(e.target.value) || 0; setVariants(nv); }} className="w-20 px-2 py-1 border border-amber-300 rounded-lg text-xs outline-none" />
+                      <button type="button" onClick={() => setVariants(variants.filter((_: any, i: number) => i !== idx))} className="text-red-400 hover:text-red-600 text-xs font-bold">×</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {form.categoryId === "19" && (
+            <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl space-y-3">
+              <h3 className="text-sm font-bold text-emerald-900">🌿 Onam Fresh Pookkal — Grams</h3>
+              <div className="flex flex-wrap gap-2">
+                {["50g", "100g", "250g", "500g", "1kg", "2kg", "5kg"].map((sz) => {
+                  const exists = variants.some((v: any) => v.size === sz);
+                  return (
+                    <button
+                      key={sz}
+                      type="button"
+                      onClick={() => {
+                        if (exists) {
+                          setVariants(variants.filter((v: any) => v.size !== sz));
+                        } else {
+                          setVariants([...variants, { size: sz, price: form.price || "", stock: 50, color: "", colorCode: "" }]);
+                        }
+                      }}
+                      className={`px-4 py-2 rounded-xl text-xs font-bold transition border ${
+                        exists
+                          ? "bg-emerald-100 border-emerald-400 text-emerald-800"
+                          : "bg-white border-stone-200 text-stone-600 hover:bg-emerald-50 hover:border-emerald-300"
+                      }`}
+                    >
+                      {exists ? "✓ " : "+ "}{sz}
+                    </button>
+                  );
+                })}
+              </div>
+              {variants.length > 0 && (
+                <div className="space-y-2">
+                  {variants.map((v: any, idx: number) => (
+                    <div key={idx} className="flex items-center gap-2 bg-white border border-emerald-200 rounded-xl px-3 py-2">
+                      <span className="text-xs font-bold text-emerald-800 min-w-[60px]">✓ {v.size}</span>
+                      <input type="number" step="0.01" placeholder="Price" value={v.price || ""} onChange={(e) => { const nv = [...variants]; nv[idx].price = e.target.value; setVariants(nv); }} className="w-24 px-2 py-1 border border-emerald-300 rounded-lg text-xs font-bold outline-none" />
+                      <span className="text-[10px] text-emerald-600">£</span>
+                      <input type="number" placeholder="Stock" value={v.stock || ""} onChange={(e) => { const nv = [...variants]; nv[idx].stock = parseInt(e.target.value) || 0; setVariants(nv); }} className="w-20 px-2 py-1 border border-emerald-300 rounded-lg text-xs outline-none" />
+                      <button type="button" onClick={() => setVariants(variants.filter((_: any, i: number) => i !== idx))} className="text-red-400 hover:text-red-600 text-xs font-bold">×</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="flex gap-3 pt-4 border-t border-stone-100">
             <button type="submit" className="bg-[#0b2416] text-white px-6 py-2.5 rounded-xl hover:bg-emerald-950 transition font-bold text-xs shadow-sm">
               {editing ? "Update Product" : "Save Product"}
