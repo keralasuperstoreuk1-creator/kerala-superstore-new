@@ -21,9 +21,19 @@ export async function GET(req: NextRequest) {
     const result = [];
     for (const cartItem of cartItems) {
       let item = null;
+
+      async function findItem(type: string) {
+        if (type === "dress") {
+          const r = await db.select().from(dresses).where(eq(dresses.id, cartItem.itemId));
+          return r[0] || null;
+        }
+        const r = await db.select().from(items).where(eq(items.id, Number(cartItem.itemId)));
+        return r[0] || null;
+      }
+
       if (cartItem.itemType === "dress") {
-        const dressRes = await db.select().from(dresses).where(eq(dresses.id, cartItem.itemId));
-        item = dressRes[0] || null;
+        item = await findItem("dress");
+        if (!item) item = await findItem("item");
       } else if (cartItem.itemType === "offer") {
         const offerRes = await db.select().from(offers).where(eq(offers.id, cartItem.itemId));
         if (offerRes.length > 0) {
@@ -31,8 +41,8 @@ export async function GET(req: NextRequest) {
           item = { id: o.id, name: o.name, price: o.newPrice, images: [o.image] };
         }
       } else {
-        const itemRes = await db.select().from(items).where(eq(items.id, Number(cartItem.itemId)));
-        item = itemRes[0] || null;
+        item = await findItem("item");
+        if (!item) item = await findItem("dress");
       }
 
       if (!item) {
