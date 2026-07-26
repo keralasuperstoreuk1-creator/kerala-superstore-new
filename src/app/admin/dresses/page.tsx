@@ -33,6 +33,7 @@ export default function DressesPage() {
   const [dbCategories, setDbCategories] = useState<any[]>([]);
 
   const availableSizes = [
+    { category: "Age Sizes", sizes: ["0-1 year", "0-2 year", "1-2 year", "2-4 year", "4-6 year", "6-8 year", "7-8 year", "8-10 year", "10+ year"] },
     { category: "Kids Sizes", sizes: ["20", "22", "24", "26", "28", "30", "32"] },
     { category: "Standard Sizes", sizes: ["Free Size", "XS", "S", "M", "L", "XL", "2XL", "3XL"] },
   ];
