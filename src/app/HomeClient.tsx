@@ -1161,11 +1161,14 @@ async function handleCheckout(e: React.FormEvent) {
                     const selectedSz = promoSelectedSize[item.id] || (hasVariants ? item.variants[0].size : "");
                     const variantData = hasVariants ? item.variants.find((v: any) => v.size === selectedSz) : null;
                     const displayPrice = variantData ? variantData.price : item.price;
+                    const hasColorVariants = hasVariants && item.variants.some((v: any) => v.color && v.images && v.images[0]);
+                    const activeColorVariant = hasColorVariants ? (item.variants.find((v: any) => v.size === selectedSz && v.color && v.images && v.images[0]) || null) : null;
+                    const displayImage = activeColorVariant ? activeColorVariant.images[0] : (item.images?.[0] || null);
                     return (
                       <div key={item.id} className="reveal group bg-white rounded-2xl border border-pink-200/60 overflow-hidden hover:border-pink-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: `${Math.min(idx * 40, 400)}ms` }}>
                         <div className="aspect-square bg-pink-50/50 relative overflow-hidden cursor-pointer" onClick={() => openDetailModal(item)}>
-                          {item.images?.[0] ? (
-                            <img src={item.images[0]} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                          {displayImage ? (
+                            <img src={displayImage} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-5xl">🌸</div>
                           )}
@@ -1187,6 +1190,14 @@ async function handleCheckout(e: React.FormEvent) {
                               {item.variants.map((v: any) => (
                                 <button key={v.size} onClick={(e) => { e.stopPropagation(); setPromoSelectedSize((prev) => ({ ...prev, [item.id]: v.size })); }} className={`px-2 py-0.5 rounded-md text-[10px] font-bold border transition ${selectedSz === v.size ? "bg-amber-100 border-amber-400 text-amber-800" : "bg-stone-50 border-stone-200 text-stone-600 hover:border-amber-300"}`}>{v.size}</button>
                               ))}
+                            </div>
+                          )}
+                          {hasColorVariants && (
+                            <div className="flex items-center gap-1.5 mt-2">
+                              {item.variants.filter((v: any) => v.color && v.colorCode).reduce((acc: any[], v: any) => { if (!acc.find((a: any) => a.color === v.color)) acc.push(v); return acc; }, []).map((cv: any) => (
+                                <button key={cv.color} onClick={(e) => { e.stopPropagation(); setPromoSelectedSize((prev) => ({ ...prev, [item.id]: cv.size })); }} title={cv.color} className={`w-5 h-5 rounded-full border-2 transition ${selectedSz === cv.size ? "border-pink-500 scale-125 shadow-md" : "border-stone-300 hover:scale-110"}`} style={{ backgroundColor: cv.colorCode }} />
+                              ))}
+                              {activeColorVariant?.color && <span className="text-[9px] text-stone-500 font-mono">{activeColorVariant.color}</span>}
                             </div>
                           )}
                           <div className="flex gap-2 mt-3">
@@ -1269,11 +1280,14 @@ async function handleCheckout(e: React.FormEvent) {
                     const selectedSz = promoSelectedSize[item.id] || (hasVariants ? item.variants[0].size : "");
                     const variantData = hasVariants ? item.variants.find((v: any) => v.size === selectedSz) : null;
                     const displayPrice = variantData ? variantData.price : item.price;
+                    const hasColorVariants = hasVariants && item.variants.some((v: any) => v.color && v.images && v.images[0]);
+                    const activeColorVariant = hasColorVariants ? (item.variants.find((v: any) => v.size === selectedSz && v.color && v.images && v.images[0]) || null) : null;
+                    const displayImage = activeColorVariant ? activeColorVariant.images[0] : (item.images?.[0] || null);
                     return (
                       <div key={item.id} className="reveal group bg-white rounded-2xl border border-emerald-200/60 overflow-hidden hover:border-emerald-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: `${Math.min(idx * 40, 400)}ms` }}>
                         <div className="aspect-square bg-emerald-50/50 relative overflow-hidden cursor-pointer" onClick={() => openDetailModal(item)}>
-                          {item.images?.[0] ? (
-                            <img src={item.images[0]} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                          {displayImage ? (
+                            <img src={displayImage} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-5xl">🌿</div>
                           )}
@@ -1295,6 +1309,14 @@ async function handleCheckout(e: React.FormEvent) {
                               {item.variants.map((v: any) => (
                                 <button key={v.size} onClick={(e) => { e.stopPropagation(); setPromoSelectedSize((prev) => ({ ...prev, [item.id]: v.size })); }} className={`px-2 py-0.5 rounded-md text-[10px] font-bold border transition ${selectedSz === v.size ? "bg-emerald-100 border-emerald-400 text-emerald-800" : "bg-stone-50 border-stone-200 text-stone-600 hover:border-emerald-300"}`}>{v.size}</button>
                               ))}
+                            </div>
+                          )}
+                          {hasColorVariants && (
+                            <div className="flex items-center gap-1.5 mt-2">
+                              {item.variants.filter((v: any) => v.color && v.colorCode).reduce((acc: any[], v: any) => { if (!acc.find((a: any) => a.color === v.color)) acc.push(v); return acc; }, []).map((cv: any) => (
+                                <button key={cv.color} onClick={(e) => { e.stopPropagation(); setPromoSelectedSize((prev) => ({ ...prev, [item.id]: cv.size })); }} title={cv.color} className={`w-5 h-5 rounded-full border-2 transition ${selectedSz === cv.size ? "border-emerald-500 scale-125 shadow-md" : "border-stone-300 hover:scale-110"}`} style={{ backgroundColor: cv.colorCode }} />
+                              ))}
+                              {activeColorVariant?.color && <span className="text-[9px] text-stone-500 font-mono">{activeColorVariant.color}</span>}
                             </div>
                           )}
                           <div className="flex gap-2 mt-3">
