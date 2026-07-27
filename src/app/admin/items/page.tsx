@@ -329,7 +329,7 @@ export default function ItemsPage() {
                         if (exists) {
                           setVariants(variants.filter((v: any) => v.size !== sz));
                         } else {
-                          setVariants([...variants, { size: sz, price: form.price || "", stock: 50, color: "", colorCode: "" }]);
+                          setVariants([...variants, { size: sz, price: form.price || "", stock: 50, color: "", colorCode: "", images: [] }]);
                         }
                       }}
                       className={`px-4 py-2 rounded-xl text-xs font-bold transition border ${
@@ -343,41 +343,38 @@ export default function ItemsPage() {
                   );
                 })}
               </div>
-              {form.categoryId === "17" && (
-                <div className="flex items-center gap-2 mt-2">
-                  <input id="customPookSize" type="text" placeholder="Custom size (e.g. 5 feet)" className="flex-1 px-3 py-1.5 border border-amber-300 rounded-lg text-xs outline-none bg-white" />
-                  <button type="button" onClick={() => {
-                    const inp = document.getElementById("customPookSize") as HTMLInputElement;
-                    const val = inp?.value?.trim();
-                    if (val && !variants.some((v: any) => v.size === val)) {
-                      setVariants([...variants, { size: val, price: form.price || "", stock: 50, color: "", colorCode: "" }]);
-                      inp.value = "";
-                    }
-                  }} className="px-3 py-1.5 bg-amber-500 text-white rounded-lg text-xs font-bold hover:bg-amber-600 transition">+ Add</button>
-                </div>
-              )}
+              <div className="flex items-center gap-2 mt-2">
+                <input id="customPookSize" type="text" placeholder="Custom size (e.g. 5 feet)" className="flex-1 px-3 py-1.5 border border-amber-300 rounded-lg text-xs outline-none bg-white" />
+                <button type="button" onClick={() => {
+                  const inp = document.getElementById("customPookSize") as HTMLInputElement;
+                  const val = inp?.value?.trim();
+                  if (val && !variants.some((v: any) => v.size === val)) {
+                    setVariants([...variants, { size: val, price: form.price || "", stock: 50, color: "", colorCode: "", images: [] }]);
+                    inp.value = "";
+                  }
+                }} className="px-3 py-1.5 bg-amber-500 text-white rounded-lg text-xs font-bold hover:bg-amber-600 transition">+ Add</button>
+              </div>
               {variants.length > 0 && (
-                <div className="space-y-2 mt-3">
-                  {variants.map((v: any, idx: number) => (
-                    <div key={idx} className="flex flex-col gap-2 bg-white border border-amber-200 rounded-xl px-3 py-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-amber-800 min-w-[80px]">✓ {v.size}</span>
-                        <input type="number" step="0.01" placeholder="Price" value={v.price || ""} onChange={(e) => { const nv = [...variants]; nv[idx].price = e.target.value; setVariants(nv); }} className="w-24 px-2 py-1 border border-amber-300 rounded-lg text-xs font-bold outline-none" />
-                        <span className="text-[10px] text-amber-600">£</span>
-                        <input type="number" placeholder="Stock" value={v.stock || ""} onChange={(e) => { const nv = [...variants]; nv[idx].stock = parseInt(e.target.value) || 0; setVariants(nv); }} className="w-20 px-2 py-1 border border-amber-300 rounded-lg text-xs outline-none" />
-                        <button type="button" onClick={() => setVariants(variants.filter((_: any, i: number) => i !== idx))} className="text-red-400 hover:text-red-600 text-xs font-bold">×</button>
-                      </div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <input type="text" placeholder="Color name (e.g. Rose Pink)" value={v.color || ""} onChange={(e) => { const nv = [...variants]; nv[idx].color = e.target.value; setVariants(nv); }} className="flex-1 min-w-[120px] px-2 py-1 border border-amber-200 rounded-lg text-xs outline-none bg-amber-50" />
-                        <input type="color" value={v.colorCode || "#e74c3c"} onChange={(e) => { const nv = [...variants]; nv[idx].colorCode = e.target.value; setVariants(nv); }} className="w-8 h-8 rounded cursor-pointer border-0" />
+                <div className="mt-3">
+                  <div className="grid grid-cols-[80px_1fr_70px_50px_30px_80px_24px] gap-1.5 px-2 text-[9px] font-bold text-amber-600 uppercase tracking-wide mb-1">
+                    <span>Size</span><span>Color</span><span>Price £</span><span>Stock</span><span></span><span>Photo</span><span></span>
+                  </div>
+                  <div className="space-y-1.5">
+                    {variants.map((v: any, idx: number) => (
+                      <div key={idx} className="grid grid-cols-[80px_1fr_70px_50px_30px_80px_24px] gap-1.5 items-center bg-white border border-amber-200 rounded-xl px-2 py-1.5">
+                        <span className="text-[10px] font-bold text-amber-800 truncate">{v.size}</span>
+                        <input type="text" placeholder="e.g. Rose Pink" value={v.color || ""} onChange={(e) => { const nv = [...variants]; nv[idx].color = e.target.value; setVariants(nv); }} className="px-2 py-1 border border-amber-200 rounded-lg text-[10px] outline-none bg-amber-50 min-w-0" />
+                        <input type="number" step="0.01" placeholder="0" value={v.price || ""} onChange={(e) => { const nv = [...variants]; nv[idx].price = e.target.value; setVariants(nv); }} className="px-2 py-1 border border-amber-300 rounded-lg text-[10px] font-bold outline-none min-w-0" />
+                        <input type="number" placeholder="50" value={v.stock || ""} onChange={(e) => { const nv = [...variants]; nv[idx].stock = parseInt(e.target.value) || 0; setVariants(nv); }} className="px-1.5 py-1 border border-amber-300 rounded-lg text-[10px] outline-none min-w-0" />
+                        <input type="color" value={v.colorCode || "#e74c3c"} onChange={(e) => { const nv = [...variants]; nv[idx].colorCode = e.target.value; setVariants(nv); }} className="w-6 h-6 rounded cursor-pointer border-0 p-0" />
                         {v.images && v.images[0] ? (
-                          <div className="relative">
-                            <img src={v.images[0]} alt="" className="w-8 h-8 rounded-lg object-cover border border-amber-300" />
-                            <button type="button" onClick={() => { const nv = [...variants]; nv[idx].images = []; setVariants(nv); }} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-3.5 h-3.5 text-[8px] flex items-center justify-center">×</button>
+                          <div className="relative flex items-center gap-1">
+                            <img src={v.images[0]} alt="" className="w-7 h-7 rounded-lg object-cover border border-amber-300" />
+                            <button type="button" onClick={() => { const nv = [...variants]; nv[idx].images = []; setVariants(nv); }} className="text-red-400 hover:text-red-600 text-[9px] font-bold">✕</button>
                           </div>
                         ) : (
-                          <label className="px-2 py-1 bg-amber-100 text-amber-700 rounded-lg text-[10px] font-bold cursor-pointer hover:bg-amber-200 transition">
-                            📷 Photo
+                          <label className="px-1.5 py-1 bg-amber-100 text-amber-700 rounded-lg text-[9px] font-bold cursor-pointer hover:bg-amber-200 transition text-center">
+                            📷
                             <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
                               const file = e.target.files?.[0];
                               if (!file) return;
@@ -390,9 +387,11 @@ export default function ItemsPage() {
                             }} />
                           </label>
                         )}
+                        <button type="button" onClick={() => setVariants(variants.filter((_: any, i: number) => i !== idx))} className="text-red-400 hover:text-red-600 text-xs font-bold text-center">×</button>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                  <p className="text-[9px] text-amber-600 mt-1.5 italic">💡 Same size, different color? Add multiple rows — each color gets its own image on the website.</p>
                 </div>
               )}
             </div>
@@ -412,7 +411,7 @@ export default function ItemsPage() {
                         if (exists) {
                           setVariants(variants.filter((v: any) => v.size !== sz));
                         } else {
-                          setVariants([...variants, { size: sz, price: form.price || "", stock: 50, color: "", colorCode: "" }]);
+                          setVariants([...variants, { size: sz, price: form.price || "", stock: 50, color: "", colorCode: "", images: [] }]);
                         }
                       }}
                       className={`px-4 py-2 rounded-xl text-xs font-bold transition border ${
@@ -432,33 +431,32 @@ export default function ItemsPage() {
                   const inp = document.getElementById("customGramSize") as HTMLInputElement;
                   const val = inp?.value?.trim();
                   if (val && !variants.some((v: any) => v.size === val)) {
-                    setVariants([...variants, { size: val, price: form.price || "", stock: 50, color: "", colorCode: "" }]);
+                    setVariants([...variants, { size: val, price: form.price || "", stock: 50, color: "", colorCode: "", images: [] }]);
                     inp.value = "";
                   }
                 }} className="px-3 py-1.5 bg-emerald-500 text-white rounded-lg text-xs font-bold hover:bg-emerald-600 transition">+ Add</button>
               </div>
               {variants.length > 0 && (
-                <div className="space-y-2 mt-3">
-                  {variants.map((v: any, idx: number) => (
-                    <div key={idx} className="flex flex-col gap-2 bg-white border border-emerald-200 rounded-xl px-3 py-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-emerald-800 min-w-[60px]">✓ {v.size}</span>
-                        <input type="number" step="0.01" placeholder="Price" value={v.price || ""} onChange={(e) => { const nv = [...variants]; nv[idx].price = e.target.value; setVariants(nv); }} className="w-24 px-2 py-1 border border-emerald-300 rounded-lg text-xs font-bold outline-none" />
-                        <span className="text-[10px] text-emerald-600">£</span>
-                        <input type="number" placeholder="Stock" value={v.stock || ""} onChange={(e) => { const nv = [...variants]; nv[idx].stock = parseInt(e.target.value) || 0; setVariants(nv); }} className="w-20 px-2 py-1 border border-emerald-300 rounded-lg text-xs outline-none" />
-                        <button type="button" onClick={() => setVariants(variants.filter((_: any, i: number) => i !== idx))} className="text-red-400 hover:text-red-600 text-xs font-bold">×</button>
-                      </div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <input type="text" placeholder="Color name (e.g. Rose Pink)" value={v.color || ""} onChange={(e) => { const nv = [...variants]; nv[idx].color = e.target.value; setVariants(nv); }} className="flex-1 min-w-[120px] px-2 py-1 border border-emerald-200 rounded-lg text-xs outline-none bg-emerald-50" />
-                        <input type="color" value={v.colorCode || "#e74c3c"} onChange={(e) => { const nv = [...variants]; nv[idx].colorCode = e.target.value; setVariants(nv); }} className="w-8 h-8 rounded cursor-pointer border-0" />
+                <div className="mt-3">
+                  <div className="grid grid-cols-[60px_1fr_70px_50px_30px_80px_24px] gap-1.5 px-2 text-[9px] font-bold text-emerald-600 uppercase tracking-wide mb-1">
+                    <span>Size</span><span>Color</span><span>Price £</span><span>Stock</span><span></span><span>Photo</span><span></span>
+                  </div>
+                  <div className="space-y-1.5">
+                    {variants.map((v: any, idx: number) => (
+                      <div key={idx} className="grid grid-cols-[60px_1fr_70px_50px_30px_80px_24px] gap-1.5 items-center bg-white border border-emerald-200 rounded-xl px-2 py-1.5">
+                        <span className="text-[10px] font-bold text-emerald-800 truncate">{v.size}</span>
+                        <input type="text" placeholder="e.g. Rose Pink" value={v.color || ""} onChange={(e) => { const nv = [...variants]; nv[idx].color = e.target.value; setVariants(nv); }} className="px-2 py-1 border border-emerald-200 rounded-lg text-[10px] outline-none bg-emerald-50 min-w-0" />
+                        <input type="number" step="0.01" placeholder="0" value={v.price || ""} onChange={(e) => { const nv = [...variants]; nv[idx].price = e.target.value; setVariants(nv); }} className="px-2 py-1 border border-emerald-300 rounded-lg text-[10px] font-bold outline-none min-w-0" />
+                        <input type="number" placeholder="50" value={v.stock || ""} onChange={(e) => { const nv = [...variants]; nv[idx].stock = parseInt(e.target.value) || 0; setVariants(nv); }} className="px-1.5 py-1 border border-emerald-300 rounded-lg text-[10px] outline-none min-w-0" />
+                        <input type="color" value={v.colorCode || "#e74c3c"} onChange={(e) => { const nv = [...variants]; nv[idx].colorCode = e.target.value; setVariants(nv); }} className="w-6 h-6 rounded cursor-pointer border-0 p-0" />
                         {v.images && v.images[0] ? (
-                          <div className="relative">
-                            <img src={v.images[0]} alt="" className="w-8 h-8 rounded-lg object-cover border border-emerald-300" />
-                            <button type="button" onClick={() => { const nv = [...variants]; nv[idx].images = []; setVariants(nv); }} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-3.5 h-3.5 text-[8px] flex items-center justify-center">×</button>
+                          <div className="relative flex items-center gap-1">
+                            <img src={v.images[0]} alt="" className="w-7 h-7 rounded-lg object-cover border border-emerald-300" />
+                            <button type="button" onClick={() => { const nv = [...variants]; nv[idx].images = []; setVariants(nv); }} className="text-red-400 hover:text-red-600 text-[9px] font-bold">✕</button>
                           </div>
                         ) : (
-                          <label className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-[10px] font-bold cursor-pointer hover:bg-emerald-200 transition">
-                            📷 Photo
+                          <label className="px-1.5 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-[9px] font-bold cursor-pointer hover:bg-emerald-200 transition text-center">
+                            📷
                             <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
                               const file = e.target.files?.[0];
                               if (!file) return;
@@ -471,9 +469,11 @@ export default function ItemsPage() {
                             }} />
                           </label>
                         )}
+                        <button type="button" onClick={() => setVariants(variants.filter((_: any, i: number) => i !== idx))} className="text-red-400 hover:text-red-600 text-xs font-bold text-center">×</button>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                  <p className="text-[9px] text-emerald-600 mt-1.5 italic">💡 Same size, different color? Add multiple rows — each color gets its own image on the website.</p>
                 </div>
               )}
             </div>
