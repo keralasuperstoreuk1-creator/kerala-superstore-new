@@ -64,6 +64,7 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [detailQty, setDetailQty] = useState<number>(1);
   const [zoomOpen, setZoomOpen] = useState<boolean>(false);
   const [promoSelectedSize, setPromoSelectedSize] = useState<Record<number, string>>({});
+  const [detailSelectedVariant, setDetailSelectedVariant] = useState<any>(null);
 
 
 
@@ -140,7 +141,6 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
   }
 
   function openDetailModal(prod: any) {
-    // Tag dresses (they have a 'type' field like ladies/gents/kids/combo)
     const isDress = !!(prod.type && ['ladies','gents','kids','combo'].includes(prod.type));
     setDetailProduct({ ...prod, isDress });
     const thumbs = getProductThumbnails(prod);
@@ -148,6 +148,8 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
     setSelectedColor(thumbs[0]?.color || prod.colors?.[0] || "");
     setSelectedSize("");
     setDetailQty(1);
+    const hasItemVariants = prod.variants && prod.variants.length > 0 && !isDress;
+    setDetailSelectedVariant(hasItemVariants ? prod.variants[0] : null);
   }
 
   function isPreOrder(prod: any) {
@@ -668,16 +670,20 @@ async function handleCheckout(e: React.FormEvent) {
         <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 w-full">
           <div className="max-w-3xl">
             <div className="flex items-center gap-3 mb-6">
+              {(settings.hero_badge_text || "Authentic Kerala Store · UK Delivery") && (
               <span className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.22em] text-amber-300 bg-amber-400/20 border border-amber-400/30 rounded-full px-3.5 py-1.5 backdrop-blur-md font-semibold">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Authentic Kerala Store · UK Delivery
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" /> {settings.hero_badge_text || "Authentic Kerala Store · UK Delivery"}
               </span>
+              )}
+              {settings.hero_viewers_text !== "" && (
               <span className="hidden sm:flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.22em] text-emerald-300 bg-emerald-400/20 border border-emerald-400/30 rounded-full px-3.5 py-1.5 backdrop-blur-md font-semibold">
                 <span className="relative flex h-1.5 w-1.5">
                   <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping"></span>
                   <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400"></span>
                 </span>
-                {viewers} shopping now
+                {settings.hero_viewers_text || `${viewers} shopping now`}
               </span>
+              )}
             </div>
 
             <h1 
@@ -727,9 +733,9 @@ async function handleCheckout(e: React.FormEvent) {
 
             {/* Trust strip */}
             <div className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-3 text-xs md:text-sm text-emerald-100/90 font-medium pt-4 border-t border-white/15">
-              <div className="flex items-center gap-2"><Truck className="w-4 h-4 text-amber-400" /> Free UK delivery over £30</div>
-              <div className="flex items-center gap-2"><Shield className="w-4 h-4 text-amber-400" /> Cash on Delivery Available</div>
-              <div className="flex items-center gap-2"><Leaf className="w-4 h-4 text-amber-400" /> 100% Authentic Products</div>
+              {(settings.hero_trust_1 || "Free UK delivery over £30") && <div className="flex items-center gap-2"><Truck className="w-4 h-4 text-amber-400" /> {settings.hero_trust_1 || "Free UK delivery over £30"}</div>}
+              {(settings.hero_trust_2 || "Cash on Delivery Available") && <div className="flex items-center gap-2"><Shield className="w-4 h-4 text-amber-400" /> {settings.hero_trust_2 || "Cash on Delivery Available"}</div>}
+              {(settings.hero_trust_3 || "100% Authentic Products") && <div className="flex items-center gap-2"><Leaf className="w-4 h-4 text-amber-400" /> {settings.hero_trust_3 || "100% Authentic Products"}</div>}
             </div>
           </div>
         </div>
@@ -1150,7 +1156,7 @@ async function handleCheckout(e: React.FormEvent) {
                     const displayPrice = variantData ? variantData.price : item.price;
                     return (
                       <div key={item.id} className="reveal group bg-white rounded-2xl border border-pink-200/60 overflow-hidden hover:border-pink-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: `${Math.min(idx * 40, 400)}ms` }}>
-                        <div className="aspect-square bg-pink-50/50 relative overflow-hidden">
+                        <div className="aspect-square bg-pink-50/50 relative overflow-hidden cursor-pointer" onClick={() => openDetailModal(item)}>
                           {item.images?.[0] ? (
                             <img src={item.images[0]} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                           ) : (
@@ -1159,8 +1165,11 @@ async function handleCheckout(e: React.FormEvent) {
                           <div className="absolute top-3 left-3 flex flex-col gap-1">
                             {discountPct > 0 && <div className="bg-pink-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">-{discountPct}%</div>}
                           </div>
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <span className="bg-white/90 backdrop-blur text-stone-900 text-xs font-bold px-4 py-2 rounded-full shadow-lg">Quick View</span>
+                          </div>
                         </div>
-                        <div className="p-4">
+                        <div className="p-4 cursor-pointer" onClick={() => openDetailModal(item)}>
                           <h3 className="font-semibold text-stone-900 text-sm line-clamp-2">{item.name}</h3>
                           <div className="flex items-baseline gap-2 mt-2">
                             <span className="font-bold text-stone-900">£{displayPrice}</span>
@@ -1169,18 +1178,18 @@ async function handleCheckout(e: React.FormEvent) {
                           {hasVariants && (
                             <div className="flex flex-wrap gap-1.5 mt-2">
                               {item.variants.map((v: any) => (
-                                <button key={v.size} onClick={() => setPromoSelectedSize((prev) => ({ ...prev, [item.id]: v.size }))} className={`px-2 py-0.5 rounded-md text-[10px] font-bold border transition ${selectedSz === v.size ? "bg-amber-100 border-amber-400 text-amber-800" : "bg-stone-50 border-stone-200 text-stone-600 hover:border-amber-300"}`}>{v.size}</button>
+                                <button key={v.size} onClick={(e) => { e.stopPropagation(); setPromoSelectedSize((prev) => ({ ...prev, [item.id]: v.size })); }} className={`px-2 py-0.5 rounded-md text-[10px] font-bold border transition ${selectedSz === v.size ? "bg-amber-100 border-amber-400 text-amber-800" : "bg-stone-50 border-stone-200 text-stone-600 hover:border-amber-300"}`}>{v.size}</button>
                               ))}
                             </div>
                           )}
                           <div className="flex gap-2 mt-3">
                             {(item.buttonAction === "pre_order" || item.buttonAction === "both") && (
-                              <button onClick={() => addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz, variantData?.id || null)} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
+                              <button onClick={(e) => { e.stopPropagation(); addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz, variantData?.id || null); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
                             )}
                             {(item.buttonAction === "add_to_bag" || item.buttonAction === "both" || !item.buttonAction) && (
-                              <button onClick={() => addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz, variantData?.id || null)} className="flex-1 bg-pink-600 hover:bg-pink-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
+                              <button onClick={(e) => { e.stopPropagation(); addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz, variantData?.id || null); }} className="flex-1 bg-pink-600 hover:bg-pink-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
                             )}
-                            <button onClick={() => shareOnWhatsApp(item.name, displayPrice, item.slug)} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
+                            <button onClick={(e) => { e.stopPropagation(); shareOnWhatsApp(item.name, displayPrice, item.slug); }} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
                           </div>
                         </div>
                       </div>
@@ -1255,7 +1264,7 @@ async function handleCheckout(e: React.FormEvent) {
                     const displayPrice = variantData ? variantData.price : item.price;
                     return (
                       <div key={item.id} className="reveal group bg-white rounded-2xl border border-emerald-200/60 overflow-hidden hover:border-emerald-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: `${Math.min(idx * 40, 400)}ms` }}>
-                        <div className="aspect-square bg-emerald-50/50 relative overflow-hidden">
+                        <div className="aspect-square bg-emerald-50/50 relative overflow-hidden cursor-pointer" onClick={() => openDetailModal(item)}>
                           {item.images?.[0] ? (
                             <img src={item.images[0]} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                           ) : (
@@ -1264,8 +1273,11 @@ async function handleCheckout(e: React.FormEvent) {
                           <div className="absolute top-3 left-3 flex flex-col gap-1">
                             {discountPct > 0 && <div className="bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">-{discountPct}%</div>}
                           </div>
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <span className="bg-white/90 backdrop-blur text-stone-900 text-xs font-bold px-4 py-2 rounded-full shadow-lg">Quick View</span>
+                          </div>
                         </div>
-                        <div className="p-4">
+                        <div className="p-4 cursor-pointer" onClick={() => openDetailModal(item)}>
                           <h3 className="font-semibold text-stone-900 text-sm line-clamp-2">{item.name}</h3>
                           <div className="flex items-baseline gap-2 mt-2">
                             <span className="font-bold text-stone-900">£{displayPrice}</span>
@@ -1274,18 +1286,18 @@ async function handleCheckout(e: React.FormEvent) {
                           {hasVariants && (
                             <div className="flex flex-wrap gap-1.5 mt-2">
                               {item.variants.map((v: any) => (
-                                <button key={v.size} onClick={() => setPromoSelectedSize((prev) => ({ ...prev, [item.id]: v.size }))} className={`px-2 py-0.5 rounded-md text-[10px] font-bold border transition ${selectedSz === v.size ? "bg-emerald-100 border-emerald-400 text-emerald-800" : "bg-stone-50 border-stone-200 text-stone-600 hover:border-emerald-300"}`}>{v.size}</button>
+                                <button key={v.size} onClick={(e) => { e.stopPropagation(); setPromoSelectedSize((prev) => ({ ...prev, [item.id]: v.size })); }} className={`px-2 py-0.5 rounded-md text-[10px] font-bold border transition ${selectedSz === v.size ? "bg-emerald-100 border-emerald-400 text-emerald-800" : "bg-stone-50 border-stone-200 text-stone-600 hover:border-emerald-300"}`}>{v.size}</button>
                               ))}
                             </div>
                           )}
                           <div className="flex gap-2 mt-3">
                             {(item.buttonAction === "pre_order" || item.buttonAction === "both") && (
-                              <button onClick={() => addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz, variantData?.id || null)} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
+                              <button onClick={(e) => { e.stopPropagation(); addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz, variantData?.id || null); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
                             )}
                             {(item.buttonAction === "add_to_bag" || item.buttonAction === "both" || !item.buttonAction) && (
-                              <button onClick={() => addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz, variantData?.id || null)} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
+                              <button onClick={(e) => { e.stopPropagation(); addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz, variantData?.id || null); }} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
                             )}
-                            <button onClick={() => shareOnWhatsApp(item.name, displayPrice, item.slug)} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
+                            <button onClick={(e) => { e.stopPropagation(); shareOnWhatsApp(item.name, displayPrice, item.slug); }} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
                           </div>
                         </div>
                       </div>
@@ -1366,7 +1378,7 @@ async function handleCheckout(e: React.FormEvent) {
                   const discountPct = item.compareAtPrice ? Math.round((1 - parseFloat(item.price) / parseFloat(item.compareAtPrice)) * 100) : 0;
                   return (
                     <div key={item.id} className="reveal group bg-white rounded-2xl border border-stone-200/80 overflow-hidden hover:border-emerald-500/50 hover:shadow-2xl hover:shadow-emerald-900/10 transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: `${Math.min(idx * 40, 400)}ms` }}>
-                      <div className="aspect-square bg-gradient-to-br from-stone-50 to-stone-100 relative overflow-hidden">
+                      <div className="aspect-square bg-gradient-to-br from-stone-50 to-stone-100 relative overflow-hidden cursor-pointer" onClick={() => openDetailModal(item)}>
                         {item.images?.[0] ? (
                           <img src={item.images[0]} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                         ) : (
@@ -1384,13 +1396,11 @@ async function handleCheckout(e: React.FormEvent) {
                             </div>
                           )}
                         </div>
-                        <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 p-3">
-                          <button onClick={() => addToCart(item.id, item.name, item.price, 1, item.isDress ? "dress" : "item")} className="w-full bg-[#0b2416] text-white py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-emerald-800 transition shadow-xl">
-                            <ShoppingCart className="w-3.5 h-3.5" /> Add to cart
-                          </button>
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                          <span className="bg-white/90 backdrop-blur text-stone-900 text-xs font-bold px-4 py-2 rounded-full shadow-lg">Quick View</span>
                         </div>
                       </div>
-                      <div className="p-4">
+                      <div className="p-4 cursor-pointer" onClick={() => openDetailModal(item)}>
                         <div className="flex items-center gap-1 text-amber-500 mb-1">
                           {[...Array(5)].map((_, i) => <Star key={i} className="w-3 h-3 fill-current" />)}
                           <span className="text-[10px] text-stone-400 font-mono ml-1">(4.7)</span>
@@ -1400,9 +1410,6 @@ async function handleCheckout(e: React.FormEvent) {
                           <span className="font-display text-xl font-bold text-[#0b2416]">£{item.price}</span>
                           {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">£{item.compareAtPrice}</span>}
                         </div>
-                        <button onClick={() => addToCart(item.id, item.name, item.price, 1, item.isDress ? "dress" : "item")} className="md:hidden mt-3 w-full bg-[#0b2416] text-white py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5">
-                          <ShoppingCart className="w-3.5 h-3.5" /> Add
-                        </button>
                       </div>
                     </div>
                   );
@@ -1450,7 +1457,7 @@ async function handleCheckout(e: React.FormEvent) {
               const isPreOrder = isPreOrderCategory(item.categoryId);
               return (
                 <div key={item.id} className="reveal group bg-white rounded-2xl border border-stone-200/80 overflow-hidden hover:border-emerald-500/50 hover:shadow-2xl hover:shadow-emerald-900/10 transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: `${Math.min(idx * 40, 400)}ms` }}>
-                  <div className="aspect-square bg-gradient-to-br from-stone-50 to-stone-100 relative overflow-hidden">
+                  <div className="aspect-square bg-gradient-to-br from-stone-50 to-stone-100 relative overflow-hidden cursor-pointer" onClick={() => openDetailModal(item)}>
                     {item.images?.[0] ? (
                       <img src={item.images[0]} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                     ) : (
@@ -1469,38 +1476,21 @@ async function handleCheckout(e: React.FormEvent) {
                         <Flame className="w-3 h-3" /> Low stock
                       </div>
                     )}
-                    <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 p-3 flex gap-2">
-                      <button onClick={() => addToCart(item.id, item.name, item.price, 1, item.isDress ? "dress" : "item")} className={`flex-1 ${isPreOrder ? "bg-amber-600 hover:bg-amber-700" : "bg-[#0b2416] hover:bg-emerald-800"} text-white py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition shadow-xl`}>
-                        {isPreOrder ? <Clock className="w-3.5 h-3.5" /> : <ShoppingCart className="w-3.5 h-3.5" />}
-                        {isPreOrder ? "PRE-ORDER" : "ADD TO BAG"}
-                      </button>
-                      <button onClick={() => shareOnWhatsApp(item.name, item.price, item.slug)} title="Share on WhatsApp" className="p-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition shadow-xl">
-                        <Share2 className="w-4 h-4" />
-                      </button>
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                      <span className="bg-white/90 backdrop-blur text-stone-900 text-xs font-bold px-4 py-2 rounded-full shadow-lg">Quick View</span>
                     </div>
                   </div>
-                  <div className="p-4">
+                  <div className="p-4 cursor-pointer" onClick={() => openDetailModal(item)}>
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-1 text-amber-500">
                         {[...Array(5)].map((_, i) => <Star key={i} className="w-3 h-3 fill-current" />)}
                         <span className="text-[10px] text-stone-400 font-mono ml-1">({(4.5 + (idx % 3) * 0.1).toFixed(1)})</span>
                       </div>
-                      <button onClick={() => shareOnWhatsApp(item.name, item.price, item.slug)} title="Share" className="text-emerald-600 hover:text-emerald-700 p-1">
-                        <Share2 className="w-3.5 h-3.5" />
-                      </button>
                     </div>
                     <h3 className="font-display text-[15px] font-semibold text-[#0b2416] line-clamp-2 leading-snug">{item.name}</h3>
                     <div className="flex items-baseline gap-2 mt-2">
                       <span className="font-display text-xl font-bold text-[#0b2416]">£{item.price}</span>
                       {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">£{item.compareAtPrice}</span>}
-                    </div>
-                    <div className="md:hidden flex gap-2 mt-3">
-                      <button onClick={() => addToCart(item.id, item.name, item.price, 1, item.isDress ? "dress" : "item")} className={`flex-1 ${isPreOrder ? "bg-amber-600" : "bg-[#0b2416]"} text-white py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5`}>
-                        {isPreOrder ? "PRE-ORDER" : "ADD TO BAG"}
-                      </button>
-                      <button onClick={() => shareOnWhatsApp(item.name, item.price, item.slug)} className="p-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-xs">
-                        <Share2 className="w-3.5 h-3.5" />
-                      </button>
                     </div>
                   </div>
                 </div>
@@ -1866,11 +1856,12 @@ async function handleCheckout(e: React.FormEvent) {
                     {detailProduct.name}
                   </h2>
                   <div className="text-xs font-mono text-stone-400 mt-1 uppercase tracking-wider">
-                    {detailProduct.type || "Traditional"}
+                    {detailProduct.isDress ? (detailProduct.type || "Traditional") : (detailProduct.buttonAction === "pre_order" ? "Pre-Order" : detailProduct.buttonAction === "both" ? "Pre-Order / Add to Bag" : "Add to Bag")}
                   </div>
                 </div>
 
-                {/* Important Color Warning Box (Exact as Image) */}
+                {/* Important Color Warning Box — only for dresses */}
+                {detailProduct.isDress && (
                 <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-amber-950 space-y-1.5 shadow-sm">
                   <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-amber-900">
                     <span className="text-amber-600">⚠️</span> Important:
@@ -1884,38 +1875,41 @@ async function handleCheckout(e: React.FormEvent) {
                     </div>
                   )}
                 </div>
+                )}
 
                 {/* Price */}
-                <div className="flex items-baseline gap-3 pt-1">
-                  <span className="font-editorial text-3xl font-bold text-stone-900">
-                    £{selectedSize && getSizePrice(detailProduct, selectedSize) ? getSizePrice(detailProduct, selectedSize) : detailProduct.price}
-                  </span>
-                  {selectedSize && getSizePrice(detailProduct, selectedSize) && detailProduct.compareAtPrice && (
-                    <span className="text-base text-stone-400 line-through">
-                      £{detailProduct.compareAtPrice}
-                    </span>
-                  )}
-                  {(!selectedSize || !getSizePrice(detailProduct, selectedSize)) && detailProduct.compareAtPrice && (
-                    <span className="text-base text-stone-400 line-through">
-                      £{detailProduct.compareAtPrice}
-                    </span>
-                  )}
-                  {selectedSize && getSizePrice(detailProduct, selectedSize) && (
-                    <span className="text-[10px] text-emerald-600 font-semibold font-mono bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                      Size: {selectedSize}
-                    </span>
-                  )}
-                </div>
+                {(() => {
+                  const isItemWithVariants = detailProduct.variants && detailProduct.variants.length > 0 && !detailProduct.isDress;
+                  const modalPrice = isItemWithVariants && detailSelectedVariant ? detailSelectedVariant.price : (selectedSize && getSizePrice(detailProduct, selectedSize) ? getSizePrice(detailProduct, selectedSize) : detailProduct.price);
+                  return (
+                    <div className="flex items-baseline gap-3 pt-1">
+                      <span className="font-editorial text-3xl font-bold text-stone-900">£{modalPrice}</span>
+                      {detailProduct.compareAtPrice && <span className="text-base text-stone-400 line-through">£{detailProduct.compareAtPrice}</span>}
+                      {isItemWithVariants && detailSelectedVariant && (
+                        <span className="text-[10px] text-emerald-600 font-semibold font-mono bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                          {detailSelectedVariant.size}
+                        </span>
+                      )}
+                      {!isItemWithVariants && selectedSize && getSizePrice(detailProduct, selectedSize) && (
+                        <span className="text-[10px] text-emerald-600 font-semibold font-mono bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                          Size: {selectedSize}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })()}
 
                 {/* Material tag */}
+                {detailProduct.isDress && (
                 <div className="flex items-center gap-2">
                   <span className="bg-stone-100 text-stone-600 border border-stone-200 text-xs px-3 py-1 rounded-lg font-medium">
                     cotton
                   </span>
                 </div>
+                )}
 
-                {/* Available Sizes */}
-                {parseSizes(detailProduct.sizes).length > 0 && (
+                {/* Available Sizes — Dress Sizes */}
+                {!detailProduct.isDress && parseSizes(detailProduct.sizes).length > 0 && (
                   <div>
                     <label className="block text-xs font-mono uppercase tracking-wider text-stone-500 mb-2">Available Sizes:</label>
                     <div className="flex flex-wrap gap-2">
@@ -1945,6 +1939,32 @@ async function handleCheckout(e: React.FormEvent) {
                   </div>
                 )}
 
+                {/* Item Variant Selector (grams/feet/cm) */}
+                {detailProduct.variants && detailProduct.variants.length > 0 && !detailProduct.isDress && (
+                  <div>
+                    <label className="block text-xs font-mono uppercase tracking-wider text-stone-500 mb-2">Select Size / Weight:</label>
+                    <div className="flex flex-wrap gap-2">
+                      {detailProduct.variants.map((v: any) => (
+                        <button
+                          key={v.id}
+                          type="button"
+                          onClick={() => { setDetailSelectedVariant(v); setSelectedSize(v.size); }}
+                          className={`px-3 py-1.5 border rounded-lg text-xs font-semibold transition flex flex-col items-center ${
+                            detailSelectedVariant?.id === v.id
+                              ? "bg-amber-500 text-white border-amber-500 shadow-md"
+                              : "bg-stone-100 text-stone-700 border-stone-200 hover:border-amber-400"
+                          }`}
+                        >
+                          <span>{v.size}</span>
+                          <span className={`text-[9px] font-mono ${detailSelectedVariant?.id === v.id ? "text-amber-100" : "text-emerald-600"}`}>
+                            £{v.price}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Stock info */}
                 <div className="text-xs font-semibold text-rose-600 flex items-center gap-1">
                   Only {detailProduct.stock || 4} left in stock!
@@ -1965,11 +1985,18 @@ async function handleCheckout(e: React.FormEvent) {
                   <button
                     type="button"
                     onClick={() => {
+                      const isItemWithVariants = detailProduct.variants && detailProduct.variants.length > 0 && !detailProduct.isDress;
                       if (parseSizes(detailProduct.sizes).length > 0 && !selectedSize) {
                         return alert("⚠️ Please select a size before adding to bag");
                       }
-                      const effPrice = getEffectivePrice(detailProduct, selectedSize);
-                      addToCart(detailProduct.id, `${detailProduct.name} (${selectedColor || 'Default'})`, effPrice, detailQty, detailProduct.isDress ? "dress" : "item", selectedColor, selectedSize);
+                      if (isItemWithVariants && !detailSelectedVariant) {
+                        return alert("⚠️ Please select a size/weight before adding to bag");
+                      }
+                      const effPrice = isItemWithVariants && detailSelectedVariant ? detailSelectedVariant.price : getEffectivePrice(detailProduct, selectedSize);
+                      const vName = isItemWithVariants && detailSelectedVariant ? detailSelectedVariant.size : selectedColor;
+                      const vSize = isItemWithVariants && detailSelectedVariant ? detailSelectedVariant.size : selectedSize;
+                      const vId = isItemWithVariants && detailSelectedVariant ? detailSelectedVariant.id : null;
+                      addToCart(detailProduct.id, `${detailProduct.name} (${vName || 'Default'})`, effPrice, detailQty, detailProduct.isDress ? "dress" : "item", vName, vSize, vId);
                       setDetailProduct(null);
                     }}
                     className={`w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition shadow-lg uppercase tracking-wider ${
@@ -1988,16 +2015,20 @@ async function handleCheckout(e: React.FormEvent) {
                   <button
                     type="button"
                     onClick={() => {
+                      const isItemWithVariants = detailProduct.variants && detailProduct.variants.length > 0 && !detailProduct.isDress;
                       if (parseSizes(detailProduct.sizes).length > 0 && !selectedSize) {
                         return alert("⚠️ Please select a size before ordering");
+                      }
+                      if (isItemWithVariants && !detailSelectedVariant) {
+                        return alert("⚠️ Please select a size/weight before ordering");
                       }
                       const prefix = isPreOrder(detailProduct) ? "PRE-ORDER" : "BUY NOW";
                       const name = detailProduct.name;
                       const img = selectedImage || detailProduct.images?.[0] || '';
-                      const clr = selectedColor || '-';
-                      const sz = selectedSize || '-';
-                      const effPrice2 = getEffectivePrice(detailProduct, selectedSize);
-                      const msg = `${prefix}\n\nItem: ${name}\nColour: ${clr}\nSize: ${sz}\nQty: ${detailQty}\nPrice: £${effPrice2}\nImage: ${img}`;
+                      const clr = isItemWithVariants && detailSelectedVariant ? detailSelectedVariant.size : (selectedColor || '-');
+                      const sz = isItemWithVariants && detailSelectedVariant ? detailSelectedVariant.size : (selectedSize || '-');
+                      const effPrice2 = isItemWithVariants && detailSelectedVariant ? detailSelectedVariant.price : getEffectivePrice(detailProduct, selectedSize);
+                      const msg = `${prefix}\n\nItem: ${name}\nSize: ${sz}\nQty: ${detailQty}\nPrice: £${effPrice2}\nImage: ${img}`;
                       window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, "_blank");
                     }}
                     className="w-full bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition uppercase tracking-wider"
@@ -2009,11 +2040,19 @@ async function handleCheckout(e: React.FormEvent) {
                 {/* Key Highlights */}
                 <div className="pt-4 border-t border-stone-100 space-y-2">
                   <h4 className="font-semibold text-xs uppercase tracking-wider text-stone-900 font-mono">Key Highlights</h4>
-                  <ul className="text-xs text-stone-600 space-y-1.5 list-disc list-inside">
-                    <li>Authentic Traditional Kerala Weave</li>
-                    <li>Soft, breathable cotton fabric</li>
-                    <li>Fast UK Dispatch & Cash on Delivery</li>
-                  </ul>
+                  {detailProduct.isDress ? (
+                    <ul className="text-xs text-stone-600 space-y-1.5 list-disc list-inside">
+                      <li>Authentic Traditional Kerala Weave</li>
+                      <li>Soft, breathable cotton fabric</li>
+                      <li>Fast UK Dispatch & Cash on Delivery</li>
+                    </ul>
+                  ) : (
+                    <ul className="text-xs text-stone-600 space-y-1.5 list-disc list-inside">
+                      <li>Authentic Kerala Pookkalam Art</li>
+                      <li>Fresh, vibrant floral arrangements</li>
+                      <li>Fast UK Dispatch</li>
+                    </ul>
+                  )}
                 </div>
               </div>
             </div>
