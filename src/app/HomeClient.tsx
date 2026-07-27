@@ -304,6 +304,7 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
   }, 0);
 
   const filteredDresses = dresses.filter((d) => {
+    if (d.type === "fresh_pookkal") return false;
     const matchesFilter = dressFilter === "all" || d.type === dressFilter;
     const q = searchQuery.toLowerCase();
     const matchesSearch = !searchQuery ||
