@@ -646,37 +646,38 @@ async function handleCheckout(e: React.FormEvent) {
         </div>
       )}
       {/* Full Width Hero Carousel */}
-      <section id="home" className="relative overflow-hidden h-[580px] sm:h-[600px] md:h-[620px] flex items-center bg-[#0b2416] text-white">
+      <section id="home" className="relative overflow-hidden h-[520px] sm:h-[560px] md:h-[620px] lg:h-[640px] flex items-center bg-[#0b2416] text-white">
         {/* Full-width Background Hero Images */}
         {heroSlides.map((slide, i) => (
           <div
             key={slide.id || i}
             className={`absolute inset-0 transition-opacity duration-1000 ${
-              i === heroIndex ? "opacity-100 z-0 scale-100" : "opacity-0 -z-10 scale-105"
+              i === heroIndex ? "opacity-100 z-0" : "opacity-0 -z-10"
             }`}
           >
             {slide.image ? (
-              <img src={slide.image} alt={slide.title || ""} className="w-full h-full object-cover object-[80%_center] md:object-center" />
+              <img src={slide.image} alt={slide.title || ""} className="w-full h-full object-cover object-center" />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-emerald-950 via-forest-900 to-amber-950" />
             )}
-            {/* Dark luxury gradient overlays for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/30" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20" />
+            {/* Strong left overlay for text readability */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/20" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10" />
           </div>
         ))}
 
         {/* Hero Content Container */}
-        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 w-full">
-          <div className="max-w-3xl">
-            <div className="flex items-center gap-3 mb-6">
+        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 w-full">
+          <div className="max-w-2xl">
+            {/* Badges */}
+            <div className="flex flex-wrap items-center gap-2.5 mb-5">
               {(heroSlides[heroIndex]?.badgeText || settings.hero_badge_text) && (
-              <span className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.22em] text-amber-300 bg-amber-400/20 border border-amber-400/30 rounded-full px-3.5 py-1.5 backdrop-blur-md font-semibold">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" /> {heroSlides[heroIndex]?.badgeText || settings.hero_badge_text || "Authentic Kerala Store · UK Delivery"}
+              <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.2em] text-amber-300 bg-amber-500/20 border border-amber-400/30 rounded-full px-3 py-1.5 backdrop-blur-sm font-semibold">
+                <Sparkles className="w-3 h-3 text-amber-400" /> {heroSlides[heroIndex]?.badgeText || settings.hero_badge_text || "Authentic Kerala Store · UK Delivery"}
               </span>
               )}
               {settings.hero_viewers_text !== "" && (
-              <span className="hidden sm:flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.22em] text-emerald-300 bg-emerald-400/20 border border-emerald-400/30 rounded-full px-3.5 py-1.5 backdrop-blur-md font-semibold">
+              <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.2em] text-emerald-300 bg-emerald-500/20 border border-emerald-400/30 rounded-full px-3 py-1.5 backdrop-blur-sm font-semibold">
                 <span className="relative flex h-1.5 w-1.5">
                   <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping"></span>
                   <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400"></span>
@@ -686,45 +687,48 @@ async function handleCheckout(e: React.FormEvent) {
               )}
             </div>
 
+            {/* Title */}
             <h1 
               style={{ 
                 color: heroSlides[heroIndex]?.titleColor || "#ffffff",
                 fontSize: heroSlides[heroIndex]?.titleSize ? `${heroSlides[heroIndex].titleSize}px` : undefined,
                 fontFamily: heroSlides[heroIndex]?.titleFont || undefined,
               }}
-              className="font-editorial font-bold leading-[1.02] tracking-tight drop-shadow-md text-[clamp(28px,5vw,72px)]"
+              className="font-editorial font-bold leading-[1.05] tracking-tight drop-shadow-lg text-[clamp(32px,5.5vw,68px)]"
             >
               {heroSlides[heroIndex]?.title || "Grand Onam & Kerala Festive Collection 2026"}
             </h1>
 
+            {/* Subtitle */}
             <p 
               style={{ 
                 color: heroSlides[heroIndex]?.subtitleColor || "#ffffffcc",
                 fontSize: heroSlides[heroIndex]?.subtitleSize ? `${heroSlides[heroIndex].subtitleSize}px` : undefined,
                 fontFamily: heroSlides[heroIndex]?.subtitleFont || undefined,
               }}
-              className="mt-6 max-w-2xl leading-relaxed font-light drop-shadow-sm text-[clamp(14px,2.5vw,20px)]"
+              className="mt-4 max-w-xl leading-relaxed font-light drop-shadow-sm text-[clamp(13px,2vw,18px)] opacity-90"
             >
               {heroSlides[heroIndex]?.subtitle || "Authentic Kasavu sarees, shirts, kids attire & traditional Kerala groceries delivered straight to your doorstep across the UK."}
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-4 items-center">
+            {/* CTA Buttons */}
+            <div className="mt-7 flex flex-wrap gap-3 items-center">
               <button
                 onClick={() => handleExploreSlide(heroSlides[heroIndex])}
                 style={{ 
                   backgroundColor: heroSlides[heroIndex]?.btnBgColor || "#f59e0b",
                   color: heroSlides[heroIndex]?.btnTextColor || "#1c1917"
                 }}
-                className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-full font-bold text-base transition-all shadow-xl hover:scale-105 cursor-pointer"
+                className="group inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-bold text-sm sm:text-base transition-all shadow-xl hover:scale-105 hover:shadow-2xl cursor-pointer"
               >
                 {heroSlides[heroIndex]?.buttonText || "Explore Collection"}
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
               </button>
 
               <a
                 href={whatsappOrderLink}
                 target="_blank"
-                className="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-md border border-white/30 text-white px-7 py-4 rounded-full font-semibold transition hover:scale-105"
+                className="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/25 text-white px-6 py-3.5 rounded-full font-semibold text-sm sm:text-base transition hover:scale-105"
               >
                 <Phone className="w-4 h-4 text-emerald-400" />
                 WhatsApp Order
@@ -732,10 +736,10 @@ async function handleCheckout(e: React.FormEvent) {
             </div>
 
             {/* Trust strip */}
-            <div className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-3 text-xs md:text-sm text-emerald-100/90 font-medium pt-4 border-t border-white/15">
-              {(settings.hero_trust_1 || "Free UK delivery over £30") && <div className="flex items-center gap-2"><Truck className="w-4 h-4 text-amber-400" /> {settings.hero_trust_1 || "Free UK delivery over £30"}</div>}
-              {(settings.hero_trust_2 || "Cash on Delivery Available") && <div className="flex items-center gap-2"><Shield className="w-4 h-4 text-amber-400" /> {settings.hero_trust_2 || "Cash on Delivery Available"}</div>}
-              {(settings.hero_trust_3 || "100% Authentic Products") && <div className="flex items-center gap-2"><Leaf className="w-4 h-4 text-amber-400" /> {settings.hero_trust_3 || "100% Authentic Products"}</div>}
+            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-[11px] sm:text-xs text-emerald-100/80 font-medium pt-4 border-t border-white/10">
+              {(settings.hero_trust_1 || "Free UK delivery over £30") && <div className="flex items-center gap-1.5"><Truck className="w-3.5 h-3.5 text-amber-400" /> {settings.hero_trust_1 || "Free UK delivery over £30"}</div>}
+              {(settings.hero_trust_2 || "Cash on Delivery Available") && <div className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5 text-amber-400" /> {settings.hero_trust_2 || "Cash on Delivery Available"}</div>}
+              {(settings.hero_trust_3 || "100% Authentic Products") && <div className="flex items-center gap-1.5"><Leaf className="w-3.5 h-3.5 text-amber-400" /> {settings.hero_trust_3 || "100% Authentic Products"}</div>}
             </div>
           </div>
         </div>
