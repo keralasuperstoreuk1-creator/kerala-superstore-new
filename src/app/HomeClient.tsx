@@ -64,6 +64,7 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [detailQty, setDetailQty] = useState<number>(1);
   const [zoomOpen, setZoomOpen] = useState<boolean>(false);
   const [promoSelectedSize, setPromoSelectedSize] = useState<Record<number, string>>({});
+  const [promoSelectedColor, setPromoSelectedColor] = useState<Record<number, string>>({});
   const [detailSelectedVariant, setDetailSelectedVariant] = useState<any>(null);
 
 
@@ -1275,14 +1276,17 @@ async function handleCheckout(e: React.FormEvent) {
               {freshProducts.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                   {freshProducts.slice(0, 8).map((item, idx) => {
+                    const isDress = !!(item.type);
                     const discountPct = item.compareAtPrice ? Math.round((1 - parseFloat(item.price) / parseFloat(item.compareAtPrice)) * 100) : 0;
-                    const hasVariants = item.variants && item.variants.length > 0;
-                    const selectedSz = promoSelectedSize[item.id] || (hasVariants ? item.variants[0].size : "");
-                    const variantData = hasVariants ? item.variants.find((v: any) => v.size === selectedSz) : null;
-                    const displayPrice = variantData ? variantData.price : item.price;
-                    const hasColorVariants = hasVariants && item.variants.some((v: any) => v.color && v.images && v.images[0]);
-                    const activeColorVariant = hasColorVariants ? (item.variants.find((v: any) => v.size === selectedSz && v.color && v.images && v.images[0]) || null) : null;
-                    const displayImage = activeColorVariant ? activeColorVariant.images[0] : (item.images?.[0] || null);
+                    const dressSizes = isDress ? (item.sizes || []) : (item.variants ? item.variants.map((v: any) => v.size).filter((s: string, i: number, a: string[]) => a.indexOf(s) === i) : []);
+                    const allSizes = isDress ? dressSizes : dressSizes;
+                    const selectedSz = promoSelectedSize[item.id] || (allSizes[0] || "");
+                    const displayPrice = isDress ? (item.sizePrices?.[selectedSz] || item.price) : ((item.variants && item.variants.find((v: any) => v.size === selectedSz))?.price || item.price);
+                    const dressColors = isDress ? (item.colorVariants || []) : [];
+                    const selectedCol = promoSelectedColor[item.id] || (dressColors.find((c: any) => c.isDefault)?.color || dressColors[0]?.color || "");
+                    const activeColorVariant = isDress ? dressColors.find((c: any) => c.color === selectedCol) || null : (item.variants && item.variants.find((v: any) => v.size === selectedSz && v.color && v.images && v.images[0]) || null);
+                    const displayImage = activeColorVariant?.image || activeColorVariant?.images?.[0] || item.images?.[0] || null;
+                    const effAction = isDress ? (item.orderType || "add_to_bag") : (item.buttonAction || "add_to_bag");
                     return (
                       <div key={item.id} className="reveal group bg-white rounded-2xl border border-emerald-200/60 overflow-hidden hover:border-emerald-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: `${Math.min(idx * 40, 400)}ms` }}>
                         <div className="aspect-square bg-emerald-50/50 relative overflow-hidden cursor-pointer" onClick={() => openDetailModal(item)}>
@@ -1304,27 +1308,36 @@ async function handleCheckout(e: React.FormEvent) {
                             <span className="font-bold text-stone-900">£{displayPrice}</span>
                             {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">£{item.compareAtPrice}</span>}
                           </div>
-                          {hasVariants && (
+                          {allSizes.length > 0 && (
                             <div className="flex flex-wrap gap-1.5 mt-2">
-                              {item.variants.map((v: any) => (
-                                <button key={v.size} onClick={(e) => { e.stopPropagation(); setPromoSelectedSize((prev) => ({ ...prev, [item.id]: v.size })); }} className={`px-2 py-0.5 rounded-md text-[10px] font-bold border transition ${selectedSz === v.size ? "bg-emerald-100 border-emerald-400 text-emerald-800" : "bg-stone-50 border-stone-200 text-stone-600 hover:border-emerald-300"}`}>{v.size}</button>
+                              {allSizes.map((sz: string) => (
+                                <button key={sz} onClick={(e) => { e.stopPropagation(); setPromoSelectedSize((prev) => ({ ...prev, [item.id]: sz })); }} className={`px-2 py-0.5 rounded-md text-[10px] font-bold border transition ${selectedSz === sz ? "bg-emerald-100 border-emerald-400 text-emerald-800" : "bg-stone-50 border-stone-200 text-stone-600 hover:border-emerald-300"}`}>{sz}</button>
                               ))}
                             </div>
                           )}
-                          {hasColorVariants && (
-                            <div className="flex items-center gap-1.5 mt-2">
-                              {item.variants.filter((v: any) => v.color && v.colorCode).reduce((acc: any[], v: any) => { if (!acc.find((a: any) => a.color === v.color)) acc.push(v); return acc; }, []).map((cv: any) => (
-                                <button key={cv.color} onClick={(e) => { e.stopPropagation(); setPromoSelectedSize((prev) => ({ ...prev, [item.id]: cv.size })); }} title={cv.color} className={`w-5 h-5 rounded-full border-2 transition ${selectedSz === cv.size ? "border-emerald-500 scale-125 shadow-md" : "border-stone-300 hover:scale-110"}`} style={{ backgroundColor: cv.colorCode }} />
+                          {dressColors.length > 0 && (
+                            <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                              {dressColors.map((cv: any) => (
+                                <button key={cv.color} onClick={(e) => { e.stopPropagation(); setPromoSelectedColor((prev) => ({ ...prev, [item.id]: cv.color })); }} title={cv.color} className={`w-5 h-5 rounded-full border-2 transition ${selectedCol === cv.color ? "border-emerald-500 scale-125 shadow-md" : "border-stone-300 hover:scale-110"}`} style={{ backgroundColor: cv.image ? undefined : "#ccc" }}>
+                                  {cv.image && <img src={cv.image} alt="" className="w-full h-full rounded-full object-cover" />}
+                                </button>
                               ))}
                               {activeColorVariant?.color && <span className="text-[9px] text-stone-500 font-mono">{activeColorVariant.color}</span>}
                             </div>
                           )}
+                          {!isDress && item.variants && item.variants.filter((v: any) => v.color && v.colorCode).reduce((acc: any[], v: any) => { if (!acc.find((a: any) => a.color === v.color)) acc.push(v); return acc; }, []).length > 0 && !dressColors.length && (
+                            <div className="flex items-center gap-1.5 mt-2">
+                              {item.variants.filter((v: any) => v.color && v.colorCode).reduce((acc: any[], v: any) => { if (!acc.find((a: any) => a.color === v.color)) acc.push(v); return acc; }, []).map((cv: any) => (
+                                <button key={cv.color} onClick={(e) => { e.stopPropagation(); setPromoSelectedSize((prev) => ({ ...prev, [item.id]: cv.size })); }} title={cv.color} className={`w-5 h-5 rounded-full border-2 transition ${selectedSz === cv.size ? "border-emerald-500 scale-125 shadow-md" : "border-stone-300 hover:scale-110"}`} style={{ backgroundColor: cv.colorCode }} />
+                              ))}
+                            </div>
+                          )}
                           <div className="flex gap-2 mt-3">
-                            {(item.buttonAction === "pre_order" || item.buttonAction === "both") && (
-                              <button onClick={(e) => { e.stopPropagation(); addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz, variantData?.id || null); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
+                            {(effAction === "pre_order" || effAction === "both") && (
+                              <button onClick={(e) => { e.stopPropagation(); addToCart(item.id, item.name, displayPrice, 1, isDress ? "dress" : "item", activeColorVariant?.color || null, selectedSz, null); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
                             )}
-                            {(item.buttonAction === "add_to_bag" || item.buttonAction === "both" || !item.buttonAction) && (
-                              <button onClick={(e) => { e.stopPropagation(); addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz, variantData?.id || null); }} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
+                            {(effAction === "add_to_bag" || effAction === "both" || !effAction) && (
+                              <button onClick={(e) => { e.stopPropagation(); addToCart(item.id, item.name, displayPrice, 1, isDress ? "dress" : "item", activeColorVariant?.color || null, selectedSz, null); }} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
                             )}
                             <button onClick={(e) => { e.stopPropagation(); shareOnWhatsApp(item.name, displayPrice, item.slug); }} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
                           </div>

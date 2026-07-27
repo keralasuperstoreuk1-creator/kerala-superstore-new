@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
 import {
   LayoutDashboard, Layers, FolderOpen, Package, ImageIcon,
   ShoppingBag, Settings, Store, Tag, Shirt, Trophy, ExternalLink,
-  Menu, X, Sparkles, Type
+  Menu, X, Sparkles, Type, Flower2
 } from "lucide-react";
 
 const navGroups = [
@@ -22,6 +22,7 @@ const navGroups = [
     items: [
       { href: "/admin/items", label: "All Products", icon: Package },
       { href: "/admin/dresses", label: "Onam Outfits", icon: Shirt },
+      { href: "/admin/fresh-pookkal", label: "Fresh Pookkal", icon: Flower2 },
       { href: "/admin/categories", label: "Categories", icon: FolderOpen },
       { href: "/admin/collections", label: "Collections", icon: Layers },
       { href: "/admin/offers", label: "Offers & Discounts", icon: Tag },
