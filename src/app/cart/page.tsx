@@ -31,7 +31,14 @@ export default function CartPage() {
     fetchCart();
   }
 
-  const total = cartItems.reduce((sum, item) => sum + parseFloat(item.item?.price || 0) * item.quantity, 0);
+  function getUnitPrice(cartItem: any): string {
+    const variantPrice = cartItem.variant?.price;
+    const sizeKey = cartItem.variantSize || cartItem.variant?.size || null;
+    const sizePrice = sizeKey && cartItem.item?.sizePrices?.[sizeKey] ? cartItem.item.sizePrices[sizeKey] : null;
+    return variantPrice || sizePrice || cartItem.item?.price || "0";
+  }
+
+  const total = cartItems.reduce((sum, item) => sum + parseFloat(getUnitPrice(item)) * item.quantity, 0);
 
   if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
@@ -66,7 +73,10 @@ export default function CartPage() {
                   {cartItem.variant && (
                     <p className="text-sm text-slate-500">{cartItem.variant.color} {cartItem.variant.size && `- ${cartItem.variant.size}`}</p>
                   )}
-                  <p className="font-medium text-slate-900 mt-1">£{cartItem.item?.price}</p>
+                  {!cartItem.variant && cartItem.variantSize && (
+                    <p className="text-sm text-slate-500">Size: {cartItem.variantSize}</p>
+                  )}
+                  <p className="font-medium text-slate-900 mt-1">£{getUnitPrice(cartItem)}</p>
                   {cartItem.item?.description && (
                     <p className="text-sm text-slate-600 mt-1 line-clamp-2">{cartItem.item?.description}</p>
                   )}
@@ -77,7 +87,7 @@ export default function CartPage() {
                   <button onClick={() => updateQuantity(cartItem.id, cartItem.quantity + 1)} className="px-3 py-2 hover:bg-slate-50"><Plus className="w-4 h-4" /></button>
                 </div>
                 <div className="text-right min-w-[5rem]">
-                  <p className="font-bold text-slate-900">£{(parseFloat(cartItem.item?.price || 0) * cartItem.quantity).toFixed(2)}</p>
+                  <p className="font-bold text-slate-900">£{(parseFloat(getUnitPrice(cartItem)) * cartItem.quantity).toFixed(2)}</p>
                 </div>
                 <button onClick={() => removeItem(cartItem.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 className="w-5 h-5" /></button>
               </div>

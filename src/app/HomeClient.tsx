@@ -233,11 +233,11 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
     setCart(data);
   }
 
-  async function addToCart(itemId: number, name: string, price: string, quantity = 1, itemType = "item", variantName: string | null = null, variantSize: string | null = null) {
+  async function addToCart(itemId: number, name: string, price: string, quantity = 1, itemType = "item", variantName: string | null = null, variantSize: string | null = null, variantId: number | null = null) {
     await fetch("/api/cart", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ itemId, quantity, itemType, variantName, variantSize }),
+      body: JSON.stringify({ itemId, quantity, itemType, variantName, variantSize, variantId }),
     });
     fetchCart();
     setCartOpen(true);
@@ -289,10 +289,15 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
     return col?.orderType === "pre_order";
   }
 
+  function getCartUnitPrice(cartItem: any): string {
+    const variantPrice = cartItem.variant?.price;
+    const sizeKey = cartItem.variantSize || cartItem.variant?.size || null;
+    const sizePrice = sizeKey && cartItem.item?.sizePrices?.[sizeKey] ? cartItem.item.sizePrices[sizeKey] : null;
+    return variantPrice || sizePrice || cartItem.item?.price || "0";
+  }
+
   const cartTotal = cart.reduce((sum, item) => {
-    const sizeKey = item.variantSize || item.variant?.size || null;
-    const sizePrice = sizeKey && item.item?.sizePrices?.[sizeKey] ? item.item.sizePrices[sizeKey] : null;
-    return sum + parseFloat(sizePrice || item.item?.price || 0) * item.quantity;
+    return sum + parseFloat(getCartUnitPrice(item)) * item.quantity;
   }, 0);
 
   const filteredDresses = dresses.filter((d) => {
@@ -390,7 +395,7 @@ async function handleCheckout(e: React.FormEvent) {
     try {
       const cartData = cart.map((item) => {
         const sizeKey = item.variantSize || item.variant?.size || null;
-        const sizePrice = sizeKey && item.item?.sizePrices?.[sizeKey] ? item.item.sizePrices[sizeKey] : null;
+        const unitPrice = getCartUnitPrice(item);
         return {
           itemId: item.itemId,
           variantId: item.variantId,
@@ -399,7 +404,7 @@ async function handleCheckout(e: React.FormEvent) {
           color: item.variant?.color || item.variantName || null,
           size: sizeKey,
           quantity: item.quantity,
-          price: sizePrice || item.item?.price,
+          price: unitPrice,
           imageUrl: getFirstImage(item.item) || item.variant?.images?.[0] || item.item?.image || null,
         };
       });
@@ -1170,10 +1175,10 @@ async function handleCheckout(e: React.FormEvent) {
                           )}
                           <div className="flex gap-2 mt-3">
                             {(item.buttonAction === "pre_order" || item.buttonAction === "both") && (
-                              <button onClick={() => addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz)} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
+                              <button onClick={() => addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz, variantData?.id || null)} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
                             )}
                             {(item.buttonAction === "add_to_bag" || item.buttonAction === "both" || !item.buttonAction) && (
-                              <button onClick={() => addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz)} className="flex-1 bg-pink-600 hover:bg-pink-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
+                              <button onClick={() => addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz, variantData?.id || null)} className="flex-1 bg-pink-600 hover:bg-pink-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
                             )}
                             <button onClick={() => shareOnWhatsApp(item.name, displayPrice, item.slug)} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
                           </div>
@@ -1275,10 +1280,10 @@ async function handleCheckout(e: React.FormEvent) {
                           )}
                           <div className="flex gap-2 mt-3">
                             {(item.buttonAction === "pre_order" || item.buttonAction === "both") && (
-                              <button onClick={() => addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz)} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
+                              <button onClick={() => addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz, variantData?.id || null)} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
                             )}
                             {(item.buttonAction === "add_to_bag" || item.buttonAction === "both" || !item.buttonAction) && (
-                              <button onClick={() => addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz)} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
+                              <button onClick={() => addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz, variantData?.id || null)} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
                             )}
                             <button onClick={() => shareOnWhatsApp(item.name, displayPrice, item.slug)} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
                           </div>
@@ -1694,7 +1699,7 @@ async function handleCheckout(e: React.FormEvent) {
                       <p className="font-medium text-sm text-slate-900 truncate">
                         {item.item?.name} {item.variantName ? `(${item.variantName})` : ""}{item.variantSize ? ` - Size: ${item.variantSize}` : ""}
                       </p>
-                      <p className="text-xs text-slate-500">£{(() => { const sk = item.variantSize || item.variant?.size || null; const sp = sk && item.item?.sizePrices?.[sk] ? item.item.sizePrices[sk] : null; return sp || item.item?.price; })()}</p>
+                      <p className="text-xs text-slate-500">£{getCartUnitPrice(item)}</p>
                     </div>
                     <div className="flex items-center border border-slate-300 rounded-lg">
                       <button onClick={() => updateCartQty(item.id, item.quantity - 1)} className="px-2 py-1 hover:bg-slate-100 text-sm">-</button>
@@ -1757,9 +1762,7 @@ async function handleCheckout(e: React.FormEvent) {
                   <div className="bg-slate-50 p-4 rounded-lg">
                     <p className="font-medium text-slate-900 mb-2">Order Summary</p>
                     {cart.map((item) => {
-                      const sk = item.variantSize || item.variant?.size || null;
-                      const sp = sk && item.item?.sizePrices?.[sk] ? item.item.sizePrices[sk] : null;
-                      const effPrice = sp || item.item?.price || 0;
+                      const effPrice = getCartUnitPrice(item);
                       return (
                         <div key={item.id} className="flex justify-between text-sm py-1">
                           <span>{item.item?.name}{item.variantSize ? ` (${item.variantName || ''} Size: ${item.variantSize})` : ''} x{item.quantity}</span>

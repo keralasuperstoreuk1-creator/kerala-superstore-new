@@ -21,7 +21,14 @@ export default function CheckoutPage() {
     setCartItems(data);
   }
 
-  const total = cartItems.reduce((sum, item) => sum + parseFloat(item.item?.price || 0) * item.quantity, 0);
+  function getUnitPrice(cartItem: any): string {
+    const variantPrice = cartItem.variant?.price;
+    const sizeKey = cartItem.variantSize || cartItem.variant?.size || null;
+    const sizePrice = sizeKey && cartItem.item?.sizePrices?.[sizeKey] ? cartItem.item.sizePrices[sizeKey] : null;
+    return variantPrice || sizePrice || cartItem.item?.price || "0";
+  }
+
+  const total = cartItems.reduce((sum, item) => sum + parseFloat(getUnitPrice(item)) * item.quantity, 0);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -33,8 +40,10 @@ export default function CheckoutPage() {
       variantId: item.variantId,
       name: item.item?.name,
       variantName: item.variant ? `${item.variant.color || ""} ${item.variant.size || ""}`.trim() : null,
+      color: item.variant?.color || item.variantName || null,
+      size: item.variantSize || item.variant?.size || null,
       quantity: item.quantity,
-      price: item.item?.price,
+      price: getUnitPrice(item),
     }));
 
     const res = await fetch("/api/orders", {
