@@ -660,9 +660,9 @@ async function handleCheckout(e: React.FormEvent) {
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-emerald-950 via-forest-900 to-amber-950" />
             )}
-            {/* Strong left overlay for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/20" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10" />
+            {/* Strong left overlay to hide background image text, right side lighter */}
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.92) 30%, rgba(0,0,0,0.70) 55%, rgba(0,0,0,0.25) 80%, rgba(0,0,0,0.10) 100%)' }} />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10" />
           </div>
         ))}
 
