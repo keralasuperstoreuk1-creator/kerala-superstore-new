@@ -10,7 +10,7 @@ export default async function HomePage() {
     db.select().from(slides).where(eq(slides.isActive, true)).orderBy(slides.sortOrder),
     db.select().from(offers).where(eq(offers.isActive, true)).orderBy(offers.sortOrder),
     db.select().from(dresses).where(eq(dresses.isActive, true)).orderBy(dresses.sortOrder),
-    db.select().from(categories).where(eq(categories.isActive, true)).orderBy(categories.sortOrder),
+    db.select().from(categories).orderBy(categories.sortOrder),
     db.select().from(items).where(eq(items.isActive, true)).orderBy(items.sortOrder),
     db.select().from(itemVariants),
     db.select().from(winners).where(eq(winners.isActive, true)).orderBy(winners.sortOrder),

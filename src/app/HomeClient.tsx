@@ -1233,6 +1233,8 @@ async function handleCheckout(e: React.FormEvent) {
         const catId = settings.fresh_pookkal_category_id;
         let freshProducts: any[] = [];
         if (catId) freshProducts = [...freshProducts, ...items.filter((i) => String(i.categoryId) === String(catId))];
+        // Also include any dresses with type fresh_pookkal (legacy items saved via old system)
+        freshProducts = [...freshProducts, ...dresses.filter((d) => d.type === "fresh_pookkal")];
         const title = settings.fresh_pookkal_title || "Onam Fresh Pookkal";
         const desc = settings.fresh_pookkal_description || "Fresh flowers and floral arrangements to bring the spirit of Onam to your home.";
         const btnText = settings.fresh_pookkal_btn_text || "Shop Fresh Pookkal";
