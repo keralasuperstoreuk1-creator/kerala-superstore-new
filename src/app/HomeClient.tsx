@@ -1235,7 +1235,8 @@ async function handleCheckout(e: React.FormEvent) {
         const freshDressTypes = (settings.fresh_pookkal_dress_types || "").split(",").filter(Boolean);
         let freshProducts: any[] = [];
         if (catId) freshProducts = [...freshProducts, ...items.filter((i) => String(i.categoryId) === String(catId))];
-        if (freshDressTypes.length > 0) freshProducts = [...freshProducts, ...dresses.filter((d) => freshDressTypes.includes(d.type))];
+        // Always include items added via Admin → Fresh Pookkal (type="fresh_pookkal")
+        freshProducts = [...freshProducts, ...dresses.filter((d) => d.type === "fresh_pookkal" || freshDressTypes.includes(d.type))];
         const title = settings.fresh_pookkal_title || "Onam Fresh Pookkal";
         const desc = settings.fresh_pookkal_description || "Fresh flowers and floral arrangements to bring the spirit of Onam to your home.";
         const btnText = settings.fresh_pookkal_btn_text || "Shop Fresh Pookkal";
