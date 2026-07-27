@@ -57,16 +57,29 @@ export default function ItemsPage() {
     return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   }
 
+  const [uploadMsg, setUploadMsg] = useState("");
+
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
+    setUploadMsg("");
     const fd = new FormData();
     fd.append("file", file);
     fd.append("folder", "uploads/items");
-    const res = await fetch("/api/upload", { method: "POST", body: fd });
-    const data = await res.json();
-    if (data.url) setForm((f) => ({ ...f, images: [...f.images, data.url] }));
+    try {
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (data.url) {
+        setForm((f) => ({ ...f, images: [...f.images, data.url] }));
+        setUploadMsg("Image uploaded successfully!");
+        setTimeout(() => setUploadMsg(""), 3000);
+      } else {
+        setUploadMsg("Upload failed: " + (data.error || "Unknown error"));
+      }
+    } catch (err) {
+      setUploadMsg("Upload failed: Network error");
+    }
     setUploading(false);
   }
 

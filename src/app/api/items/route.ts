@@ -29,7 +29,14 @@ export async function GET(req: NextRequest) {
     }
 
     const data = await query;
-    return NextResponse.json(data);
+    const allVariants = await db.select().from(itemVariants);
+    const variantsByItem: Record<number, any[]> = {};
+    allVariants.forEach((v) => {
+      if (!variantsByItem[v.itemId]) variantsByItem[v.itemId] = [];
+      variantsByItem[v.itemId].push(v);
+    });
+    const dataWithVariants = data.map((item) => ({ ...item, variants: variantsByItem[item.id] || [] }));
+    return NextResponse.json(dataWithVariants);
   } catch (error) {
     return NextResponse.json({ error: "Failed to fetch items" }, { status: 500 });
   }

@@ -63,6 +63,7 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [detailQty, setDetailQty] = useState<number>(1);
   const [zoomOpen, setZoomOpen] = useState<boolean>(false);
+  const [promoSelectedSize, setPromoSelectedSize] = useState<Record<number, string>>({});
 
 
 
@@ -1138,6 +1139,10 @@ async function handleCheckout(e: React.FormEvent) {
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                   {pookkalamProducts.slice(0, 8).map((item, idx) => {
                     const discountPct = item.compareAtPrice ? Math.round((1 - parseFloat(item.price) / parseFloat(item.compareAtPrice)) * 100) : 0;
+                    const hasVariants = item.variants && item.variants.length > 0;
+                    const selectedSz = promoSelectedSize[item.id] || (hasVariants ? item.variants[0].size : "");
+                    const variantData = hasVariants ? item.variants.find((v: any) => v.size === selectedSz) : null;
+                    const displayPrice = variantData ? variantData.price : item.price;
                     return (
                       <div key={item.id} className="reveal group bg-white rounded-2xl border border-pink-200/60 overflow-hidden hover:border-pink-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: `${Math.min(idx * 40, 400)}ms` }}>
                         <div className="aspect-square bg-pink-50/50 relative overflow-hidden">
@@ -1153,17 +1158,24 @@ async function handleCheckout(e: React.FormEvent) {
                         <div className="p-4">
                           <h3 className="font-semibold text-stone-900 text-sm line-clamp-2">{item.name}</h3>
                           <div className="flex items-baseline gap-2 mt-2">
-                            <span className="font-bold text-stone-900">£{item.price}</span>
+                            <span className="font-bold text-stone-900">£{displayPrice}</span>
                             {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">£{item.compareAtPrice}</span>}
                           </div>
+                          {hasVariants && (
+                            <div className="flex flex-wrap gap-1.5 mt-2">
+                              {item.variants.map((v: any) => (
+                                <button key={v.size} onClick={() => setPromoSelectedSize((prev) => ({ ...prev, [item.id]: v.size }))} className={`px-2 py-0.5 rounded-md text-[10px] font-bold border transition ${selectedSz === v.size ? "bg-amber-100 border-amber-400 text-amber-800" : "bg-stone-50 border-stone-200 text-stone-600 hover:border-amber-300"}`}>{v.size}</button>
+                              ))}
+                            </div>
+                          )}
                           <div className="flex gap-2 mt-3">
                             {(item.buttonAction === "pre_order" || item.buttonAction === "both") && (
-                              <button onClick={() => addToCart(item.id, item.name, item.price, 1, "item")} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
+                              <button onClick={() => addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz)} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
                             )}
                             {(item.buttonAction === "add_to_bag" || item.buttonAction === "both" || !item.buttonAction) && (
-                              <button onClick={() => addToCart(item.id, item.name, item.price, 1, "item")} className="flex-1 bg-pink-600 hover:bg-pink-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
+                              <button onClick={() => addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz)} className="flex-1 bg-pink-600 hover:bg-pink-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
                             )}
-                            <button onClick={() => shareOnWhatsApp(item.name, item.price, item.slug)} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
+                            <button onClick={() => shareOnWhatsApp(item.name, displayPrice, item.slug)} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
                           </div>
                         </div>
                       </div>
@@ -1232,6 +1244,10 @@ async function handleCheckout(e: React.FormEvent) {
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                   {freshProducts.slice(0, 8).map((item, idx) => {
                     const discountPct = item.compareAtPrice ? Math.round((1 - parseFloat(item.price) / parseFloat(item.compareAtPrice)) * 100) : 0;
+                    const hasVariants = item.variants && item.variants.length > 0;
+                    const selectedSz = promoSelectedSize[item.id] || (hasVariants ? item.variants[0].size : "");
+                    const variantData = hasVariants ? item.variants.find((v: any) => v.size === selectedSz) : null;
+                    const displayPrice = variantData ? variantData.price : item.price;
                     return (
                       <div key={item.id} className="reveal group bg-white rounded-2xl border border-emerald-200/60 overflow-hidden hover:border-emerald-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: `${Math.min(idx * 40, 400)}ms` }}>
                         <div className="aspect-square bg-emerald-50/50 relative overflow-hidden">
@@ -1247,17 +1263,24 @@ async function handleCheckout(e: React.FormEvent) {
                         <div className="p-4">
                           <h3 className="font-semibold text-stone-900 text-sm line-clamp-2">{item.name}</h3>
                           <div className="flex items-baseline gap-2 mt-2">
-                            <span className="font-bold text-stone-900">£{item.price}</span>
+                            <span className="font-bold text-stone-900">£{displayPrice}</span>
                             {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">£{item.compareAtPrice}</span>}
                           </div>
+                          {hasVariants && (
+                            <div className="flex flex-wrap gap-1.5 mt-2">
+                              {item.variants.map((v: any) => (
+                                <button key={v.size} onClick={() => setPromoSelectedSize((prev) => ({ ...prev, [item.id]: v.size }))} className={`px-2 py-0.5 rounded-md text-[10px] font-bold border transition ${selectedSz === v.size ? "bg-emerald-100 border-emerald-400 text-emerald-800" : "bg-stone-50 border-stone-200 text-stone-600 hover:border-emerald-300"}`}>{v.size}</button>
+                              ))}
+                            </div>
+                          )}
                           <div className="flex gap-2 mt-3">
                             {(item.buttonAction === "pre_order" || item.buttonAction === "both") && (
-                              <button onClick={() => addToCart(item.id, item.name, item.price, 1, "item")} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
+                              <button onClick={() => addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz)} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
                             )}
                             {(item.buttonAction === "add_to_bag" || item.buttonAction === "both" || !item.buttonAction) && (
-                              <button onClick={() => addToCart(item.id, item.name, item.price, 1, "item")} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
+                              <button onClick={() => addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz)} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
                             )}
-                            <button onClick={() => shareOnWhatsApp(item.name, item.price, item.slug)} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
+                            <button onClick={() => shareOnWhatsApp(item.name, displayPrice, item.slug)} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
                           </div>
                         </div>
                       </div>
