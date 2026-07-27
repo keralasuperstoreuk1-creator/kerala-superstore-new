@@ -27,6 +27,7 @@ export default function SlidesPage() {
     subtitleFont: "",
     btnBgColor: "#f59e0b",
     btnTextColor: "#1c1917",
+    badgeText: "",
   });
   const [uploading, setUploading] = useState(false);
 
@@ -84,7 +85,7 @@ export default function SlidesPage() {
     }
     setShowForm(false);
     setEditing(null);
-    setForm({ title: "", subtitle: "", image: "", link: "", buttonText: "Explore Collection", sortOrder: 0, width: 1920, height: 600, isActive: true, titleColor: "#ffffff", titleSize: "72", titleFont: "", subtitleColor: "#ffffffcc", subtitleSize: "20", subtitleFont: "", btnBgColor: "#f59e0b", btnTextColor: "#1c1917" });
+    setForm({ title: "", subtitle: "", image: "", link: "", buttonText: "Explore Collection", sortOrder: 0, width: 1920, height: 600, isActive: true, titleColor: "#ffffff", titleSize: "72", titleFont: "", subtitleColor: "#ffffffcc", subtitleSize: "20", subtitleFont: "", btnBgColor: "#f59e0b", btnTextColor: "#1c1917", badgeText: "" });
     fetchData();
   }
 
@@ -114,6 +115,7 @@ export default function SlidesPage() {
       subtitleFont: s.subtitleFont || "",
       btnBgColor: s.btnBgColor || "#f59e0b",
       btnTextColor: s.btnTextColor || "#1c1917",
+      badgeText: s.badgeText || "",
     });
     setShowForm(true);
   }
@@ -137,7 +139,7 @@ export default function SlidesPage() {
           onClick={() => {
             setShowForm(true);
             setEditing(null);
-    setForm({ title: "", subtitle: "", image: "", link: "", buttonText: "Explore Collection", sortOrder: 0, width: 1920, height: 600, isActive: true, titleColor: "#ffffff", titleSize: "72", titleFont: "", subtitleColor: "#ffffffcc", subtitleSize: "20", subtitleFont: "", btnBgColor: "#f59e0b", btnTextColor: "#1c1917" });
+    setForm({ title: "", subtitle: "", image: "", link: "", buttonText: "Explore Collection", sortOrder: 0, width: 1920, height: 600, isActive: true, titleColor: "#ffffff", titleSize: "72", titleFont: "", subtitleColor: "#ffffffcc", subtitleSize: "20", subtitleFont: "", btnBgColor: "#f59e0b", btnTextColor: "#1c1917", badgeText: "" });
           }}
           className="flex items-center gap-2 bg-forest-900 text-white px-5 py-2.5 rounded-xl hover:bg-forest-800 transition font-medium shadow-sm"
         >
@@ -218,6 +220,17 @@ export default function SlidesPage() {
               rows={2}
               className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-forest-600 outline-none transition text-sm"
             />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Badge Text (above title)</label>
+            <input
+              value={form.badgeText}
+              onChange={(e) => setForm({ ...form, badgeText: e.target.value })}
+              placeholder="e.g. Authentic Kerala Store · UK Delivery (leave blank to hide)"
+              className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-forest-600 outline-none transition text-sm"
+            />
+            <p className="text-[11px] text-stone-400 mt-1">Shows above the title. Leave blank to hide this slide's badge.</p>
           </div>
 
           <div className="bg-slate-50 border border-stone-200 p-4 rounded-xl space-y-4">

@@ -670,9 +670,9 @@ async function handleCheckout(e: React.FormEvent) {
         <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 w-full">
           <div className="max-w-3xl">
             <div className="flex items-center gap-3 mb-6">
-              {(settings.hero_badge_text || "Authentic Kerala Store · UK Delivery") && (
+              {(heroSlides[heroIndex]?.badgeText || settings.hero_badge_text) && (
               <span className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.22em] text-amber-300 bg-amber-400/20 border border-amber-400/30 rounded-full px-3.5 py-1.5 backdrop-blur-md font-semibold">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" /> {settings.hero_badge_text || "Authentic Kerala Store · UK Delivery"}
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" /> {heroSlides[heroIndex]?.badgeText || settings.hero_badge_text || "Authentic Kerala Store · UK Delivery"}
               </span>
               )}
               {settings.hero_viewers_text !== "" && (

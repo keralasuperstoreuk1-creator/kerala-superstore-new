@@ -80,6 +80,7 @@ export const slides = pgTable("slides", {
   subtitleFont: varchar("subtitle_font", { length: 100 }),
   btnBgColor: varchar("btn_bg_color", { length: 20 }),
   btnTextColor: varchar("btn_text_color", { length: 20 }),
+  badgeText: varchar("badge_text", { length: 255 }),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
