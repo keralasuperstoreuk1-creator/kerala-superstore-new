@@ -142,7 +142,7 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
   }
 
   function openDetailModal(prod: any) {
-    const isDress = !!(prod.type && ['ladies','gents','kids','combo'].includes(prod.type));
+    const isDress = !!(prod.type && ['ladies','gents','kids','combo','fresh_pookkal'].includes(prod.type));
     setDetailProduct({ ...prod, isDress });
     const thumbs = getProductThumbnails(prod);
     setSelectedImage(thumbs[0]?.url || prod.images?.[0] || "");
@@ -1942,16 +1942,38 @@ async function handleCheckout(e: React.FormEvent) {
                   );
                 })()}
 
-                {/* Material tag */}
-                {detailProduct.isDress && (
-                <div className="flex items-center gap-2">
-                  <span className="bg-stone-100 text-stone-600 border border-stone-200 text-xs px-3 py-1 rounded-lg font-medium">
-                    cotton
-                  </span>
-                </div>
+                {/* Dress / Fresh Pookkal Size Selector */}
+                {detailProduct.isDress && parseSizes(detailProduct.sizes).length > 0 && (
+                  <div>
+                    <label className="block text-xs font-mono uppercase tracking-wider text-stone-500 mb-2">Available Sizes:</label>
+                    <div className="flex flex-wrap gap-2">
+                      {parseSizes(detailProduct.sizes).map((size) => {
+                        const sp = getSizePrice(detailProduct, size);
+                        return (
+                          <button
+                            key={size}
+                            type="button"
+                            onClick={() => setSelectedSize(size)}
+                            className={`px-3 py-1.5 border rounded-lg text-xs font-semibold transition flex flex-col items-center ${
+                              selectedSize === size
+                                ? "bg-emerald-600 text-white border-emerald-600"
+                                : "bg-stone-100 text-stone-700 border-stone-200 hover:border-emerald-400"
+                            }`}
+                          >
+                            <span>{size}</span>
+                            {sp && (
+                              <span className={`text-[9px] font-mono ${selectedSize === size ? "text-emerald-200" : "text-emerald-600"}`}>
+                                £{sp}
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 )}
 
-                {/* Available Sizes — Dress Sizes */}
+                {/* Available Sizes — Item Sizes */}
                 {!detailProduct.isDress && parseSizes(detailProduct.sizes).length > 0 && (
                   <div>
                     <label className="block text-xs font-mono uppercase tracking-wider text-stone-500 mb-2">Available Sizes:</label>
@@ -2083,7 +2105,13 @@ async function handleCheckout(e: React.FormEvent) {
                 {/* Key Highlights */}
                 <div className="pt-4 border-t border-stone-100 space-y-2">
                   <h4 className="font-semibold text-xs uppercase tracking-wider text-stone-900 font-mono">Key Highlights</h4>
-                  {detailProduct.isDress ? (
+                  {detailProduct.isDress && detailProduct.type === "fresh_pookkal" ? (
+                    <ul className="text-xs text-stone-600 space-y-1.5 list-disc list-inside">
+                      <li>Fresh, vibrant floral arrangements</li>
+                      <li>Hand-selected seasonal flowers</li>
+                      <li>Fast UK Dispatch</li>
+                    </ul>
+                  ) : detailProduct.isDress ? (
                     <ul className="text-xs text-stone-600 space-y-1.5 list-disc list-inside">
                       <li>Authentic Traditional Kerala Weave</li>
                       <li>Soft, breathable cotton fabric</li>
