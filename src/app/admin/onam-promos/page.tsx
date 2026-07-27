@@ -136,10 +136,10 @@ export default function OnamPromosPage() {
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Dress Types (to show)</label>
                 <div className="flex flex-wrap gap-1.5 mt-1">
-                  {["ladies", "gents", "kids", "kids-boys", "kids-girls", "combo", "fresh_pookkal"].map((t) => {
+                  {["ladies", "gents", "kids", "kids-boys", "kids-girls", "combo"].map((t) => {
                     const selected = (settings[`${promo.key}_dress_types`] || "").split(",").filter(Boolean);
                     const isSelected = selected.includes(t);
-                    const labels: Record<string,string> = {"ladies":"👩 Ladies","gents":"👨 Gents","kids":"👶 Kids","kids-boys":"👦 Boys","kids-girls":"👧 Girls","combo":"👪 Combo","fresh_pookkal":"🌿 Fresh Pookkal"};
+                    const labels: Record<string,string> = {"ladies":"👩 Ladies","gents":"👨 Gents","kids":"👶 Kids","kids-boys":"👦 Boys","kids-girls":"👧 Girls","combo":"👪 Combo"};
                     return (
                       <button
                         key={t}

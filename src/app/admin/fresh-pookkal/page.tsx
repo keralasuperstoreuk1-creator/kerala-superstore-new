@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import {
-  Plus, Pencil, Trash2, ImageIcon, X, Sparkles,
-  Palette, ShoppingBag, Clock, Search, Filter, Flower2
+  Plus, Pencil, Trash2, ImageIcon, X,
+  Palette, Search, Flower2
 } from "lucide-react";
 
 export default function FreshPookkalPage() {
@@ -16,8 +16,8 @@ export default function FreshPookkalPage() {
   const [lastSizePrices, setLastSizePrices] = useState<Record<string, string>>({});
 
   const [form, setForm] = useState({
-    name: "", type: "fresh_pookkal", description: "", price: "", compareAtPrice: "",
-    images: [] as string[], sizes: [] as string[], colors: [] as string[],
+    name: "", description: "", price: "", compareAtPrice: "",
+    images: [] as string[], sizes: [] as string[],
     colorVariants: [{ color: "", image: "", isDefault: true }],
     sizePrices: {} as Record<string, string>,
     orderType: "add_to_bag",
@@ -25,10 +25,14 @@ export default function FreshPookkalPage() {
   });
   const [uploading, setUploading] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [catId, setCatId] = useState<number>(19);
 
   const gramPresets = ["50g", "100g", "200g", "250g", "30cm", "500g", "750g", "1kg", "2kg", "5kg"];
 
-  useEffect(() => { fetchItems(); }, []);
+  useEffect(() => {
+    fetchSettings();
+    fetchItems();
+  }, []);
 
   useEffect(() => {
     if (showForm && form.colorVariants.length === 0) {
@@ -36,9 +40,24 @@ export default function FreshPookkalPage() {
     }
   }, [showForm]);
 
+  function generateSlug(name: string) {
+    return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") + "-" + Date.now();
+  }
+
+  async function fetchSettings() {
+    try {
+      const res = await fetch("/api/settings");
+      const data = await res.json();
+      if (data) {
+        const v = data.find((s: any) => s.key === "fresh_pookkal_category_id");
+        if (v?.value) setCatId(parseInt(v.value));
+      }
+    } catch (e) { console.error(e); }
+  }
+
   async function fetchItems() {
     try {
-      const res = await fetch("/api/dresses?type=fresh_pookkal");
+      const res = await fetch(`/api/items?categoryId=${catId}`);
       const data = await res.json();
       if (Array.isArray(data)) setList(data);
     } catch (e) { console.error(e); }
@@ -108,39 +127,132 @@ export default function FreshPookkalPage() {
     setForm((f) => ({ ...f, sizePrices: { ...f.sizePrices, [size]: value } }));
   }
 
+  // Convert dress-style form data to items API format (item + variants array)
+  function buildPayload() {
+    const colors = form.colorVariants.filter((c) => c.color.trim());
+    const hasColors = colors.length > 0;
+    const allSizes = form.sizes.filter((s) => s.trim());
+    const hasSizes = allSizes.length > 0;
+
+    // Generate itemVariants: if both sizes and colors exist, create all combinations
+    let variants: any[] = [];
+    if (hasSizes && hasColors) {
+      for (const sz of allSizes) {
+        for (const cv of colors) {
+          variants.push({
+            size: sz,
+            color: cv.color,
+            price: form.sizePrices[sz] || form.price,
+            images: cv.image ? [cv.image] : [],
+            stock: parseInt(String(form.stock)) || 50,
+          });
+        }
+      }
+    } else if (hasSizes) {
+      for (const sz of allSizes) {
+        variants.push({
+          size: sz,
+          price: form.sizePrices[sz] || form.price,
+            images: [],
+          stock: parseInt(String(form.stock)) || 50,
+        });
+      }
+    } else if (hasColors) {
+      for (const cv of colors) {
+        variants.push({
+          color: cv.color,
+          price: form.price,
+            images: cv.image ? [cv.image] : [],
+          stock: parseInt(String(form.stock)) || 50,
+        });
+      }
+    }
+
+    return {
+      categoryId: catId,
+      name: form.name,
+      slug: generateSlug(form.name),
+      description: form.description || null,
+      price: form.price,
+      compareAtPrice: form.compareAtPrice || null,
+      images: form.images.length > 0 ? form.images : null,
+      buttonAction: form.orderType,
+      stock: parseInt(String(form.stock)) || 0,
+      sortOrder: form.sortOrder || 0,
+      isActive: form.isActive,
+      variants,
+    };
+  }
+
+  // Reverse: convert item+variants back to dress-style form data
+  function itemToForm(item: any) {
+    const v = item.variants || [];
+    const sizes = [...new Set(v.map((x: any) => x.size).filter(Boolean))] as string[];
+    const sizePrices: Record<string, string> = {};
+    sizes.forEach((sz) => {
+      const match = v.find((x: any) => x.size === sz && x.price);
+      if (match) sizePrices[sz] = match.price;
+    });
+    const seenColors = new Set<string>();
+    const colorVariants: { color: string; image: string; isDefault: boolean }[] = [];
+    v.forEach((x: any) => {
+      if (x.color && !seenColors.has(x.color)) {
+        seenColors.add(x.color);
+        colorVariants.push({
+          color: x.color,
+          image: (x.images && x.images[0]) || "",
+          isDefault: colorVariants.length === 0,
+        });
+      }
+    });
+    if (colorVariants.length === 0) {
+      colorVariants.push({ color: "", image: "", isDefault: true });
+    }
+
+    return {
+      name: item.name || "",
+      description: item.description || "",
+      price: String(item.price || ""),
+      compareAtPrice: item.compareAtPrice ? String(item.compareAtPrice) : "",
+      images: item.images || [],
+      sizes,
+      colorVariants,
+      sizePrices,
+      orderType: item.buttonAction || "add_to_bag",
+      stock: item.stock || 50,
+      sortOrder: item.sortOrder || 0,
+      isActive: item.isActive,
+    };
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const autoColors = form.colorVariants.map((cv) => cv.color).filter(Boolean);
-    const payload = {
-      name: form.name, type: "fresh_pookkal", description: form.description,
-      price: form.price, compareAtPrice: form.compareAtPrice || null,
-      images: form.images.length > 0 ? form.images : [],
-      sizes: form.sizes || [], sizePrices: form.sizePrices || null,
-      colors: autoColors.length > 0 ? autoColors : form.colors,
-      colorVariants: form.colorVariants.length > 0 ? form.colorVariants : [],
-      orderType: form.orderType, stock: form.stock, sortOrder: form.sortOrder, isActive: form.isActive,
-    };
+    const payload = buildPayload();
+    if (!payload.name.trim()) { alert("Please enter a name"); return; }
+    if (payload.variants.length === 0 && !payload.price) { alert("Please add at least one size or color variant, or set a base price"); return; }
+
     try {
       let res;
       if (editing) {
-        res = await fetch("/api/dresses", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...payload, id: editing.id }) });
+        res = await fetch("/api/items", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...payload, id: editing.id }) });
       } else {
-        res = await fetch("/api/dresses", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+        res = await fetch("/api/items", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       }
       const data = await res.json();
       if (!res.ok) { alert("Save failed: " + (data.error || data.details || "Unknown error")); return; }
     } catch (err: any) { alert("Save failed: " + (err?.message || "Network error")); return; }
+
     setLastSizes(form.sizes);
     setLastSizePrices(form.sizePrices);
     setShowForm(false);
     setEditing(null);
-    setForm({ name: "", type: "fresh_pookkal", description: "", price: "", compareAtPrice: "", images: [], sizes: [], colors: [], colorVariants: [], sizePrices: {}, orderType: "add_to_bag", stock: 50, sortOrder: 0, isActive: true });
+    setForm({ name: "", description: "", price: "", compareAtPrice: "", images: [], sizes: [], colorVariants: [{ color: "", image: "", isDefault: true }], sizePrices: {}, orderType: "add_to_bag", stock: 50, sortOrder: 0, isActive: true });
     fetchItems();
   }
 
   async function handleDelete(id: number) {
     if (!confirm("Delete this item permanently?")) return;
-    await fetch(`/api/dresses?id=${id}`, { method: "DELETE" });
+    await fetch(`/api/items?id=${id}`, { method: "DELETE" });
     setSelectedIds((prev) => prev.filter((i) => i !== id));
     fetchItems();
   }
@@ -148,7 +260,9 @@ export default function FreshPookkalPage() {
   async function handleBulkDelete() {
     if (selectedIds.length === 0) return;
     if (!confirm(`Delete ${selectedIds.length} selected items?`)) return;
-    await fetch(`/api/dresses?ids=${selectedIds.join(",")}`, { method: "DELETE" });
+    for (const id of selectedIds) {
+      await fetch(`/api/items?id=${id}`, { method: "DELETE" });
+    }
     setSelectedIds([]);
     fetchItems();
   }
@@ -164,13 +278,7 @@ export default function FreshPookkalPage() {
 
   function openEdit(d: any) {
     setEditing(d);
-    setForm({
-      name: d.name, type: "fresh_pookkal", description: d.description || "", price: String(d.price),
-      compareAtPrice: d.compareAtPrice ? String(d.compareAtPrice) : "",
-      images: d.images || [], sizes: d.sizes || [], colors: d.colors || [],
-      colorVariants: d.colorVariants || [], sizePrices: d.sizePrices || {},
-      orderType: d.orderType || "add_to_bag", stock: d.stock || 50, sortOrder: d.sortOrder || 0, isActive: d.isActive,
-    });
+    setForm(itemToForm(d));
     setShowForm(true);
   }
 
@@ -178,6 +286,15 @@ export default function FreshPookkalPage() {
     if (searchTerm) return d.name.toLowerCase().includes(searchTerm.toLowerCase());
     return true;
   });
+
+  // Extract unique sizes & colors from variants for table display
+  function getSizes(item: any): string[] {
+    return [...new Set((item.variants || []).map((v: any) => v.size).filter(Boolean))] as string[];
+  }
+  function getColors(item: any): { color: string; image?: string }[] {
+    const seen = new Set<string>();
+    return (item.variants || []).filter((v: any) => { if (v.color && !seen.has(v.color)) { seen.add(v.color); return true; } return false; });
+  }
 
   return (
     <div className="space-y-6 animate-fade-in pb-12">
@@ -199,7 +316,7 @@ export default function FreshPookkalPage() {
               <Trash2 className="w-4 h-4" /> Delete Selected ({selectedIds.length})
             </button>
           )}
-          <button onClick={() => { setShowForm(true); setEditing(null); setForm({ name: "", type: "fresh_pookkal", description: "", price: "", compareAtPrice: "", images: [], sizes: [...lastSizes], colors: [], colorVariants: [{ color: "", image: "", isDefault: true }], sizePrices: { ...lastSizePrices }, orderType: "add_to_bag", stock: 50, sortOrder: 0, isActive: true }); }} className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-xl transition font-bold text-xs shadow-md">
+          <button onClick={() => { setShowForm(true); setEditing(null); setForm({ name: "", description: "", price: "", compareAtPrice: "", images: [], sizes: [...lastSizes], colorVariants: [{ color: "", image: "", isDefault: true }], sizePrices: { ...lastSizePrices }, orderType: "add_to_bag", stock: 50, sortOrder: 0, isActive: true }); }} className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-xl transition font-bold text-xs shadow-md">
             <Plus className="w-4 h-4" /> Add Fresh Pookkal
           </button>
         </div>
@@ -210,7 +327,7 @@ export default function FreshPookkalPage() {
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-stone-200 p-6 md:p-8 shadow-xl space-y-5 animate-slide-up">
           <div className="flex items-center justify-between border-b border-stone-100 pb-4">
             <h2 className="font-display text-xl font-bold text-stone-900">{editing ? `Edit: ${editing.name}` : "Add New Fresh Pookkal Item"}</h2>
-            <span className="text-xs font-mono text-stone-400">Color + Gram Variant Builder</span>
+            <span className="text-xs font-mono text-stone-400">Items API — variants auto-generated from sizes + colors</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -300,6 +417,7 @@ export default function FreshPookkalPage() {
               <input id="freshCustomSize" placeholder="Custom gram (e.g. 150g, 1.5kg)" className="flex-1 px-3 py-2 bg-white border border-emerald-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-400" onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); const val = (e.target as HTMLInputElement).value.trim(); if (val && !form.sizes.includes(val)) { toggleSize(val); (e.target as HTMLInputElement).value = ""; } } }} />
               <button type="button" onClick={() => { const inp = document.getElementById("freshCustomSize") as HTMLInputElement; const val = inp?.value?.trim(); if (val && !form.sizes.includes(val)) { toggleSize(val); inp.value = ""; } }} className="px-4 py-2 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700 transition">Add</button>
             </div>
+            <p className="text-[10px] text-emerald-600 italic">💡 Each size × each color = one variant on the website.</p>
           </div>
 
           {/* Color Image Variants Section */}
@@ -397,6 +515,8 @@ export default function FreshPookkalPage() {
           <tbody className="divide-y divide-stone-150">
             {filteredList.map((d) => {
               const isSelected = selectedIds.includes(d.id);
+              const sizes = getSizes(d);
+              const colors = getColors(d);
               return (
                 <tr key={d.id} className={`hover:bg-stone-50/70 transition ${isSelected ? "bg-amber-50/40" : ""}`}>
                   <td className="p-4 text-center">
@@ -408,8 +528,8 @@ export default function FreshPookkalPage() {
                       <div>
                         <div className="font-bold text-stone-900 text-sm">{d.name}</div>
                         <div className="flex items-center gap-1.5 mt-0.5">
-                          <div className="text-[10px] text-stone-400 font-mono">/fresh_pookkal</div>
-                          {d.orderType === "pre_order" && <span className="text-[9px] font-bold text-amber-700 bg-amber-100 rounded-full px-1.5 py-0.5">⏰ PRE-ORDER</span>}
+                          <div className="text-[10px] text-stone-400 font-mono">/{d.categoryId}</div>
+                          {d.buttonAction === "pre_order" && <span className="text-[9px] font-bold text-amber-700 bg-amber-100 rounded-full px-1.5 py-0.5">⏰ PRE-ORDER</span>}
                         </div>
                       </div>
                     </div>
@@ -419,12 +539,12 @@ export default function FreshPookkalPage() {
                   </td>
                   <td className="p-4">
                     <div className="flex items-center gap-1 flex-wrap">
-                      {d.sizes?.length > 0 ? d.sizes.map((s: string, i: number) => (<span key={i} className="px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-[10px] font-semibold text-emerald-800">{s}</span>)) : <span className="text-stone-400 text-[10px] italic">—</span>}
+                      {sizes.length > 0 ? sizes.map((s: string, i: number) => (<span key={i} className="px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-[10px] font-semibold text-emerald-800">{s}</span>)) : <span className="text-stone-400 text-[10px] italic">—</span>}
                     </div>
                   </td>
                   <td className="p-4">
                     <div className="flex items-center gap-1 flex-wrap">
-                      {d.colorVariants?.length > 0 ? d.colorVariants.map((cv: any, i: number) => (<span key={i} className="px-2 py-0.5 rounded bg-stone-100 border text-[10px] font-semibold text-stone-800">{cv.color}</span>)) : <span className="text-stone-400 text-[10px] italic">—</span>}
+                      {colors.length > 0 ? colors.map((cv: any, i: number) => (<span key={i} className="px-2 py-0.5 rounded bg-stone-100 border text-[10px] font-semibold text-stone-800">{cv.color}</span>)) : <span className="text-stone-400 text-[10px] italic">—</span>}
                     </div>
                   </td>
                   <td className="p-4 text-right">

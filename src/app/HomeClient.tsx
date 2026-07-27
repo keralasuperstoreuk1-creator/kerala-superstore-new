@@ -142,7 +142,7 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
   }
 
   function openDetailModal(prod: any) {
-    const isDress = !!(prod.type && ['ladies','gents','kids','combo','fresh_pookkal'].includes(prod.type));
+    const isDress = !!(prod.type && ['ladies','gents','kids','combo'].includes(prod.type));
     setDetailProduct({ ...prod, isDress });
     const thumbs = getProductThumbnails(prod);
     setSelectedImage(thumbs[0]?.url || prod.images?.[0] || "");
@@ -304,7 +304,6 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
   }, 0);
 
   const filteredDresses = dresses.filter((d) => {
-    if (d.type === "fresh_pookkal") return false;
     const matchesFilter = dressFilter === "all" || d.type === dressFilter;
     const q = searchQuery.toLowerCase();
     const matchesSearch = !searchQuery ||
@@ -1232,11 +1231,8 @@ async function handleCheckout(e: React.FormEvent) {
       {/* Onam Fresh Pookkal Promo Section */}
       {(() => {
         const catId = settings.fresh_pookkal_category_id;
-        const freshDressTypes = (settings.fresh_pookkal_dress_types || "").split(",").filter(Boolean);
         let freshProducts: any[] = [];
         if (catId) freshProducts = [...freshProducts, ...items.filter((i) => String(i.categoryId) === String(catId))];
-        // Always include items added via Admin → Fresh Pookkal (type="fresh_pookkal")
-        freshProducts = [...freshProducts, ...dresses.filter((d) => d.type === "fresh_pookkal" || freshDressTypes.includes(d.type))];
         const title = settings.fresh_pookkal_title || "Onam Fresh Pookkal";
         const desc = settings.fresh_pookkal_description || "Fresh flowers and floral arrangements to bring the spirit of Onam to your home.";
         const btnText = settings.fresh_pookkal_btn_text || "Shop Fresh Pookkal";
