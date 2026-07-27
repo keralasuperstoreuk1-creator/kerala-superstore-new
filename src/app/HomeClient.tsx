@@ -776,10 +776,10 @@ async function handleCheckout(e: React.FormEvent) {
         <div className="flex animate-marquee whitespace-nowrap">
           {[...Array(2)].map((_, idx) => (
             <span key={idx} className="flex gap-8 mx-8 text-sm">
-              <span>🚚 Free Delivery on orders over £30</span>
-              <span>🔥 Special Offers Available</span>
-              <span>📱 Order via WhatsApp: +44 7749 132122</span>
-              <span>🌿 Fresh Products Daily</span>
+              {(settings.marquee_1 || "🚚 Free Delivery on orders over £30") && <span>{settings.marquee_1 || "🚚 Free Delivery on orders over £30"}</span>}
+              {(settings.marquee_2 || "🔥 Special Offers Available") && <span>{settings.marquee_2 || "🔥 Special Offers Available"}</span>}
+              {(settings.marquee_3 || "📱 Order via WhatsApp: +44 7749 132122") && <span>{settings.marquee_3 || "📱 Order via WhatsApp: +44 7749 132122"}</span>}
+              {(settings.marquee_4 || "🌿 Fresh Products Daily") && <span>{settings.marquee_4 || "🌿 Fresh Products Daily"}</span>}
             </span>
           ))}
         </div>

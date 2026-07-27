@@ -153,6 +153,41 @@ export default function SettingsPage() {
         </div>
       </div>
 
+      <div className="bg-white rounded-xl border border-slate-200 p-6 mb-6 space-y-6">
+        <h2 className="font-semibold text-slate-900">Running Banner (Marquee) Settings</h2>
+        <p className="text-xs text-slate-500">Edit or clear these fields to customize the scrolling green banner. Leave blank to hide.</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Item 1</label>
+            <div className="flex gap-2">
+              <input value={settings.marquee_1 || ""} onChange={(e) => setSettings({ ...settings, marquee_1: e.target.value })} placeholder="🚚 Free Delivery on orders over £30" className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+              <button onClick={() => saveSetting("marquee_1", settings.marquee_1 || "")} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"><Save className="w-4 h-4" /></button>
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Item 2</label>
+            <div className="flex gap-2">
+              <input value={settings.marquee_2 || ""} onChange={(e) => setSettings({ ...settings, marquee_2: e.target.value })} placeholder="🔥 Special Offers Available" className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+              <button onClick={() => saveSetting("marquee_2", settings.marquee_2 || "")} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"><Save className="w-4 h-4" /></button>
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Item 3</label>
+            <div className="flex gap-2">
+              <input value={settings.marquee_3 || ""} onChange={(e) => setSettings({ ...settings, marquee_3: e.target.value })} placeholder="📱 Order via WhatsApp: +44 7749 132122" className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+              <button onClick={() => saveSetting("marquee_3", settings.marquee_3 || "")} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"><Save className="w-4 h-4" /></button>
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Item 4</label>
+            <div className="flex gap-2">
+              <input value={settings.marquee_4 || ""} onChange={(e) => setSettings({ ...settings, marquee_4: e.target.value })} placeholder="🌿 Fresh Products Daily" className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+              <button onClick={() => saveSetting("marquee_4", settings.marquee_4 || "")} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"><Save className="w-4 h-4" /></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
         <h2 className="font-semibold text-slate-900 flex items-center gap-2"><FileSpreadsheet className="w-5 h-5" /> Google Sheets Sync</h2>
         <div>
