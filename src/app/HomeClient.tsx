@@ -1088,7 +1088,7 @@ async function handleCheckout(e: React.FormEvent) {
                             {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">£{item.compareAtPrice}</span>}
                           </div>
                           <div className="flex gap-2 mt-3">
-                            <button onClick={(e) => { e.stopPropagation(); addToCart(item.id, item.name, item.price, 1, "item"); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Pre-Order</button>
+                            <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Pre-Order</button>
                             <button onClick={(e) => { e.stopPropagation(); shareOnWhatsApp(item.name, item.price, item.slug); }} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
                           </div>
                         </div>
@@ -1203,10 +1203,10 @@ async function handleCheckout(e: React.FormEvent) {
                           )}
                           <div className="flex gap-2 mt-3">
                             {(item.buttonAction === "pre_order" || item.buttonAction === "both") && (
-                              <button onClick={(e) => { e.stopPropagation(); addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz, variantData?.id || null); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
+                              <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
                             )}
                             {(item.buttonAction === "add_to_bag" || item.buttonAction === "both" || !item.buttonAction) && (
-                              <button onClick={(e) => { e.stopPropagation(); addToCart(item.id, item.name, displayPrice, 1, "item", null, selectedSz, variantData?.id || null); }} className="flex-1 bg-pink-600 hover:bg-pink-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
+                              <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-pink-600 hover:bg-pink-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
                             )}
                             <button onClick={(e) => { e.stopPropagation(); shareOnWhatsApp(item.name, displayPrice, item.slug); }} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
                           </div>
@@ -1334,10 +1334,10 @@ async function handleCheckout(e: React.FormEvent) {
                           )}
                           <div className="flex gap-2 mt-3">
                             {(effAction === "pre_order" || effAction === "both") && (
-                              <button onClick={(e) => { e.stopPropagation(); addToCart(item.id, item.name, displayPrice, 1, isDress ? "dress" : "item", activeColorVariant?.color || null, selectedSz, null); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
+                              <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
                             )}
                             {(effAction === "add_to_bag" || effAction === "both" || !effAction) && (
-                              <button onClick={(e) => { e.stopPropagation(); addToCart(item.id, item.name, displayPrice, 1, isDress ? "dress" : "item", activeColorVariant?.color || null, selectedSz, null); }} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
+                              <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
                             )}
                             <button onClick={(e) => { e.stopPropagation(); shareOnWhatsApp(item.name, displayPrice, item.slug); }} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
                           </div>
