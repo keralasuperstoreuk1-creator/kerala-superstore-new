@@ -20,7 +20,7 @@ export default function StoreInfoPage() {
     // Set default values if empty
     if (!map.store_name) map.store_name = "Kerala Super Store";
     if (!map.store_tagline) map.store_tagline = "SOUTH INDIAN GROCERY";
-    if (!map.store_topbar_text) map.store_topbar_text = "🎉 Free Delivery on orders over £30 | Cash on Delivery Available";
+    if (!map.store_topbar_text) map.store_topbar_text = "";
     if (!map.store_phone) map.store_phone = "+44 7749 132122";
     if (!map.store_whatsapp) map.store_whatsapp = "447749132122";
     if (!map.store_email) map.store_email = "info@keralasuperstore.co.uk";
