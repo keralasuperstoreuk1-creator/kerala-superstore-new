@@ -455,10 +455,10 @@ async function handleCheckout(e: React.FormEvent) {
 
   return (
     <div className="min-h-screen font-sans">
-      {/* Promo Banner */}
-      <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-center py-2 px-4 text-sm relative">
-        <span>{settings.store_topbar_text || "🎉 Free Delivery on orders over £30 | Cash on Delivery Available"}</span>
-      </div>
+       {/* Promo Banner */}
+       <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-center py-2 px-4 text-sm relative">
+         <span>{settings.store_topbar_text || "🎉 Free Delivery on orders over £35 | Cash on Delivery Available"}</span>
+       </div>
 
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-40">

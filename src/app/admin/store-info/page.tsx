@@ -111,7 +111,7 @@ export default function StoreInfoPage() {
                 value={settings.store_topbar_text || ""} 
                 onChange={(e) => handleChange("store_topbar_text", e.target.value)} 
                 rows={2}
-                placeholder="e.g. Order now & get delivery soon! | Standard delivery rates apply"
+                placeholder="e.g. 🎉 Free Delivery on orders over £35 | Cash on Delivery Available | Standard delivery rates apply"
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" 
               />
               <p className="text-xs text-slate-500 mt-1">This text appears at the very top of your website.</p>
