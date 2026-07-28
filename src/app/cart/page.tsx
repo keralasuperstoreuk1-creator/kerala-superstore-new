@@ -7,10 +7,22 @@ import { ShoppingCart, Trash2, Plus, Minus, ArrowRight } from "lucide-react";
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deliverySettings, setDeliverySettings] = useState<Record<string, string>>({});
 
   useEffect(() => {
     fetchCart();
+    fetchDeliverySettings();
   }, []);
+
+  async function fetchDeliverySettings() {
+    try {
+      const res = await fetch("/api/settings");
+      const data = await res.json();
+      const map: Record<string, string> = {};
+      data.forEach((s: any) => { map[s.key] = s.value; });
+      setDeliverySettings(map);
+    } catch (e) { console.error(e); }
+  }
 
   async function fetchCart() {
     const res = await fetch("/api/cart");
@@ -39,6 +51,10 @@ export default function CartPage() {
   }
 
   const total = cartItems.reduce((sum, item) => sum + parseFloat(getUnitPrice(item)) * item.quantity, 0);
+  const freeDeliveryThreshold = parseFloat(deliverySettings.free_delivery_threshold) || 35;
+  const deliveryFee = parseFloat(deliverySettings.delivery_fee) || 5.50;
+  const freeDelivery = total >= freeDeliveryThreshold;
+  const finalTotal = total + (freeDelivery ? 0 : deliveryFee);
 
   if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
@@ -93,10 +109,30 @@ export default function CartPage() {
               </div>
             ))}
 
-            <div className="bg-slate-50 rounded-xl p-6 mt-6">
-              <div className="flex items-center justify-between mb-4">
+            <div className="bg-slate-50 rounded-xl p-6 mt-6 space-y-3">
+              <div className="flex items-center justify-between mb-2">
                 <span className="text-lg text-slate-700">Subtotal</span>
                 <span className="text-2xl font-bold text-slate-900">£{total.toFixed(2)}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-600">Delivery</span>
+                <span className={`font-semibold ${freeDelivery ? "text-emerald-600" : "text-slate-900"}`}>
+                  {freeDelivery ? "🎁 FREE" : `£${deliveryFee.toFixed(2)}`}
+                </span>
+              </div>
+              {freeDelivery && (
+                <p className="text-xs text-emerald-600 font-medium">
+                  🎉 Free delivery on orders over £{freeDeliveryThreshold.toFixed(2)}
+                </p>
+              )}
+              {!freeDelivery && (
+                <p className="text-xs text-slate-500">
+                  Add £{(freeDeliveryThreshold - total).toFixed(2)} more for free delivery
+                </p>
+              )}
+              <div className="border-t border-slate-200 pt-3 flex items-center justify-between">
+                <span className="text-lg font-bold text-slate-900">Total</span>
+                <span className="text-2xl font-bold text-slate-900">£{finalTotal.toFixed(2)}</span>
               </div>
               <Link href="/checkout" className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700">
                 Proceed to Checkout <ArrowRight className="w-5 h-5" />

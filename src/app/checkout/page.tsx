@@ -10,6 +10,22 @@ export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
+  const [deliverySettings, setDeliverySettings] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    fetchCart();
+    fetchDeliverySettings();
+  }, []);
+
+  async function fetchDeliverySettings() {
+    try {
+      const res = await fetch("/api/settings");
+      const data = await res.json();
+      const map: Record<string, string> = {};
+      data.forEach((s: any) => { map[s.key] = s.value; });
+      setDeliverySettings(map);
+    } catch (e) { console.error(e); }
+  }
 
   useEffect(() => {
     fetchCart();
@@ -29,6 +45,10 @@ export default function CheckoutPage() {
   }
 
   const total = cartItems.reduce((sum, item) => sum + parseFloat(getUnitPrice(item)) * item.quantity, 0);
+  const freeDeliveryThreshold = parseFloat(deliverySettings.free_delivery_threshold) || 35;
+  const deliveryFee = parseFloat(deliverySettings.delivery_fee) || 5.50;
+  const freeDelivery = total >= freeDeliveryThreshold;
+  const finalTotal = total + (freeDelivery ? 0 : deliveryFee);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -51,7 +71,7 @@ export default function CheckoutPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...form,
-        totalAmount: total.toFixed(2),
+        totalAmount: finalTotal.toFixed(2),
         paymentMethod: "cod",
         items: cartData,
       }),
@@ -142,7 +162,7 @@ export default function CheckoutPage() {
             </div>
 
             <button type="submit" disabled={submitting || cartItems.length === 0} className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50">
-              {submitting ? "Placing Order..." : `Place Order - £${total.toFixed(2)}`}
+              {submitting ? "Placing Order..." : `Place Order - £${finalTotal.toFixed(2)}`}
             </button>
           </form>
 
@@ -164,9 +184,22 @@ export default function CheckoutPage() {
                 </div>
               ))}
               <div className="border-t border-slate-200 pt-3 flex items-center justify-between">
-                <span className="font-semibold text-slate-900">Total</span>
-                <span className="text-xl font-bold text-slate-900">£{total.toFixed(2)}</span>
-              </div>
+                 <span className="font-semibold text-slate-900">Subtotal</span>
+                 <span className="text-slate-900">£{total.toFixed(2)}</span>
+               </div>
+               <div className="flex items-center justify-between">
+                 <span className="text-slate-600">Delivery</span>
+                 <span className={`font-semibold ${freeDelivery ? "text-emerald-600" : "text-slate-900"}`}>
+                   {freeDelivery ? "🎁 FREE" : `£${deliveryFee.toFixed(2)}`}
+                 </span>
+               </div>
+               {freeDelivery && (
+                 <p className="text-xs text-emerald-600">🎉 Free delivery on orders over £{freeDeliveryThreshold.toFixed(2)}</p>
+               )}
+               <div className="border-t border-slate-200 pt-3 flex items-center justify-between">
+                 <span className="font-bold text-slate-900">Total</span>
+                 <span className="text-xl font-bold text-slate-900">£{finalTotal.toFixed(2)}</span>
+               </div>
             </div>
           </div>
         </div>
