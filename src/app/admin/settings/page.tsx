@@ -188,6 +188,69 @@ export default function SettingsPage() {
         </div>
       </div>
 
+      <div className="bg-white rounded-xl border border-slate-200 p-6 mb-6 space-y-6">
+        <h2 className="font-semibold text-slate-900">Homepage Hero Banner Features</h2>
+        <p className="text-xs text-slate-500">Edit the 4 feature items shown below the hero banner on the homepage.</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Feature 1 Title</label>
+            <div className="flex gap-2">
+              <input value={settings.hero_f1 || "Free Delivery"} onChange={(e) => setSettings({ ...settings, hero_f1: e.target.value })} className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+              <button onClick={() => saveSetting("hero_f1", settings.hero_f1 || "Free Delivery")} className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"><Save className="w-4 h-4" /></button>
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Feature 1 Description</label>
+            <div className="flex gap-2">
+              <input value={settings.hero_d1 || "On orders over £35"} onChange={(e) => setSettings({ ...settings, hero_d1: e.target.value })} className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+              <button onClick={() => saveSetting("hero_d1", settings.hero_d1 || "On orders over £35")} className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"><Save className="w-4 h-4" /></button>
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Feature 2 Title</label>
+            <div className="flex gap-2">
+              <input value={settings.hero_f2 || "Cash on Delivery"} onChange={(e) => setSettings({ ...settings, hero_f2: e.target.value })} className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+              <button onClick={() => saveSetting("hero_f2", settings.hero_f2 || "Cash on Delivery")} className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"><Save className="w-4 h-4" /></button>
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Feature 2 Description</label>
+            <div className="flex gap-2">
+              <input value={settings.hero_d2 || "Pay when you receive"} onChange={(e) => setSettings({ ...settings, hero_d2: e.target.value })} className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+              <button onClick={() => saveSetting("hero_d2", settings.hero_d2 || "Pay when you receive")} className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"><Save className="w-4 h-4" /></button>
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Feature 3 Title</label>
+            <div className="flex gap-2">
+              <input value={settings.hero_f3 || "100% Fresh"} onChange={(e) => setSettings({ ...settings, hero_f3: e.target.value })} className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+              <button onClick={() => saveSetting("hero_f3", settings.hero_f3 || "100% Fresh")} className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"><Save className="w-4 h-4" /></button>
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Feature 3 Description</label>
+            <div className="flex gap-2">
+              <input value={settings.hero_d3 || "Quality guaranteed"} onChange={(e) => setSettings({ ...settings, hero_d3: e.target.value })} className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+              <button onClick={() => saveSetting("hero_d3", settings.hero_d3 || "Quality guaranteed")} className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"><Save className="w-4 h-4" /></button>
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Feature 4 Title</label>
+            <div className="flex gap-2">
+              <input value={settings.hero_f4 || "Easy Ordering"} onChange={(e) => setSettings({ ...settings, hero_f4: e.target.value })} className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+              <button onClick={() => saveSetting("hero_f4", settings.hero_f4 || "Easy Ordering")} className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"><Save className="w-4 h-4" /></button>
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Feature 4 Description</label>
+            <div className="flex gap-2">
+              <input value={settings.hero_d4 || "Order via WhatsApp"} onChange={(e) => setSettings({ ...settings, hero_d4: e.target.value })} className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+              <button onClick={() => saveSetting("hero_d4", settings.hero_d4 || "Order via WhatsApp")} className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"><Save className="w-4 h-4" /></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
         <h2 className="font-semibold text-slate-900 flex items-center gap-2"><FileSpreadsheet className="w-5 h-5" /> Google Sheets Sync</h2>
         <div>

@@ -762,7 +762,7 @@ async function handleCheckout(e: React.FormEvent) {
       <section className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[{icon:Truck,title:"Free Delivery",desc:"On orders over £35"},{icon:Shield,title:"Cash on Delivery",desc:"Pay when you receive"},{icon:Leaf,title:"100% Fresh",desc:"Quality guaranteed"},{icon:Phone,title:"Easy Ordering",desc:"Order via WhatsApp"}].map((f) => (
+            {[{icon:Truck,title:settings.hero_f1 || "Free Delivery",desc:settings.hero_d1 || "On orders over £35"},{icon:Shield,title:settings.hero_f2 || "Cash on Delivery",desc:settings.hero_d2 || "Pay when you receive"},{icon:Leaf,title:settings.hero_f3 || "100% Fresh",desc:settings.hero_d3 || "Quality guaranteed"},{icon:Phone,title:settings.hero_f4 || "Easy Ordering",desc:settings.hero_d4 || "Order via WhatsApp"}].map((f) => (
               <div key={f.title} className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-700"><f.icon className="w-5 h-5" /></div>
                 <div><h4 className="font-semibold text-sm text-slate-900">{f.title}</h4><p className="text-xs text-slate-500">{f.desc}</p></div>
