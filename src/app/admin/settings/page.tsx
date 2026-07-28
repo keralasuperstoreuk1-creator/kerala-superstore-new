@@ -160,7 +160,7 @@ export default function SettingsPage() {
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Item 1</label>
             <div className="flex gap-2">
-              <input value={settings.marquee_1 || ""} onChange={(e) => setSettings({ ...settings, marquee_1: e.target.value })} placeholder="🚚 Free Delivery on orders over £30" className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+              <input value={settings.marquee_1 || ""} onChange={(e) => setSettings({ ...settings, marquee_1: e.target.value })} placeholder="🚚 Free Delivery on orders over £35" className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
               <button onClick={() => saveSetting("marquee_1", settings.marquee_1 || "")} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"><Save className="w-4 h-4" /></button>
             </div>
           </div>
