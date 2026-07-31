@@ -1083,12 +1083,17 @@ async function handleCheckout(e: React.FormEvent) {
                         </div>
                         <div className="p-4 cursor-pointer" onClick={() => openDetailModal(item)}>
                           <h3 className="font-semibold text-stone-900 text-sm line-clamp-2">{item.name}</h3>
-                          <div className="flex items-baseline gap-2 mt-2">
-                            <span className="font-bold text-stone-900">£{item.price}</span>
-                            {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">£{item.compareAtPrice}</span>}
-                          </div>
+<div className="flex items-baseline gap-2 mt-2">
+                             <span className="font-bold text-stone-900">£{item.price}</span>
+                             {item.compareAtPrice && <span className="text-xs text-red-500 line-through">£{item.compareAtPrice}</span>}
+                           </div>
                           <div className="flex gap-2 mt-3">
-                            <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Pre-Order</button>
+                            {(item.buttonAction === "pre_order" || item.buttonAction === "both") && (
+                              <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
+                            )}
+                            {(item.buttonAction === "add_to_bag" || item.buttonAction === "both" || !item.buttonAction) && (
+                              <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
+                            )}
                             <button onClick={(e) => { e.stopPropagation(); shareOnWhatsApp(item.name, item.price, item.slug); }} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
                           </div>
                         </div>
