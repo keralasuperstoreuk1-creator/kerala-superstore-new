@@ -1299,7 +1299,7 @@ async function handleCheckout(e: React.FormEvent) {
                     const selectedCol = promoSelectedColor[item.id] || (dressColors.find((c: any) => c.isDefault)?.color || dressColors[0]?.color || "");
                     const activeColorVariant = isDress ? dressColors.find((c: any) => c.color === selectedCol) || null : (item.variants && item.variants.find((v: any) => v.size === selectedSz && v.color && v.images && v.images[0]) || null);
                     const displayImage = activeColorVariant?.image || activeColorVariant?.images?.[0] || item.images?.[0] || null;
-                    const effAction = isDress ? (item.orderType || "add_to_bag") : (item.buttonAction || "add_to_bag");
+                    const effAction = isDress ? (item.orderType || "add_to_bag") : (item.buttonAction || item.orderType || "add_to_bag");
                     return (
                       <div key={item.id} className="reveal group bg-white rounded-2xl border border-emerald-200/60 overflow-hidden hover:border-emerald-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: `${Math.min(idx * 40, 400)}ms` }}>
                         <div className="aspect-square bg-emerald-50/50 relative overflow-hidden cursor-pointer" onClick={() => openDetailModal(item)}>
