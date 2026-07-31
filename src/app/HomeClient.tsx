@@ -1004,12 +1004,8 @@ async function handleCheckout(e: React.FormEvent) {
                     </div>
                     {parseSizes(dress.sizes).length > 0 && <p className="text-xs text-slate-500 mt-1">Sizes: {parseSizes(dress.sizes).join(", ")}</p>}
                     <div className="mt-3 flex gap-2">
-                      <button onClick={(e) => { e.stopPropagation(); openDetailModal(dress); }} className="flex-1 bg-[#fdd835] hover:bg-[#fbc02d] text-stone-900 py-2 rounded-lg text-sm font-bold transition flex items-center justify-center gap-1 shadow-sm uppercase tracking-wider">
-                        {isPreOrder(dress) ? (
-                          <><Clock className="w-3.5 h-3.5" /> Pre-Order</>
-                        ) : (
-                          <><ShoppingCart className="w-3.5 h-3.5" /> Add to Cart</>
-                        )}
+                      <button onClick={(e) => { e.stopPropagation(); openDetailModal(dress); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-lg text-sm font-bold transition flex items-center justify-center gap-1 shadow-sm uppercase tracking-wider">
+                        <Clock className="w-3.5 h-3.5" /> Pre-Order
                       </button>
                       <button onClick={(e) => { e.stopPropagation(); shareOnWhatsApp(dress.name, dress.price, dress.slug); }} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition shadow-sm" title="Share on WhatsApp">
                         <Share2 className="w-3.5 h-3.5" />
