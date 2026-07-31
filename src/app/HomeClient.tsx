@@ -1081,12 +1081,15 @@ async function handleCheckout(e: React.FormEvent) {
                             <span className="bg-white/90 backdrop-blur text-stone-900 text-xs font-bold px-4 py-2 rounded-full shadow-lg">Quick View</span>
                           </div>
                         </div>
-                        <div className="p-4 cursor-pointer" onClick={() => openDetailModal(item)}>
+<div className="p-4 cursor-pointer" onClick={() => openDetailModal(item)}>
                           <h3 className="font-semibold text-stone-900 text-sm line-clamp-2">{item.name}</h3>
-<div className="flex items-baseline gap-2 mt-2">
-                             <span className="font-bold text-stone-900">£{item.price}</span>
-                             {item.compareAtPrice && <span className="text-xs text-red-500 line-through">£{item.compareAtPrice}</span>}
-                           </div>
+                          {item.description && (
+                            <p className="text-xs text-stone-500 mt-1 line-clamp-2">{item.description}</p>
+                          )}
+                          <div className="flex items-baseline gap-2 mt-2">
+                            <span className="font-bold text-stone-900">£{item.price}</span>
+                            {item.compareAtPrice && <span className="text-xs text-red-500 line-through">£{item.compareAtPrice}</span>}
+                          </div>
                           <div className="flex gap-2 mt-3">
                             {(item.buttonAction === "pre_order" || item.buttonAction === "both") && (
                               <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
