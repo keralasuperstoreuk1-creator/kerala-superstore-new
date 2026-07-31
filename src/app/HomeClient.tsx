@@ -978,12 +978,12 @@ async function handleCheckout(e: React.FormEvent) {
                 <div key={dress.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all group cursor-pointer" onClick={() => openDetailModal(dress)}>
                   <div className="aspect-[3/4] bg-slate-100 relative overflow-hidden">
                     {dress.images?.[0] ? <img src={dress.images[0]} alt={dress.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /> : <div className="w-full h-full flex items-center justify-center text-4xl">👗</div>}
-                    {(dress.type === "kids" || dress.type === "kids-boys" || dress.type === "kids-girls") && (
-                      <span className="absolute top-2 left-2 bg-amber-500 text-white text-[9px] font-bold px-2 py-1 rounded-lg shadow-md leading-tight text-center">
-                        ⏰ Pre-order before<br />{preOrderLabel}
-                      </span>
-                    )}
-                    {dress.colorVariants?.length > 0 && (
+                    {isPreOrder(dress) && (
+                       <span className="absolute top-2 left-2 bg-amber-500 text-white text-[9px] font-bold px-2 py-1 rounded-lg shadow-md leading-tight text-center">
+                         ⏰ Pre-order before<br />{preOrderLabel}
+                       </span>
+                     )}
+                     {dress.colorVariants?.length > 0 && (
                       <span className="absolute top-2 right-2 bg-black/70 text-white text-[10px] font-mono px-2 py-0.5 rounded-full backdrop-blur-sm">
                         {dress.colorVariants.length} colors
                       </span>
@@ -1004,7 +1004,11 @@ async function handleCheckout(e: React.FormEvent) {
                     {parseSizes(dress.sizes).length > 0 && <p className="text-xs text-slate-500 mt-1">Sizes: {parseSizes(dress.sizes).join(", ")}</p>}
                     <div className="mt-3 flex gap-2">
                       <button onClick={(e) => { e.stopPropagation(); openDetailModal(dress); }} className="flex-1 bg-[#fdd835] hover:bg-[#fbc02d] text-stone-900 py-2 rounded-lg text-sm font-bold transition flex items-center justify-center gap-1 shadow-sm uppercase tracking-wider">
-                        Add to Cart
+                        {isPreOrder(dress) ? (
+                          <><Clock className="w-3.5 h-3.5" /> Pre-Order</>
+                        ) : (
+                          <><ShoppingCart className="w-3.5 h-3.5" /> Add to Cart</>
+                        )}
                       </button>
                       <button onClick={(e) => { e.stopPropagation(); shareOnWhatsApp(dress.name, dress.price, dress.slug); }} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition shadow-sm" title="Share on WhatsApp">
                         <Share2 className="w-3.5 h-3.5" />
