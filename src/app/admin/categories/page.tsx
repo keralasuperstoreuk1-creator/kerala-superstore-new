@@ -353,6 +353,7 @@ function CategoriesContent() {
               >
                 <option value="add_to_bag">🛍️ ADD TO BAG (Standard Cart Checkout)</option>
                 <option value="pre_order">⏳ PRE-ORDER NOW Badge</option>
+                <option value="both">🔀 BOTH — Pre-Order & Add to Cart</option>
               </select>
             </div>
 

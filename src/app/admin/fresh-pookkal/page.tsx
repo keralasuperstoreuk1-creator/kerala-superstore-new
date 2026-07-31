@@ -360,6 +360,7 @@ export default function FreshPookkalPage() {
                 <select value={form.orderType} onChange={(e) => setForm({ ...form, orderType: e.target.value })} className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm font-semibold">
                   <option value="add_to_bag">🛍️ ADD TO BAG</option>
                   <option value="pre_order">⏳ PRE-ORDER NOW</option>
+                  <option value="both">🔀 BOTH — Pre-Order & Add to Cart</option>
                 </select>
               </div>
             </div>

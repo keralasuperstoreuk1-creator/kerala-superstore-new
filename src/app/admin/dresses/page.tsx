@@ -315,10 +315,11 @@ export default function DressesPage() {
             </div>
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Button Action</label>
-              <select value={form.orderType} onChange={(e) => setForm({ ...form, orderType: e.target.value })} className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm font-semibold">
-                <option value="add_to_bag">🛍️ ADD TO BAG (Instant Purchase)</option>
-                <option value="pre_order">⏳ PRE-ORDER NOW Badge</option>
-              </select>
+                <select value={form.orderType} onChange={(e) => setForm({ ...form, orderType: e.target.value })} className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm font-semibold">
+                  <option value="add_to_bag">🛍️ ADD TO BAG (Instant Purchase)</option>
+                  <option value="pre_order">⏳ PRE-ORDER NOW Badge</option>
+                  <option value="both">🔀 BOTH — Pre-Order & Add to Cart</option>
+                </select>
             </div>
           </div>
 
