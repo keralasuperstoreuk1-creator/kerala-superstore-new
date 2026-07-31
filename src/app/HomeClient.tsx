@@ -155,6 +155,7 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   function isPreOrder(prod: any) {
     if (!prod) return false;
+    if (prod.orderType === "pre_order") return true;
     if (prod.type) {
       const matchingCat = data.categories?.find(
         (c: any) => c.slug === prod.type || c.name?.toLowerCase() === prod.type?.toLowerCase()
