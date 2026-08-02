@@ -759,6 +759,113 @@ async function handleCheckout(e: React.FormEvent) {
         )}
       </section>
 
+      {/* Collection Carousel Strip */}
+      {(() => {
+        const stripItems: {
+          name: string; img?: string;
+          onClick?: () => void; count?: number; tag?: string;
+        }[] = [];
+
+        // Dress collections (types)
+        const dressTypeMeta: Record<string, { name: string; key: string }> = {
+          ladies: { name: "Ladies Onam Collection", key: "ladies" },
+          gents: { name: "Gents Onam Collection", key: "gents" },
+          "kids-boys": { name: "Boys Onam Collection", key: "kids-boys" },
+          "kids-girls": { name: "Girls Onam Collection", key: "kids-girls" },
+          combo: { name: "Onam Family Collection", key: "combo" },
+        };
+        for (const t of ["ladies", "gents", "kids-boys", "kids-girls", "combo"]) {
+          const meta = dressTypeMeta[t];
+          const list = dresses.filter((d) => d.type === t);
+          if (list.length === 0) continue;
+          stripItems.push({
+            name: meta.name,
+            img: list.find((d) => d.images?.[0])?.images?.[0],
+            tag: "Dresses",
+            count: list.length,
+            onClick: () => { setDressFilter(t); document.getElementById("dresses")?.scrollIntoView({ behavior: "smooth" }); },
+          });
+        }
+
+        // Category sections
+        for (const cat of categories) {
+          const catItems = items.filter((i) => i.categoryId === cat.id);
+          const sectionBanner = settings[`section_${cat.id}_banner_image`];
+          const enabled = settings[`section_${cat.id}_enabled`] !== "false";
+          if (catItems.length === 0 && !sectionBanner) continue;
+          if (enabled === false) continue;
+          stripItems.push({
+            name: settings[`section_${cat.id}_title`] || cat.name,
+            img: sectionBanner || cat.image || catItems.find((i) => i.images?.[0])?.images?.[0],
+            count: catItems.length,
+            onClick: () => { document.getElementById(`cat-${cat.id}`)?.scrollIntoView({ behavior: "smooth" }); },
+          });
+        }
+
+        // Legacy homepage sections
+        const legacyDefs = [
+          { id: "sadhya", name: "Onam Sadhya", findCat: (c: any) => c.name?.toLowerCase().includes("sadhya") },
+          { id: "pookkalam", name: "Ona Pookkalam", findCat: (c: any) => c.name?.toLowerCase().includes("pookkalam") },
+          { id: "fresh_pookkal", name: "Fresh Pookkal", findCat: (c: any) => c.name?.toLowerCase().includes("pookkal") },
+        ];
+        for (const ld of legacyDefs) {
+          const cat = categories.find(ld.findCat);
+          const banner = settings[`${ld.id}_banner_image`];
+          if (!cat && !banner) continue;
+          const list = cat ? items.filter((i) => i.categoryId === cat.id) : [];
+          stripItems.push({
+            name: settings[`${ld.id}_title`] || ld.name,
+            img: banner || (cat ? (cat.image || list.find((i) => i.images?.[0])?.images?.[0]) : undefined),
+            tag: "Special",
+            count: list.length,
+            onClick: () => { document.getElementById(cat ? `cat-${cat.id}` : "products")?.scrollIntoView({ behavior: "smooth" }); },
+          });
+        }
+
+        if (stripItems.length === 0) return null;
+        const row = stripItems.length > 0 ? [...stripItems, ...stripItems] : [];
+
+        return (
+          <section className="bg-[#0b2416] py-6 relative overflow-hidden">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.22em] text-amber-300">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Collections <span className="text-emerald-100/40">·</span> tap to explore
+              </div>
+              <span className="hidden sm:flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-emerald-100/40">
+                <ChevronRight className="w-3 h-3" /> auto-moving
+              </span>
+            </div>
+            <div className="collection-marquee">
+              <div className="flex gap-4 px-4 sm:px-8 w-max">
+                {row.map((item, i) => (
+                  <button
+                    key={`${item.name}-${i}`}
+                    onClick={item.onClick}
+                    className="group relative flex-shrink-0 w-[240px] sm:w-[280px] md:w-[320px] h-32 sm:h-36 overflow-hidden rounded-2xl border border-white/10 bg-emerald-950 hover:border-amber-400/60 hover:shadow-lg hover:shadow-amber-500/10 transition-all duration-300 text-left"
+                  >
+                    {item.img ? (
+                      <img src={item.img} alt={item.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                    ) : (
+                      <div className="absolute inset-0 bg-gradient-to-br from-emerald-800 via-emerald-900 to-amber-900" />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    {item.tag && (
+                      <span className="absolute top-2.5 left-2.5 text-[9px] font-bold uppercase tracking-wider text-emerald-900 bg-amber-300/90 rounded-full px-2 py-0.5">{item.tag}</span>
+                    )}
+                    <div className="absolute bottom-0 left-0 right-0 p-3.5">
+                      <h3 className="font-bold text-white text-sm leading-tight drop-shadow">{item.name}</h3>
+                      <p className="text-[10px] font-mono text-amber-200/80 mt-0.5">
+                        {typeof item.count === "number" && item.count > 0 ? `${item.count} items` : "Shop now"} · explore →
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      })()}
+
       {/* Features Bar */}
       <section className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">

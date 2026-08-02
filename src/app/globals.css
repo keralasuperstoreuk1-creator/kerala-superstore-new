@@ -33,6 +33,21 @@ html, body { font-family: var(--font-sans); }
 }
 .animate-marquee { animation: marquee 25s linear infinite; }
 
+.collection-marquee {
+  overflow: hidden;
+}
+.collection-marquee > div {
+  display: flex;
+  animation: collection-marquee 38s linear infinite;
+}
+.collection-marquee:hover > div {
+  animation-play-state: paused;
+}
+@keyframes collection-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
 @keyframes pulse-ring {
   0% { box-shadow: 0 0 0 0 rgba(45, 122, 62, 0.4); }
   70% { box-shadow: 0 0 0 8px rgba(45, 122, 62, 0); }
