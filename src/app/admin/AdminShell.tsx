@@ -23,6 +23,7 @@ const navGroups = [
       { href: "/admin/items", label: "All Products", icon: Package },
       { href: "/admin/dresses", label: "Onam Outfits", icon: Shirt },
       { href: "/admin/fresh-pookkal", label: "Fresh Pookkal", icon: Flower2 },
+      { href: "/admin/onam-pookkalam", label: "Ona Pookkalam", icon: Flower2 },
       { href: "/admin/categories", label: "Categories", icon: FolderOpen },
       { href: "/admin/collections", label: "Collections", icon: Layers },
       { href: "/admin/offers", label: "Offers & Discounts", icon: Tag },

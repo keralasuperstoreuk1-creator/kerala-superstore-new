@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Layers, FolderOpen, Package, ImageIcon, ShoppingBag,
-  Tag, Shirt, Trophy, ArrowUpRight, Plus, TrendingUp, Sparkles, Store, ExternalLink
+  Tag, Shirt, Trophy, ArrowUpRight, Plus, TrendingUp, Sparkles, Store, ExternalLink, Flower2
 } from "lucide-react";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
     collections: 0, categories: 0, items: 0, slides: 0,
-    orders: 0, revenue: 0, offers: 0, dresses: 0, winners: 0,
+    orders: 0, revenue: 0, offers: 0, dresses: 0, winners: 0, pookkalam: 0,
   });
   const [allOrders, setAllOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,7 +19,7 @@ export default function AdminDashboard() {
 
   async function fetchStats() {
     try {
-      const [collections, categories, items, slides, orders, offers, dresses, winners] = await Promise.all([
+      const [collections, categories, items, slides, orders, offers, dresses, winners, pookkalam] = await Promise.all([
         fetch("/api/collections").then((r) => r.json()),
         fetch("/api/categories").then((r) => r.json()),
         fetch("/api/items").then((r) => r.json()),
@@ -28,6 +28,7 @@ export default function AdminDashboard() {
         fetch("/api/offers").then((r) => r.json()),
         fetch("/api/dresses").then((r) => r.json()),
         fetch("/api/winners").then((r) => r.json()),
+        fetch("/api/items?categoryId=17").then((r) => r.json()),
       ]);
       const revenue = orders.reduce((sum: number, o: any) => sum + parseFloat(o.totalAmount || 0), 0);
       setAllOrders(orders);
@@ -35,6 +36,7 @@ export default function AdminDashboard() {
         collections: collections.length || 0, categories: categories.length || 0,
         items: items.length || 0, slides: slides.length || 0, orders: orders.length || 0,
         revenue, offers: offers.length || 0, dresses: dresses.length || 0, winners: winners.length || 0,
+        pookkalam: pookkalam.length || 0,
       });
     } catch (e) {}
     setLoading(false);
@@ -100,6 +102,7 @@ export default function AdminDashboard() {
   const tiles = [
     { label: "Products (സാധനങ്ങൾ)", value: stats.items, icon: Package, color: "text-emerald-700 bg-emerald-100 border-emerald-200", link: "/admin/items" },
     { label: "Onam Dresses (ഡ്രസ്സുകൾ)", value: stats.dresses, icon: Shirt, color: "text-amber-800 bg-amber-100 border-amber-200", link: "/admin/dresses" },
+    { label: "Ona Pookkalam (പൂക്കളം)", value: stats.pookkalam, icon: Flower2, color: "text-pink-800 bg-pink-100 border-pink-200", link: "/admin/onam-pookkalam" },
     { label: "Today's Offers (ഓഫറുകൾ)", value: stats.offers, icon: Tag, color: "text-rose-700 bg-rose-100 border-rose-200", link: "/admin/offers" },
     { label: "Categories (വിഭാഗങ്ങൾ)", value: stats.categories, icon: FolderOpen, color: "text-blue-700 bg-blue-100 border-blue-200", link: "/admin/categories" },
     { label: "Collections (കളക്ഷനുകൾ)", value: stats.collections, icon: Layers, color: "text-purple-700 bg-purple-100 border-purple-200", link: "/admin/collections" },
