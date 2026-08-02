@@ -882,10 +882,10 @@ function CollectionsContent() {
                         }}
                         className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium focus:bg-white outline-none"
                       >
-                        <option value="ladies">👩 Women's Kasavu Saree & Set Mundu</option>
-                        <option value="gents">👨 Men's Jubba & Kasavu Mundu</option>
+                        <option value="ladies">👩 Ladies Onam Collection</option>
+                        <option value="gents">👨 Gents Onam Collection</option>
                         <option value="kids">👶 Kids Festive Dress Set</option>
-                        <option value="combo">👪 Family Matching Combo Set</option>
+                        <option value="combo">👪 Onam Family Collection</option>
                       </select>
                     </div>
                     <div>

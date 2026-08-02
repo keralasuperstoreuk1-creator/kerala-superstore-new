@@ -278,9 +278,9 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
       "ladies": "Ladies",
       "gents": "Gents",
       "kids": "Kids",
-      "kids-boys": "Kids Boys",
-      "kids-girls": "Kids Girls",
-      "combo": "Combo",
+      "kids-boys": "Boys Onam",
+      "kids-girls": "Girls Onam",
+      "combo": "Family",
     };
     return map[type] || type;
   }
@@ -902,21 +902,27 @@ async function handleCheckout(e: React.FormEvent) {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
               {[
-                { type: "ladies", name: "Ladies Kasavu", emoji: "👩", desc: "Sarees & Set Mundu", bg: "bg-rose-50", border: "border-rose-200", hover: "hover:bg-rose-100", iconBg: "bg-rose-100", iconText: "text-rose-600" },
-                { type: "gents", name: "Gents Jubba", emoji: "👨", desc: "Shirt & Kasavu Mundu", bg: "bg-blue-50", border: "border-blue-200", hover: "hover:bg-blue-100", iconBg: "bg-blue-100", iconText: "text-blue-600" },
-                { type: "kids-boys", name: "Kids Boys", emoji: "👦", desc: "Boys Festival Attire", bg: "bg-sky-50", border: "border-sky-200", hover: "hover:bg-sky-100", iconBg: "bg-sky-100", iconText: "text-sky-600" },
-                { type: "kids-girls", name: "Kids Girls", emoji: "👧", desc: "Girls Festival Attire", bg: "bg-pink-50", border: "border-pink-200", hover: "hover:bg-pink-100", iconBg: "bg-pink-100", iconText: "text-pink-600", preOrder: `Pre-order before ${preOrderLabel}` },
-                { type: "combo", name: "Family Combo", emoji: "👪", desc: "Complete Family Sets", bg: "bg-amber-50", border: "border-amber-200", hover: "hover:bg-amber-100", iconBg: "bg-amber-100", iconText: "text-amber-600" },
+                { type: "ladies", name: "Ladies Onam Collection", desc: "Sarees & Set Mundu", bg: "bg-rose-50", border: "border-rose-200", hover: "hover:bg-rose-100", iconText: "text-rose-600" },
+                { type: "gents", name: "Gents Onam Collection", desc: "Shirt & Kasavu Mundu", bg: "bg-blue-50", border: "border-blue-200", hover: "hover:bg-blue-100", iconText: "text-blue-600" },
+                { type: "kids-boys", name: "Boys Onam Collection", desc: "Boys Festival Attire", bg: "bg-sky-50", border: "border-sky-200", hover: "hover:bg-sky-100", iconText: "text-sky-600" },
+                { type: "kids-girls", name: "Girls Onam Collection", desc: "Girls Festival Attire", bg: "bg-pink-50", border: "border-pink-200", hover: "hover:bg-pink-100", iconText: "text-pink-600", preOrder: `Pre-order before ${preOrderLabel}` },
+                { type: "combo", name: "Onam Family Collection", desc: "Complete Family Sets", bg: "bg-amber-50", border: "border-amber-200", hover: "hover:bg-amber-100", iconText: "text-amber-600" },
               ].map((col) => {
                 const count = dresses.filter((d) => d.type === col.type).length;
+                const colImage = dresses.find((d) => d.type === col.type && d.images?.[0])?.images?.[0];
                 return (
                   <div
                     key={col.type}
                     className={`${col.bg} ${col.border} ${col.hover} border-2 rounded-2xl p-5 text-center cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1 group`}
                     onClick={() => { setDressFilter(col.type); document.getElementById("dresses")?.scrollIntoView({ behavior: "smooth" }); }}
                   >
-                    <div className={`w-16 h-16 mx-auto ${col.iconBg} rounded-full flex items-center justify-center text-3xl mb-3 ${col.iconText} group-hover:scale-110 transition-transform`}>
-                      {col.emoji}
+                    <div className="relative w-16 h-16 mx-auto mb-3 group-hover:scale-110 transition-transform overflow-hidden rounded-full border-2 border-white shadow-md">
+                      {colImage ? (
+                        <img src={colImage} alt={col.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-white flex items-center justify-center text-3xl">👗</div>
+                      )}
+                      <div className="absolute inset-0 ring-1 ring-inset ring-white/40 rounded-full" />
                     </div>
                     <h3 className="font-bold text-stone-900 text-sm">{col.name}</h3>
                     <p className="text-[10px] text-stone-500 mt-0.5">{col.desc}</p>
