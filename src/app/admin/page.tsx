@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Layers, FolderOpen, Package, ImageIcon, ShoppingBag,
-  Tag, Shirt, Trophy, ArrowUpRight, Plus, TrendingUp, Sparkles, Store, ExternalLink, Flower2
+  Tag, Shirt, Trophy, ArrowUpRight, Plus, TrendingUp, Sparkles, Store, ExternalLink, Flower2, Salad
 } from "lucide-react";
 
 export default function AdminDashboard() {
