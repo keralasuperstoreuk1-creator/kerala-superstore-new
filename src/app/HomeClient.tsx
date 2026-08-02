@@ -788,7 +788,18 @@ async function handleCheckout(e: React.FormEvent) {
         }
 
         // Category sections
+        const legacyCatIds = new Set(
+          [
+            (c: any) => c.name?.toLowerCase().includes("sadhya"),
+            (c: any) => c.name?.toLowerCase().includes("pookkalam"),
+            (c: any) => c.name?.toLowerCase().includes("pookkal"),
+          ]
+            .map((fn) => categories.find(fn))
+            .filter(Boolean)
+            .map((c: any) => c.id)
+        );
         for (const cat of categories) {
+          if (legacyCatIds.has(cat.id)) continue;
           const catItems = items.filter((i) => i.categoryId === cat.id);
           const sectionBanner = settings[`section_${cat.id}_banner_image`];
           const enabled = settings[`section_${cat.id}_enabled`] !== "false";
@@ -823,7 +834,14 @@ async function handleCheckout(e: React.FormEvent) {
         }
 
         if (stripItems.length === 0) return null;
-        const row = stripItems.length > 0 ? [...stripItems, ...stripItems] : [];
+        const seen = new Set<string>();
+        const uniqueItems = stripItems.filter((it) => {
+          const key = it.name.toLowerCase();
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+        const row = uniqueItems.length > 0 ? [...uniqueItems, ...uniqueItems] : [];
 
         return (
           <section className="bg-[#0b2416] py-6 relative overflow-hidden">
