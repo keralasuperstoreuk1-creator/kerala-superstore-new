@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
 import {
   LayoutDashboard, Layers, FolderOpen, Package, ImageIcon,
   ShoppingBag, Settings, Store, Tag, Shirt, Trophy, ExternalLink,
-  Menu, X, Sparkles, Type, Flower2
+  Menu, X, Sparkles, Type, Flower2, Salad
 } from "lucide-react";
 
 const navGroups = [
@@ -35,6 +35,7 @@ const navGroups = [
       { href: "/admin/slides", label: "Hero Banners", icon: ImageIcon },
       { href: "/admin/promo-banners", label: "Promo Banners", icon: Sparkles },
       { href: "/admin/onam-sadhya", label: "Onam Sadhya Banner", icon: Sparkles },
+      { href: "/admin/onam-sadhya-items", label: "Sadhya Items", icon: Salad },
       { href: "/admin/onam-promos", label: "Pookkalam & Fresh Pookkal", icon: Sparkles },
       { href: "/admin/winners", label: "Lucky Winners", icon: Trophy },
     ],
