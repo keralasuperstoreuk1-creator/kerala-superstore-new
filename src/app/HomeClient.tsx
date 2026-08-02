@@ -1405,11 +1405,40 @@ async function handleCheckout(e: React.FormEvent) {
       {/* Dynamic Category Sections */}
       {categories.map((cat) => {
         const filtered = filteredItems.filter(item => item.categoryId === cat.id);
-        if (filtered.length === 0) return null; // Hide empty categories
+        const sectionBanner = settings[`section_${cat.id}_banner_image`];
+        const sectionEnabled = settings[`section_${cat.id}_enabled`] !== "false";
+        if (filtered.length === 0 && !sectionBanner) return null; // Hide empty categories
+        if (sectionEnabled === false) return null;
+
+        const bannerTitle = settings[`section_${cat.id}_title`] || cat.name;
+        const bannerDesc = settings[`section_${cat.id}_description`] || cat.description || "";
+        const bannerMobile = settings[`section_${cat.id}_banner_mobile_image`] || sectionBanner;
+        const bannerBtnText = settings[`section_${cat.id}_btn_text`] || "Shop Now";
         
         return (
           <section key={cat.id} id={`cat-${cat.id}`} className="py-16 md:py-20 bg-white relative">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              {sectionBanner && (
+                <div className="reveal relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-700 via-green-600 to-emerald-800 mb-10 shadow-xl min-h-[180px] md:min-h-[260px]">
+                  <img src={sectionBanner} alt="" className="hidden md:block absolute inset-0 w-full h-full object-cover" />
+                  <img src={bannerMobile} alt="" className="block md:hidden absolute inset-0 w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-950/70 via-emerald-900/50 to-transparent" />
+                  <div className="relative px-6 py-12 md:px-12 md:py-16 text-center text-white">
+                    <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.25em] text-emerald-200 bg-white/15 border border-white/20 rounded-full px-4 py-1.5 mb-4">
+                      {cat.name}
+                    </div>
+                    <h2 className="font-editorial text-4xl md:text-6xl font-bold leading-[0.95] mb-3">
+                      {bannerTitle}<span className="italic text-emerald-200">.</span>
+                    </h2>
+                    {bannerDesc && <p className="text-emerald-50/90 text-base md:text-lg max-w-2xl mx-auto mb-6">{bannerDesc}</p>}
+                    <div className="flex gap-3 justify-center flex-wrap">
+                      <a href={filtered.length > 0 ? `#cat-${cat.id}-items` : "#products"} className="inline-flex items-center gap-2 bg-white text-emerald-900 px-8 py-3.5 rounded-full font-bold text-sm hover:bg-emerald-50 transition shadow-lg">
+                        {filtered.length > 0 ? `${bannerBtnText} (${filtered.length} items) →` : `${bannerBtnText} →`}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
               <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
                 <div>
                   <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.22em] text-emerald-700/80 mb-3">
@@ -1424,7 +1453,7 @@ async function handleCheckout(e: React.FormEvent) {
                   View all <ArrowRight className="w-4 h-4" />
                 </a>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              <div id={`cat-${cat.id}-items`} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                 {filtered.slice(0, 8).map((item, idx) => {
                   const discountPct = item.compareAtPrice ? Math.round((1 - parseFloat(item.price) / parseFloat(item.compareAtPrice)) * 100) : 0;
                   return (

@@ -105,6 +105,7 @@ export default function AdminDashboard() {
     { label: "Onam Dresses (ഡ്രസ്സുകൾ)", value: stats.dresses, icon: Shirt, color: "text-amber-800 bg-amber-100 border-amber-200", link: "/admin/dresses" },
     { label: "Ona Pookkalam (പൂക്കളം)", value: stats.pookkalam, icon: Flower2, color: "text-pink-800 bg-pink-100 border-pink-200", link: "/admin/onam-pookkalam" },
     { label: "Onam Sadhya (സാധ്യ)", value: stats.sadhya, icon: Salad, color: "text-amber-800 bg-amber-100 border-amber-200", link: "/admin/onam-sadhya-items" },
+    { label: "Collection Sections (സെക്ഷനുകൾ)", value: stats.categories, icon: Sparkles, color: "text-teal-700 bg-teal-100 border-teal-200", link: "/admin/collection-sections" },
     { label: "Today's Offers (ഓഫറുകൾ)", value: stats.offers, icon: Tag, color: "text-rose-700 bg-rose-100 border-rose-200", link: "/admin/offers" },
     { label: "Categories (വിഭാഗങ്ങൾ)", value: stats.categories, icon: FolderOpen, color: "text-blue-700 bg-blue-100 border-blue-200", link: "/admin/categories" },
     { label: "Collections (കളക്ഷനുകൾ)", value: stats.collections, icon: Layers, color: "text-purple-700 bg-purple-100 border-purple-200", link: "/admin/collections" },
