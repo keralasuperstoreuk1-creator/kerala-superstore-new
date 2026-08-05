@@ -177,13 +177,16 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
   const whatsappNumber = settings.whatsapp_number || "447749132122";
 
   const preOrderDeadline = settings.pre_order_deadline || "2026-08-05";
-  const preOrderDate = new Date(preOrderDeadline + "T00:00:00");
+  const preOrderDeadlineTime = settings.pre_order_deadline_time || "23:59";
+  const preOrderDate = new Date(`${preOrderDeadline}T${preOrderDeadlineTime}:00`);
   const preOrderMonthShort = preOrderDate.toLocaleDateString("en-US", { month: "short" });
   const preOrderDay = preOrderDate.getDate();
   const preOrderMonthFull = preOrderDate.toLocaleDateString("en-US", { month: "long" });
   const preOrderLabel = `${preOrderMonthShort} ${preOrderDay}`;
   const preOrderLabelFull = `${preOrderMonthFull} ${preOrderDay}`;
   const preOrderMsg = settings.pre_order_message || `Pre-order before ${preOrderLabelFull} for Onam delivery`;
+  const preOrderExpired = !isNaN(preOrderDate.getTime()) && Date.now() > preOrderDate.getTime();
+  const hidePreOrders = settings.pre_order_hide_after === "true" && preOrderExpired;
 
   // Live viewers counter (ambient, purely decorative)
   const [viewers, setViewers] = useState(47);
@@ -305,6 +308,7 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
   }, 0);
 
   const filteredDresses = dresses.filter((d) => {
+    if (hidePreOrders && isPreOrder(d)) return false;
     const matchesFilter = dressFilter === "all" || d.type === dressFilter;
     const q = searchQuery.toLowerCase();
     const matchesSearch = !searchQuery ||
@@ -314,6 +318,7 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
   });
 
   const filteredItems = items.filter((item) => {
+    if (hidePreOrders && isPreOrder(item)) return false;
     const q = searchQuery.toLowerCase();
     const matchesSearch = !searchQuery ||
       item.name.toLowerCase().includes(q) ||
@@ -329,16 +334,18 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
         ...dresses
           .filter(
             (d) =>
-              d.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              (d.type && d.type.toLowerCase().includes(searchQuery.toLowerCase()))
+              !(hidePreOrders && isPreOrder(d)) &&
+              (d.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              (d.type && d.type.toLowerCase().includes(searchQuery.toLowerCase())))
           )
           .map((d) => ({ ...d, isDress: true })),
         ...items
           .filter(
             (i) =>
-              i.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              !(hidePreOrders && isPreOrder(i)) &&
+              (i.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
               (i.description && i.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
-              categories.some((c) => c.id === i.categoryId && c.name.toLowerCase().includes(searchQuery.toLowerCase()))
+              categories.some((c) => c.id === i.categoryId && c.name.toLowerCase().includes(searchQuery.toLowerCase())))
           )
           .map((i) => ({ ...i, isDress: false })),
       ]
@@ -778,6 +785,7 @@ async function handleCheckout(e: React.FormEvent) {
           const meta = dressTypeMeta[t];
           const list = dresses.filter((d) => d.type === t);
           if (list.length === 0) continue;
+          if (hidePreOrders) continue;
           stripItems.push({
             name: meta.name,
             img: list.find((d) => d.images?.[0])?.images?.[0],
@@ -805,6 +813,7 @@ async function handleCheckout(e: React.FormEvent) {
           const enabled = settings[`section_${cat.id}_enabled`] !== "false";
           if (catItems.length === 0 && !sectionBanner) continue;
           if (enabled === false) continue;
+          if (hidePreOrders && cat.orderType === "pre_order") continue;
           stripItems.push({
             name: settings[`section_${cat.id}_title`] || cat.name,
             img: sectionBanner || cat.image || catItems.find((i) => i.images?.[0])?.images?.[0],
@@ -823,6 +832,7 @@ async function handleCheckout(e: React.FormEvent) {
           const cat = categories.find(ld.findCat);
           const banner = settings[`${ld.id}_banner_image`];
           if (!cat && !banner) continue;
+          if (hidePreOrders) continue;
           const list = cat ? items.filter((i) => i.categoryId === cat.id) : [];
           stripItems.push({
             name: settings[`${ld.id}_title`] || ld.name,
@@ -1013,7 +1023,7 @@ async function handleCheckout(e: React.FormEvent) {
       ) : null}
 
       {/* Shop by Collection */}
-      {dresses.length > 0 && (
+      {dresses.length > 0 && !hidePreOrders && (
         <section className="py-16 bg-gradient-to-b from-amber-50/60 to-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="reveal text-center mb-10 max-w-3xl mx-auto">
@@ -1077,7 +1087,7 @@ async function handleCheckout(e: React.FormEvent) {
       )}
 
       {/* Dress Collections */}
-      {dresses.length > 0 && (
+      {dresses.length > 0 && !hidePreOrders && (
         <section id="dresses" className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="reveal text-center mb-10 max-w-3xl mx-auto">
@@ -1151,7 +1161,7 @@ async function handleCheckout(e: React.FormEvent) {
       )}
 
       {/* Onam Sadhya — Pre-Order Section */}
-      {(() => {
+      {hidePreOrders ? null : (() => {
         const sadhyaCat = categories.find((c) => c.name?.toLowerCase().includes("sadhya"));
         const sadhyaItems = sadhyaCat ? items.filter((i) => i.categoryId === sadhyaCat.id) : [];
         return (
@@ -1250,7 +1260,7 @@ async function handleCheckout(e: React.FormEvent) {
       })()}
 
       {/* Pookkalam Promo Section */}
-      {(() => {
+      {hidePreOrders ? null : (() => {
         const catId = settings.pookkalam_category_id;
         const dressTypes = (settings.pookkalam_dress_types || "").split(",").filter(Boolean);
         let pookkalamProducts: any[] = [];
@@ -1369,7 +1379,7 @@ async function handleCheckout(e: React.FormEvent) {
       })()}
 
       {/* Onam Fresh Pookkal Promo Section */}
-      {(() => {
+      {hidePreOrders ? null : (() => {
         const catId = settings.fresh_pookkal_category_id;
         let freshProducts: any[] = [];
         if (catId) freshProducts = [...freshProducts, ...items.filter((i) => String(i.categoryId) === String(catId))];

@@ -143,6 +143,27 @@ export default function SettingsPage() {
             <p className="text-xs text-slate-500 mt-1">Homepage-ൽ "Pre-order before [date]" badge ആയി കാണിക്കും</p>
           </div>
           <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Pre-order Deadline Time</label>
+            <div className="flex gap-2">
+              <input type="time" value={settings.pre_order_deadline_time || "23:59"} onChange={(e) => setSettings({ ...settings, pre_order_deadline_time: e.target.value })} className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" />
+              <button onClick={() => saveSetting("pre_order_deadline_time", settings.pre_order_deadline_time || "23:59")} className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700"><Save className="w-4 h-4" /></button>
+            </div>
+            <p className="text-xs text-slate-500 mt-1">ഈ സമയം കഴിഞ്ഞാൽ (date + time) pre-order sections മറയ്ക്കും</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Auto-Hide After Deadline</label>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => { const v = settings.pre_order_hide_after !== "true" ? "true" : "false"; setSettings({ ...settings, pre_order_hide_after: v }); saveSetting("pre_order_hide_after", v); }}
+                className={`w-12 h-7 rounded-full transition relative ${settings.pre_order_hide_after === "true" ? "bg-amber-600" : "bg-slate-300"}`}
+              >
+                <span className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-all ${settings.pre_order_hide_after === "true" ? "left-6" : "left-0.5"}`} />
+              </button>
+              <span className="text-sm text-slate-700 font-medium">{settings.pre_order_hide_after === "true" ? "ON — hidden after deadline" : "OFF — always visible"}</span>
+            </div>
+            <p className="text-xs text-slate-500 mt-1">Deadline കഴിഞ്ഞാൽ Onam dresses (kids, ladies, gents, combo), Sadhya, Pookkalam & Fresh Pookkal sections ഓട്ടോമാറ്റിക്കായി മറയ്ക്കും. കഴിഞ്ഞാൽ ആരും order ചെയ്യില്ല.</p>
+          </div>
+          <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Pre-order Message</label>
             <div className="flex gap-2">
               <input value={settings.pre_order_message || ""} onChange={(e) => setSettings({ ...settings, pre_order_message: e.target.value })} placeholder="Pre-order before August 5 for Onam delivery" className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" />
