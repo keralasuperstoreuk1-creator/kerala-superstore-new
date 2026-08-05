@@ -25,7 +25,7 @@ export default function DressesPage() {
     sizePrices: {} as Record<string, string>,
     gender: "", ageGroup: "",
     orderType: "add_to_bag",
-    stock: 50, sortOrder: 0, isActive: true,
+    stock: 50, sortOrder: 0, isActive: true, hideOrdering: false,
   });
   const [uploading, setUploading] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -154,6 +154,7 @@ export default function DressesPage() {
       stock: form.stock,
       sortOrder: form.sortOrder,
       isActive: form.isActive,
+      hideOrdering: form.hideOrdering,
     };
     try {
       let res;
@@ -175,7 +176,7 @@ export default function DressesPage() {
     setLastSizePrices(form.sizePrices);
     setShowForm(false);
     setEditing(null);
-    setForm({ name: "", type: "ladies", description: "", price: "", compareAtPrice: "", images: [], sizes: [], colors: [], colorVariants: [], sizePrices: {}, gender: "", ageGroup: "", orderType: "add_to_bag", stock: 50, sortOrder: 0, isActive: true });
+    setForm({ name: "", type: "ladies", description: "", price: "", compareAtPrice: "", images: [], sizes: [], colors: [], colorVariants: [], sizePrices: {}, gender: "", ageGroup: "", orderType: "add_to_bag", stock: 50, sortOrder: 0, isActive: true, hideOrdering: false });
     fetchDresses();
   }
 
@@ -183,6 +184,15 @@ export default function DressesPage() {
     if (!confirm("Delete this dress outfit permanently?")) return;
     await fetch(`/api/dresses?id=${id}`, { method: "DELETE" });
     setSelectedIds((prev) => prev.filter((i) => i !== id));
+    fetchDresses();
+  }
+
+  async function updateQuickHide(d: any, hide: boolean) {
+    await fetch("/api/dresses", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...d, hideOrdering: hide }),
+    });
     fetchDresses();
   }
 
@@ -215,7 +225,7 @@ export default function DressesPage() {
       colorVariants: d.colorVariants || [], sizePrices: d.sizePrices || {},
       gender: d.gender || "", ageGroup: d.ageGroup || "",
       orderType: d.orderType || "add_to_bag",
-      stock: d.stock || 50, sortOrder: d.sortOrder || 0, isActive: d.isActive,
+      stock: d.stock || 50, sortOrder: d.sortOrder || 0, isActive: d.isActive, hideOrdering: !!d.hideOrdering,
     });
     setShowForm(true);
   }
@@ -268,7 +278,7 @@ export default function DressesPage() {
               <Trash2 className="w-4 h-4" /> Delete Selected ({selectedIds.length})
             </button>
           )}
-          <button onClick={() => { setShowForm(true); setEditing(null); setForm({ name: "", type: "ladies", description: "", price: "", compareAtPrice: "", images: [], sizes: [...lastSizes], colors: [], colorVariants: [{ color: "", image: "", isDefault: true }], sizePrices: { ...lastSizePrices }, gender: "", ageGroup: "", orderType: "add_to_bag", stock: 50, sortOrder: 0, isActive: true }); }} className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-stone-950 px-5 py-2.5 rounded-xl transition font-bold text-xs shadow-md">
+          <button onClick={() => { setShowForm(true); setEditing(null); setForm({ name: "", type: "ladies", description: "", price: "", compareAtPrice: "", images: [], sizes: [...lastSizes], colors: [], colorVariants: [{ color: "", image: "", isDefault: true }], sizePrices: { ...lastSizePrices }, gender: "", ageGroup: "", orderType: "add_to_bag", stock: 50, sortOrder: 0, isActive: true, hideOrdering: false }); }} className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-stone-950 px-5 py-2.5 rounded-xl transition font-bold text-xs shadow-md">
             <Plus className="w-4 h-4" /> Add Dress Outfit
           </button>
         </div>
@@ -321,6 +331,24 @@ export default function DressesPage() {
                   <option value="both">🔀 BOTH — Pre-Order & Add to Cart</option>
                 </select>
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Hide Ordering on Website</label>
+              <button
+                type="button"
+                onClick={() => setForm({ ...form, hideOrdering: !form.hideOrdering })}
+                className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl border text-sm font-bold transition ${form.hideOrdering ? "bg-rose-50 border-rose-300 text-rose-800" : "bg-stone-50 border-stone-200 text-stone-600"}`}
+              >
+                <span>{form.hideOrdering ? "🚫 Hidden — no order button" : "✓ Orderable"}</span>
+                <span className={`w-9 h-5 rounded-full relative transition ${form.hideOrdering ? "bg-rose-500" : "bg-emerald-400"}`}>
+                  <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all ${form.hideOrdering ? "left-[18px]" : "left-0.5"}`} />
+                </span>
+              </button>
+              <p className="text-[10px] text-stone-400 mt-1">ON = website-ൽ ഈ dress order ചെയ്യാൻ പറ്റില്ല (order button മറയും)</p>
+            </div>
+            <div></div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -621,6 +649,7 @@ export default function DressesPage() {
                         <div className="flex items-center gap-1.5 mt-0.5">
                           <div className="text-[10px] text-stone-400 font-mono">/{d.type}</div>
                           {d.orderType === "pre_order" && <span className="text-[9px] font-bold text-amber-700 bg-amber-100 rounded-full px-1.5 py-0.5">⏰ PRE-ORDER</span>}
+                          {d.hideOrdering && <span className="text-[9px] font-bold text-rose-700 bg-rose-100 rounded-full px-1.5 py-0.5">🚫 ORDER HIDDEN</span>}
                           {d.gender && <span className="text-[9px] font-bold text-blue-700 bg-blue-100 rounded-full px-1.5 py-0.5">{d.gender}</span>}
                           {d.ageGroup && <span className="text-[9px] font-bold text-purple-700 bg-purple-100 rounded-full px-1.5 py-0.5">{d.ageGroup}</span>}
                         </div>
@@ -650,6 +679,15 @@ export default function DressesPage() {
                   </td>
                   <td className="p-4 text-right">
                     <div className="flex items-center justify-end gap-1">
+                      {d.hideOrdering ? (
+                        <button onClick={() => updateQuickHide(d, false)} title="Re-enable ordering" className="px-2 py-1.5 bg-rose-100 text-rose-800 rounded-lg text-[9px] font-bold hover:bg-rose-200 transition">
+                          🚫 HIDDEN
+                        </button>
+                      ) : (
+                        <button onClick={() => updateQuickHide(d, true)} title="Hide ordering on website" className="px-2 py-1.5 bg-stone-100 text-stone-700 rounded-lg text-[9px] font-bold hover:bg-rose-100 hover:text-rose-800 transition">
+                          Hide Order
+                        </button>
+                      )}
                       <button onClick={() => openEdit(d)} className="p-2 text-stone-700 hover:bg-stone-100 rounded-xl transition">
                         <Pencil className="w-4 h-4" />
                       </button>

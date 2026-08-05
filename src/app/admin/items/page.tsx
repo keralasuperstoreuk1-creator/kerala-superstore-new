@@ -17,7 +17,7 @@ export default function ItemsPage() {
 
   const [form, setForm] = useState({
     name: "", slug: "", description: "", price: "", compareAtPrice: "", sku: "", stock: 100,
-    images: [] as string[], categoryId: "", gender: "", ageGroup: "", buttonAction: "add_to_bag", sortOrder: 0, isActive: true,
+    images: [] as string[], categoryId: "", gender: "", ageGroup: "", buttonAction: "add_to_bag", sortOrder: 0, isActive: true, hideOrdering: false,
   });
   const [variants, setVariants] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -93,6 +93,15 @@ export default function ItemsPage() {
     fetchData();
   }
 
+  async function updateQuickHide(item: any, hide: boolean) {
+    await fetch("/api/items", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...item, hideOrdering: hide }),
+    });
+    fetchData();
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const payload = {
@@ -143,7 +152,7 @@ export default function ItemsPage() {
   }
 
   function resetForm() {
-    setForm({ name: "", slug: "", description: "", price: "", compareAtPrice: "", sku: "", stock: 100, images: [], categoryId: String(categories[0]?.id || ""), gender: "", ageGroup: "", buttonAction: "add_to_bag", sortOrder: 0, isActive: true });
+    setForm({ name: "", slug: "", description: "", price: "", compareAtPrice: "", sku: "", stock: 100, images: [], categoryId: String(categories[0]?.id || ""), gender: "", ageGroup: "", buttonAction: "add_to_bag", sortOrder: 0, isActive: true, hideOrdering: false });
     setVariants([]);
   }
 
@@ -153,7 +162,7 @@ export default function ItemsPage() {
       name: item.name, slug: item.slug, description: item.description || "", price: String(item.price),
       compareAtPrice: item.compareAtPrice ? String(item.compareAtPrice) : "", sku: item.sku || "",
       stock: item.stock || 0, images: item.images || [], categoryId: String(item.categoryId),
-      gender: item.gender || "", ageGroup: item.ageGroup || "", buttonAction: item.buttonAction || "add_to_bag", sortOrder: item.sortOrder || 0, isActive: item.isActive,
+      gender: item.gender || "", ageGroup: item.ageGroup || "", buttonAction: item.buttonAction || "add_to_bag", sortOrder: item.sortOrder || 0, isActive: item.isActive, hideOrdering: !!item.hideOrdering,
     });
     setVariants(item.variants || []);
     setShowForm(true);
@@ -279,6 +288,20 @@ export default function ItemsPage() {
                 <option value="pre_order">⏳ Pre-Order</option>
                 <option value="both">🔄 Both Buttons</option>
               </select>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Hide Ordering on Website</label>
+              <button
+                type="button"
+                onClick={() => setForm({ ...form, hideOrdering: !form.hideOrdering })}
+                className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl border text-sm font-bold transition ${form.hideOrdering ? "bg-rose-50 border-rose-300 text-rose-800" : "bg-stone-50 border-stone-200 text-stone-600"}`}
+              >
+                <span>{form.hideOrdering ? "🚫 Hidden — no order button" : "✓ Orderable"}</span>
+                <span className={`w-9 h-5 rounded-full relative transition ${form.hideOrdering ? "bg-rose-500" : "bg-emerald-400"}`}>
+                  <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all ${form.hideOrdering ? "left-[18px]" : "left-0.5"}`} />
+                </span>
+              </button>
+              <p className="text-[10px] text-stone-400 mt-1">ON = website-ൽ ഈ product order ചെയ്യാൻ പറ്റില്ല (order button മറയും)</p>
             </div>
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Gender</label>
@@ -630,6 +653,24 @@ export default function ItemsPage() {
                   </td>
                   <td className="p-4 text-right">
                     <div className="flex items-center justify-end gap-1">
+                      {item.hideOrdering && (
+                        <button
+                          onClick={() => updateQuickHide(item, false)}
+                          title="Re-enable ordering"
+                          className="px-2 py-1.5 bg-rose-100 text-rose-800 rounded-lg text-[9px] font-bold hover:bg-rose-200 transition"
+                        >
+                          🚫 HIDDEN
+                        </button>
+                      )}
+                      {!item.hideOrdering && (
+                        <button
+                          onClick={() => updateQuickHide(item, true)}
+                          title="Hide ordering on website"
+                          className="px-2 py-1.5 bg-stone-100 text-stone-700 rounded-lg text-[9px] font-bold hover:bg-rose-100 hover:text-rose-800 transition"
+                        >
+                          Hide Order
+                        </button>
+                      )}
                       <button onClick={() => openEdit(item)} className="p-2 text-stone-700 hover:bg-stone-100 rounded-xl transition">
                         <Pencil className="w-4 h-4" />
                       </button>

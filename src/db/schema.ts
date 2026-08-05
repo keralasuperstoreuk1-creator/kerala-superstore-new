@@ -9,6 +9,7 @@ export const collections = pgTable("collections", {
   orderType: varchar("order_type", { length: 20 }).default("add_to_bag"), // "add_to_bag" | "pre_order"
   sortOrder: integer("sort_order").default(0),
   isActive: boolean("is_active").default(true),
+  hideOrdering: boolean("hide_ordering").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -23,6 +24,7 @@ export const categories = pgTable("categories", {
   orderType: varchar("order_type", { length: 20 }).default("add_to_bag"), // "add_to_bag" | "pre_order"
   sortOrder: integer("sort_order").default(0),
   isActive: boolean("is_active").default(true),
+  hideOrdering: boolean("hide_ordering").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -43,6 +45,7 @@ export const items = pgTable("items", {
   ageGroup: varchar("age_group", { length: 50 }),
   buttonAction: varchar("button_action", { length: 50 }).default("add_to_bag"),
   sortOrder: integer("sort_order").default(0),
+  hideOrdering: boolean("hide_ordering").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -186,6 +189,7 @@ sizes: text("sizes").array(),
   stock: integer("stock").default(0),
   sortOrder: integer("sort_order").default(0),
   isActive: boolean("is_active").default(true),
+  hideOrdering: boolean("hide_ordering").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

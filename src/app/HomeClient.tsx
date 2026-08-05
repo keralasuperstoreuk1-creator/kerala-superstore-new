@@ -173,6 +173,20 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
     return false;
   }
 
+  function isOrderingHidden(prod: any) {
+    if (!prod) return false;
+    if (prod.hideOrdering) return true;
+    if (prod.categoryId) {
+      const matchingCat = data.categories?.find((c: any) => c.id === prod.categoryId);
+      if (matchingCat?.hideOrdering) return true;
+    }
+    if (prod.collectionId) {
+      const matchingCol = data.collections?.find((c: any) => c.id === prod.collectionId);
+      if (matchingCol?.hideOrdering) return true;
+    }
+    return false;
+  }
+
   const { slides, offers, dresses, categories, items, winners, settings, collections = [], promoBanners: allPromoBanners = [] } = data;
   const whatsappNumber = settings.whatsapp_number || "447749132122";
 
@@ -1145,9 +1159,13 @@ async function handleCheckout(e: React.FormEvent) {
                     </div>
                     {parseSizes(dress.sizes).length > 0 && <p className="text-xs text-slate-500 mt-1">Sizes: {parseSizes(dress.sizes).join(", ")}</p>}
                     <div className="mt-3 flex gap-2">
+                      {isOrderingHidden(dress) ? (
+                        <div className="flex-1 bg-slate-100 text-slate-400 py-2 rounded-lg text-sm font-bold transition flex items-center justify-center gap-1 uppercase tracking-wider">🚫 Not Available</div>
+                      ) : (
                       <button onClick={(e) => { e.stopPropagation(); openDetailModal(dress); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-lg text-sm font-bold transition flex items-center justify-center gap-1 shadow-sm uppercase tracking-wider">
                         <Clock className="w-3.5 h-3.5" /> Pre-Order
                       </button>
+                      )}
                       <button onClick={(e) => { e.stopPropagation(); shareOnWhatsApp(dress.name, dress.price, dress.slug); }} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition shadow-sm" title="Share on WhatsApp">
                         <Share2 className="w-3.5 h-3.5" />
                       </button>
@@ -1233,11 +1251,17 @@ async function handleCheckout(e: React.FormEvent) {
                             {item.compareAtPrice && <span className="text-xs text-red-500 line-through">£{item.compareAtPrice}</span>}
                           </div>
                           <div className="flex gap-2 mt-3">
+                            {isOrderingHidden(item) ? (
+                              <div className="flex-1 bg-stone-100 text-stone-400 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">🚫 Not Available</div>
+                            ) : (
+                            <>
                             {(item.buttonAction === "pre_order" || item.buttonAction === "both") && (
                               <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
                             )}
                             {(item.buttonAction === "add_to_bag" || item.buttonAction === "both" || !item.buttonAction) && (
                               <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
+                            )}
+                            </>
                             )}
                             <button onClick={(e) => { e.stopPropagation(); shareOnWhatsApp(item.name, item.price, item.slug); }} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
                           </div>
@@ -1352,11 +1376,17 @@ async function handleCheckout(e: React.FormEvent) {
                             </div>
                           )}
                           <div className="flex gap-2 mt-3">
+                            {isOrderingHidden(item) ? (
+                              <div className="flex-1 bg-stone-100 text-stone-400 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">🚫 Not Available</div>
+                            ) : (
+                            <>
                             {(item.buttonAction === "pre_order" || item.buttonAction === "both") && (
                               <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
                             )}
                             {(item.buttonAction === "add_to_bag" || item.buttonAction === "both" || !item.buttonAction) && (
                               <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-pink-600 hover:bg-pink-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
+                            )}
+                            </>
                             )}
                             <button onClick={(e) => { e.stopPropagation(); shareOnWhatsApp(item.name, displayPrice, item.slug); }} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
                           </div>
@@ -1483,11 +1513,17 @@ async function handleCheckout(e: React.FormEvent) {
                             </div>
                           )}
                           <div className="flex gap-2 mt-3">
+                            {isOrderingHidden(item) ? (
+                              <div className="flex-1 bg-stone-100 text-stone-400 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">🚫 Not Available</div>
+                            ) : (
+                            <>
                             {(effAction === "pre_order" || effAction === "both") && (
                               <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
                             )}
                             {(effAction === "add_to_bag" || effAction === "both" || !effAction) && (
                               <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
+                            )}
+                            </>
                             )}
                             <button onClick={(e) => { e.stopPropagation(); shareOnWhatsApp(item.name, displayPrice, item.slug); }} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition" title="Share"><Share2 className="w-3.5 h-3.5" /></button>
                           </div>
@@ -2225,6 +2261,12 @@ async function handleCheckout(e: React.FormEvent) {
 
                 {/* Action Buttons (ADD TO BAG / PRE-ORDER → both go to cart) */}
                 <div className="space-y-3 pt-3">
+                  {isOrderingHidden(detailProduct) ? (
+                    <div className="w-full py-3.5 rounded-xl border border-rose-200 bg-rose-50 text-rose-800 font-bold text-sm flex items-center justify-center gap-2 text-center px-4">
+                      🚫 Currently Unavailable for Ordering
+                    </div>
+                  ) : (
+                  <>
                   <button
                     type="button"
                     onClick={() => {
@@ -2278,6 +2320,8 @@ async function handleCheckout(e: React.FormEvent) {
                   >
                     ⚡ {isPreOrder(detailProduct) ? "WHATSAPP PRE-ORDER" : "BUY NOW VIA WHATSAPP"}
                   </button>
+                  </>
+                  )}
                 </div>
 
                 {/* Key Highlights */}

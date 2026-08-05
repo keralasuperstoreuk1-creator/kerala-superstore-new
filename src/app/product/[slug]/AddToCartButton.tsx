@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ShoppingCart, Check } from "lucide-react";
 
-export default function AddToCartButton({ product, variants }: { product: any; variants: any[] }) {
+export default function AddToCartButton({ product, variants, hideOrdering = false }: { product: any; variants: any[]; hideOrdering?: boolean }) {
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
@@ -93,12 +93,18 @@ export default function AddToCartButton({ product, variants }: { product: any; v
         </div>
       </div>
 
+      {hideOrdering ? (
+        <div className="w-full flex items-center justify-center gap-2 py-3 rounded-lg font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+          🚫 Currently Unavailable for Ordering
+        </div>
+      ) : (
       <button
         onClick={addToCart}
         className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg font-semibold transition-colors ${added ? "bg-emerald-600 text-white" : "bg-blue-600 text-white hover:bg-blue-700"}`}
       >
         {added ? <><Check className="w-5 h-5" /> Added to Cart</> : <><ShoppingCart className="w-5 h-5" /> Add to Cart</>}
       </button>
+      )}
     </div>
   );
 }

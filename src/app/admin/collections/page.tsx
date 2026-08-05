@@ -31,6 +31,7 @@ function CollectionsContent() {
     orderType: "add_to_bag",
     sortOrder: 0,
     isActive: true,
+    hideOrdering: false,
   });
 
   const [productTypeSelector, setProductTypeSelector] = useState<"grocery" | "dress">("grocery");
@@ -106,6 +107,7 @@ function CollectionsContent() {
             orderType: found.orderType || "add_to_bag",
             sortOrder: found.sortOrder || 0,
             isActive: found.isActive ?? true,
+            hideOrdering: !!found.hideOrdering,
           });
         }
       }
@@ -176,6 +178,15 @@ function CollectionsContent() {
     return newCat.id;
   }
 
+  async function updateQuickHide(col: any, hide: boolean) {
+    await fetch("/api/collections", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...col, hideOrdering: hide }),
+    });
+    fetchData();
+  }
+
   async function handleSaveCollection(e: React.FormEvent) {
     e.preventDefault();
     const payload = { ...form, slug: form.slug || generateSlug(form.name) };
@@ -195,7 +206,7 @@ function CollectionsContent() {
       });
       const newCol = await res.json();
       setShowCreateForm(false);
-      setForm({ name: "", slug: "", description: "", image: "", orderType: "add_to_bag", sortOrder: 0, isActive: true });
+      setForm({ name: "", slug: "", description: "", image: "", orderType: "add_to_bag", sortOrder: 0, isActive: true, hideOrdering: false });
       if (newCol.id) {
         router.push(`/admin/collections?id=${newCol.id}`);
       }
@@ -465,7 +476,7 @@ function CollectionsContent() {
           {selectedFilteredCol ? (
             <button
               onClick={() => {
-                setForm({ name: "", slug: "", description: "", image: "", orderType: "add_to_bag", sortOrder: 0, isActive: true });
+                setForm({ name: "", slug: "", description: "", image: "", orderType: "add_to_bag", sortOrder: 0, isActive: true, hideOrdering: false });
                 router.push("/admin/collections");
               }}
               className="flex items-center gap-2 bg-[#0b2416] text-white px-5 py-2.5 rounded-xl hover:bg-emerald-950 transition font-bold text-xs shadow-md"
@@ -476,7 +487,7 @@ function CollectionsContent() {
             <button
               onClick={() => {
                 setShowCreateForm(!showCreateForm);
-                setForm({ name: "", slug: "", description: "", image: "", orderType: "add_to_bag", sortOrder: 0, isActive: true });
+                setForm({ name: "", slug: "", description: "", image: "", orderType: "add_to_bag", sortOrder: 0, isActive: true, hideOrdering: false });
               }}
               className="flex items-center gap-2 bg-[#0b2416] text-white px-5 py-2.5 rounded-xl hover:bg-emerald-950 transition font-bold text-xs shadow-md"
             >
@@ -518,6 +529,20 @@ function CollectionsContent() {
                 <option value="pre_order">⏳ PRE-ORDER NOW Badge</option>
                 <option value="both">🔀 BOTH — Pre-Order & Add to Cart</option>
               </select>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Hide Ordering on Website</label>
+              <button
+                type="button"
+                onClick={() => setForm({ ...form, hideOrdering: !form.hideOrdering })}
+                className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl border text-sm font-bold transition ${form.hideOrdering ? "bg-rose-50 border-rose-300 text-rose-800" : "bg-stone-50 border-stone-200 text-stone-600"}`}
+              >
+                <span>{form.hideOrdering ? "🚫 Hidden — no order button" : "✓ Orderable"}</span>
+                <span className={`w-9 h-5 rounded-full relative transition ${form.hideOrdering ? "bg-rose-500" : "bg-emerald-400"}`}>
+                  <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all ${form.hideOrdering ? "left-[18px]" : "left-0.5"}`} />
+                </span>
+              </button>
+              <p className="text-[10px] text-stone-400 mt-1">ON = ഈ collection ലെ എല്ലാ products നും order button മറയും</p>
             </div>
           </div>
 
@@ -580,7 +605,12 @@ function CollectionsContent() {
                         No Cover Image
                       </div>
                     )}
-                    <div className="absolute top-3 left-3">
+                    <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+                      {col.hideOrdering && (
+                        <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-600 text-white shadow-md">
+                          🚫 ORDER HIDDEN
+                        </span>
+                      )}
                       {col.orderType === "pre_order" ? (
                         <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500 text-stone-950 shadow-md">
                           ⏳ PRE-ORDER
@@ -601,6 +631,13 @@ function CollectionsContent() {
 
                     <div className="pt-2 flex items-center justify-between text-xs text-stone-600 font-medium">
                       <span>Total Products: <strong>{totalCount}</strong> ({groceryCount} grocery, {dressCount} dress)</span>
+                      <button
+                        onClick={() => updateQuickHide(col, !col.hideOrdering)}
+                        className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition border ${col.hideOrdering ? "bg-rose-600 text-white border-rose-600 hover:bg-rose-700" : "bg-white text-stone-700 border-stone-200 hover:bg-rose-50 hover:text-rose-700"}`}
+                        title="Toggle ordering on website"
+                      >
+                        {col.hideOrdering ? "🚫 Show Again" : "Hide Ordering"}
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -681,6 +718,21 @@ function CollectionsContent() {
                   <option value="pre_order">⏳ PRE-ORDER NOW Badge</option>
                   <option value="both">🔀 BOTH — Pre-Order & Add to Cart</option>
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Hide Ordering on Website</label>
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, hideOrdering: !form.hideOrdering })}
+                  className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl border text-sm font-bold transition ${form.hideOrdering ? "bg-rose-50 border-rose-300 text-rose-800" : "bg-stone-50 border-stone-200 text-stone-600"}`}
+                >
+                  <span>{form.hideOrdering ? "🚫 Hidden — no order button" : "✓ Orderable"}</span>
+                  <span className={`w-9 h-5 rounded-full relative transition ${form.hideOrdering ? "bg-rose-500" : "bg-emerald-400"}`}>
+                    <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all ${form.hideOrdering ? "left-[18px]" : "left-0.5"}`} />
+                  </span>
+                </button>
+                <p className="text-[10px] text-stone-400 mt-1">ON = ഈ collection ലെ എല്ലാ products നും order button മറയും</p>
               </div>
 
               <div>

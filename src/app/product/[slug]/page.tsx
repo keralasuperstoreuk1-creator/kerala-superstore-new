@@ -83,7 +83,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               </div>
             )}
 
-            <AddToCartButton product={product} variants={variants} />
+            <AddToCartButton product={product} variants={variants} hideOrdering={!!product.hideOrdering || !!cat[0]?.hideOrdering} />
 
             <div className="mt-6 pt-6 border-t border-slate-200">
               <a href={whatsappShare} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-medium">
