@@ -43,6 +43,7 @@ function extractDressData(body: any) {
     stock: body.stock ?? 50,
     sortOrder: body.sortOrder ?? 0,
     isActive: body.isActive ?? true,
+    hideOrdering: body.hideOrdering ?? false,
   };
 }
 
