@@ -182,7 +182,7 @@ function CollectionsContent() {
     await fetch("/api/collections", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...col, hideOrdering: hide }),
+      body: JSON.stringify({ id: col.id, hideOrdering: hide }),
     });
     fetchData();
   }

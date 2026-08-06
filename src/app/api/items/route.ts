@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     const body = await req.json();
-    const { id, variants, ...data } = body;
+    const { id, variants, createdAt, updatedAt, ...data } = body;
     const result = await db.update(items).set(data).where(eq(items.id, id)).returning();
 
     if (variants) {

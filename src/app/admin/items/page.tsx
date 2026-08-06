@@ -88,7 +88,7 @@ export default function ItemsPage() {
     await fetch("/api/items", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...item, stock: newStock }),
+      body: JSON.stringify({ id: item.id, stock: newStock }),
     });
     fetchData();
   }
@@ -97,7 +97,7 @@ export default function ItemsPage() {
     await fetch("/api/items", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...item, hideOrdering: hide }),
+      body: JSON.stringify({ id: item.id, hideOrdering: hide }),
     });
     fetchData();
   }

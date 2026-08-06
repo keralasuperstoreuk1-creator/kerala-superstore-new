@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     const body = await req.json();
-    const { id, ...data } = body;
+    const { id, createdAt, updatedAt, ...data } = body;
     const result = await db.update(categories).set(data).where(eq(categories.id, id)).returning();
     return NextResponse.json(result[0]);
   } catch (error) {

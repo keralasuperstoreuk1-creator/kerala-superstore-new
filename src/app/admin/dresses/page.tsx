@@ -191,7 +191,7 @@ export default function DressesPage() {
     await fetch("/api/dresses", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...d, hideOrdering: hide }),
+      body: JSON.stringify({ id: d.id, hideOrdering: hide }),
     });
     fetchDresses();
   }

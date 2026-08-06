@@ -260,7 +260,7 @@ export default function OnamPookkalamPage() {
     await fetch("/api/items", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...d, hideOrdering: hide }),
+      body: JSON.stringify({ id: d.id, hideOrdering: hide }),
     });
     fetchItems();
   }

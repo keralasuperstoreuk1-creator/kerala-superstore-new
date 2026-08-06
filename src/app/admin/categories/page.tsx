@@ -120,7 +120,7 @@ function CategoriesContent() {
     await fetch("/api/categories", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...cat, hideOrdering: hide }),
+      body: JSON.stringify({ id: cat.id, hideOrdering: hide }),
     });
     fetchData();
   }
