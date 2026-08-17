@@ -1161,10 +1161,14 @@ async function handleCheckout(e: React.FormEvent) {
                     <div className="mt-3 flex gap-2">
                       {isOrderingHidden(dress) ? (
                         <div className="flex-1 bg-slate-100 text-slate-400 py-2 rounded-lg text-sm font-bold transition flex items-center justify-center gap-1 uppercase tracking-wider">🚫 Not Available</div>
+                      ) : isPreOrder(dress) ? (
+                        <button onClick={(e) => { e.stopPropagation(); openDetailModal(dress); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-lg text-sm font-bold transition flex items-center justify-center gap-1 shadow-sm uppercase tracking-wider">
+                          <Clock className="w-3.5 h-3.5" /> Pre-Order
+                        </button>
                       ) : (
-                      <button onClick={(e) => { e.stopPropagation(); openDetailModal(dress); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-lg text-sm font-bold transition flex items-center justify-center gap-1 shadow-sm uppercase tracking-wider">
-                        <Clock className="w-3.5 h-3.5" /> Pre-Order
-                      </button>
+                        <button onClick={(e) => { e.stopPropagation(); openDetailModal(dress); }} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-lg text-sm font-bold transition flex items-center justify-center gap-1 shadow-sm uppercase tracking-wider">
+                          <ShoppingCart className="w-3.5 h-3.5" /> Add to Cart
+                        </button>
                       )}
                       <button onClick={(e) => { e.stopPropagation(); shareOnWhatsApp(dress.name, dress.price, dress.slug); }} className="w-9 h-9 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition shadow-sm" title="Share on WhatsApp">
                         <Share2 className="w-3.5 h-3.5" />
