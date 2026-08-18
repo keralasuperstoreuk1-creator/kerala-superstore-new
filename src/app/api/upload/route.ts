@@ -5,7 +5,9 @@ import path from "path";
 
 export const maxDuration = 60;
 
+// Support both CLOUDINARY_URL (standard) and individual CLOUDINARY_* keys.
 cloudinary.config({
+  cloud_url: process.env.CLOUDINARY_URL,
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
@@ -15,7 +17,8 @@ const UPLOAD_ROOT =
   process.env.UPLOAD_ROOT || path.join(/* turbopackIgnore: true */ process.cwd(), "data", "uploads");
 
 function cloudinaryConfigured(): boolean {
-  return Boolean(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
+  return Boolean(process.env.CLOUDINARY_URL) ||
+    Boolean(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
 }
 
 export async function POST(req: NextRequest) {
