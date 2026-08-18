@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { slides, offers, dresses, categories, items, itemVariants, winners, settings, collections, promoBanners } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import HomeClient from "./HomeClient";
 
 export const dynamic = "force-dynamic";
@@ -11,7 +11,7 @@ export default async function HomePage() {
     db.select().from(offers).where(eq(offers.isActive, true)).orderBy(offers.sortOrder),
     db.select().from(dresses).where(eq(dresses.isActive, true)).orderBy(dresses.sortOrder),
     db.select().from(categories).orderBy(categories.sortOrder),
-    db.select().from(items).where(eq(items.isActive, true)).orderBy(items.sortOrder),
+    db.select().from(items).where(eq(items.isActive, true)).orderBy(items.sortOrder, desc(items.createdAt)),
     db.select().from(itemVariants),
     db.select().from(winners).where(eq(winners.isActive, true)).orderBy(winners.sortOrder),
     db.select().from(settings),

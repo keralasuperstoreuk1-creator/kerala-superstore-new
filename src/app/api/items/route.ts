@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { items, itemVariants } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
   try {
@@ -23,9 +23,9 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ ...item[0], variants });
     }
 
-    let query = db.select().from(items).orderBy(items.sortOrder);
+    let query = db.select().from(items).orderBy(items.sortOrder, desc(items.createdAt));
     if (categoryId) {
-      query = db.select().from(items).where(eq(items.categoryId, parseInt(categoryId))).orderBy(items.sortOrder) as any;
+      query = db.select().from(items).where(eq(items.categoryId, parseInt(categoryId))).orderBy(items.sortOrder, desc(items.createdAt)) as any;
     }
 
     const data = await query;

@@ -277,6 +277,11 @@ export default function ItemsPage() {
                 </label>
                 {form.images[0] && <img src={form.images[0]} alt="" className="w-10 h-10 object-cover rounded-xl border border-stone-200" />}
               </div>
+              {uploadMsg && (
+                <p className={`text-[10px] font-bold mt-1.5 ${uploadMsg.includes("failed") || uploadMsg.includes("Failed") ? "text-rose-600" : "text-emerald-600"}`}>
+                  {uploadMsg}
+                </p>
+              )}
             </div>
           </div>
 
@@ -302,6 +307,11 @@ export default function ItemsPage() {
                 </span>
               </button>
               <p className="text-[10px] text-stone-400 mt-1">ON = website-ൽ ഈ product order ചെയ്യാൻ പറ്റില്ല (order button മറയും)</p>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Sort Order (Top of Page)</label>
+              <input type="number" value={form.sortOrder} onChange={(e) => setForm({ ...form, sortOrder: parseInt(e.target.value) || 0 })} placeholder="0" className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm font-medium" />
+              <p className="text-[10px] text-stone-400 mt-1">Smaller number = website-ൽ മുകളിൽ (new items auto-top)</p>
             </div>
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Gender</label>

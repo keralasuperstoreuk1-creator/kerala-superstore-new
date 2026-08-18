@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { categories, items } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import Link from "next/link";
 import { ShoppingCart, ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
@@ -12,7 +12,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
   const cat = await db.select().from(categories).where(eq(categories.slug, slug));
   if (cat.length === 0) notFound();
 
-  const allItems = await db.select().from(items).where(eq(items.categoryId, cat[0].id)).orderBy(items.sortOrder);
+  const allItems = await db.select().from(items).where(eq(items.categoryId, cat[0].id)).orderBy(items.sortOrder, desc(items.createdAt));
 
   return (
     <div className="min-h-screen">
