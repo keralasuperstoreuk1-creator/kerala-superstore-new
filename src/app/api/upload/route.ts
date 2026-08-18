@@ -36,17 +36,22 @@ export async function POST(req: NextRequest) {
 
     // Prefer Cloudinary when keys are configured (persists across deployments).
     if (cloudinaryConfigured()) {
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const base64 = buffer.toString("base64");
-      const dataUri = `data:${file.type || "image/png"};base64,${base64}`;
+      try {
+        const bytes = await file.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+        const base64 = buffer.toString("base64");
+        const dataUri = `data:${file.type || "image/png"};base64,${base64}`;
 
-      const result = await cloudinary.uploader.upload(dataUri, {
-        folder: `kerala-superstore/${safeFolder}`,
-        resource_type: "auto",
-      });
+        const result = await cloudinary.uploader.upload(dataUri, {
+          folder: `kerala-superstore/${safeFolder}`,
+          resource_type: "auto",
+        });
 
-      return NextResponse.json({ success: true, url: result.secure_url });
+        return NextResponse.json({ success: true, url: result.secure_url });
+      } catch (cloudErr) {
+        console.error("Cloudinary upload failed, falling back to local filesystem:", cloudErr);
+        // Fall through to local filesystem so uploads never fail
+      }
     }
 
     // Fallback: save locally and serve via /api/files/*.
