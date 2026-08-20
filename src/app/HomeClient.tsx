@@ -1073,12 +1073,12 @@ async function handleCheckout(e: React.FormEvent) {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
               {[
-                { type: "ladies", name: "Ladies Onam Collection", desc: "Sarees & Set Mundu", bg: "bg-rose-50", border: "border-rose-200", hover: "hover:bg-rose-100", iconText: "text-rose-600" },
                 { type: "gents", name: "Gents Onam Collection", desc: "Shirt & Kasavu Mundu", bg: "bg-blue-50", border: "border-blue-200", hover: "hover:bg-blue-100", iconText: "text-blue-600" },
+                { type: "ladies", name: "Ladies Onam Collection", desc: "Sarees & Set Mundu", bg: "bg-rose-50", border: "border-rose-200", hover: "hover:bg-rose-100", iconText: "text-rose-600" },
                 { type: "kids-boys", name: "Boys Onam Collection", desc: "Boys Festival Attire", bg: "bg-sky-50", border: "border-sky-200", hover: "hover:bg-sky-100", iconText: "text-sky-600" },
                 { type: "kids-girls", name: "Girls Onam Collection", desc: "Girls Festival Attire", bg: "bg-pink-50", border: "border-pink-200", hover: "hover:bg-pink-100", iconText: "text-pink-600", preOrder: `Pre-order before ${preOrderLabel}` },
                 { type: "combo", name: "Onam Family Collection", desc: "Complete Family Sets", bg: "bg-amber-50", border: "border-amber-200", hover: "hover:bg-amber-100", iconText: "text-amber-600" },
-              ].map((col) => {
+              ].sort((a, b) => (dressTypeOrder[a.type] ?? 99) - (dressTypeOrder[b.type] ?? 99)).map((col) => {
                 const count = sortedDresses.filter((d) => d.type === col.type).length;
                 const colImage = sortedDresses.find((d) => d.type === col.type && d.images?.[0])?.images?.[0];
                 return (
