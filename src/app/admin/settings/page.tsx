@@ -272,6 +272,72 @@ export default function SettingsPage() {
         </div>
       </div>
 
+      <div className="bg-white rounded-xl border border-slate-200 p-6 mb-6 space-y-6">
+        <h2 className="font-semibold text-slate-900">Onam Section Visibility</h2>
+        <p className="text-xs text-slate-500">Show/hide individual sections on the homepage. Toggle on/off.</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            { key: "show_onam_sadhya", label: "Onam Sadhya Section", icon: "🍛" },
+            { key: "show_onam_pookkalam", label: "Onam Pookkalam Section", icon: "🌺" },
+            { key: "show_fresh_pookkal", label: "Fresh Pookkal Section", icon: "🌸" },
+          ].map((item) => (
+            <div key={item.key} className="flex items-center justify-between p-3 bg-stone-50 rounded-xl border border-stone-200">
+              <span className="text-sm font-medium text-stone-700">{item.icon} {item.label}</span>
+              <button
+                onClick={() => { const v = settings[item.key] === "false" ? "true" : "false"; setSettings({ ...settings, [item.key]: v }); saveSetting(item.key, v); }}
+                className={`w-12 h-7 rounded-full transition relative ${settings[item.key] !== "false" ? "bg-emerald-600" : "bg-slate-300"}`}
+              >
+                <span className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-all ${settings[item.key] !== "false" ? "left-6" : "left-0.5"}`} />
+              </button>
+            </div>
+          ))}
+        </div>
+        <p className="text-[10px] text-stone-400">Default: All sections visible (ON). Toggle OFF to hide a section.</p>
+      </div>
+
+      <div className="bg-white rounded-xl border border-slate-200 p-6 mb-6 space-y-6">
+        <h2 className="font-semibold text-slate-900">Dress Collection Order</h2>
+        <p className="text-xs text-stone-500">Set the order of dress types on the homepage. Drag or enter numbers (0 = first).</p>
+        <div className="space-y-2">
+          {[
+            { key: "order_gents", label: "Gents (Shirts)", default: "0" },
+            { key: "order_ladies", label: "Ladies (Sarees & Blouses)", default: "1" },
+            { key: "order_kids_boys", label: "Kids - Boys", default: "2" },
+            { key: "order_kids_girls", label: "Kids - Girls", default: "3" },
+            { key: "order_combo", label: "Family Combo", default: "4" },
+          ].map((item) => (
+            <div key={item.key} className="flex items-center gap-3 p-3 bg-stone-50 rounded-xl border border-stone-200">
+              <span className="text-sm font-medium text-stone-700 w-48">{item.label}</span>
+              <input
+                type="number"
+                min="0"
+                max="99"
+                value={settings[item.key] || item.default}
+                onChange={(e) => setSettings({ ...settings, [item.key]: e.target.value })}
+                onBlur={() => saveSetting(item.key, settings[item.key] || item.default)}
+                className="w-20 px-3 py-2 border border-stone-300 rounded-lg text-center text-sm focus:ring-2 focus:ring-amber-500"
+              />
+              <span className="text-xs text-stone-400">Order: {settings[item.key] || item.default}</span>
+            </div>
+          ))}
+        </div>
+        <p className="text-[10px] text-stone-400">Lower number = shows first. After changing, click outside the number box to save.</p>
+      </div>
+
+      <div className="bg-white rounded-xl border border-slate-200 p-6 mb-6 space-y-6">
+        <h2 className="font-semibold text-slate-900">Promo Banner Visibility</h2>
+        <p className="text-xs text-stone-500">Show/hide the top promo banner carousel on the homepage.</p>
+        <div className="flex items-center justify-between p-3 bg-stone-50 rounded-xl border border-stone-200">
+          <span className="text-sm font-medium text-stone-700">📱 Promo Banner Carousel</span>
+          <button
+            onClick={() => { const v = settings.show_promo_banner === "false" ? "true" : "false"; setSettings({ ...settings, show_promo_banner: v }); saveSetting("show_promo_banner", v); }}
+            className={`w-12 h-7 rounded-full transition relative ${settings.show_promo_banner !== "false" ? "bg-emerald-600" : "bg-slate-300"}`}
+          >
+            <span className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-all ${settings.show_promo_banner !== "false" ? "left-6" : "left-0.5"}`} />
+          </button>
+        </div>
+      </div>
+
       <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
         <h2 className="font-semibold text-slate-900 flex items-center gap-2"><FileSpreadsheet className="w-5 h-5" /> Google Sheets Sync</h2>
         <div>

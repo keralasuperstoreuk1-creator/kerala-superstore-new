@@ -188,6 +188,28 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
   }
 
   const { slides, offers, dresses, categories, items, winners, settings, collections = [], promoBanners: allPromoBanners = [] } = data;
+
+  // Section visibility toggles (default: visible)
+  const showSadhya = settings.show_onam_sadhya !== "false";
+  const showPookkalam = settings.show_onam_pookkalam !== "false";
+  const showFreshPookkal = settings.show_fresh_pookkal !== "false";
+  const showPromoBanner = settings.show_promo_banner !== "false";
+
+  // Dress type order from admin settings
+  const dressTypeOrder: Record<string, number> = {
+    gents: parseInt(settings.order_gents || "0"),
+    ladies: parseInt(settings.order_ladies || "1"),
+    "kids-boys": parseInt(settings.order_kids_boys || "2"),
+    "kids-girls": parseInt(settings.order_kids_girls || "3"),
+    combo: parseInt(settings.order_combo || "4"),
+  };
+
+  // Sorted dresses by admin-configured order
+  const sortedDresses = [...dresses].sort((a, b) => {
+    const orderA = dressTypeOrder[a.type] ?? 99;
+    const orderB = dressTypeOrder[b.type] ?? 99;
+    return orderA - orderB;
+  });
   const whatsappNumber = settings.whatsapp_number || "447749132122";
 
   const preOrderDeadline = settings.pre_order_deadline || "2026-08-05";
@@ -321,7 +343,7 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
     return sum + parseFloat(getCartUnitPrice(item)) * item.quantity;
   }, 0);
 
-  const filteredDresses = dresses.filter((d) => {
+  const filteredDresses = sortedDresses.filter((d) => {
     if (hidePreOrders && isPreOrder(d)) return false;
     const matchesFilter = dressFilter === "all" || d.type === dressFilter;
     const q = searchQuery.toLowerCase();
@@ -980,7 +1002,7 @@ async function handleCheckout(e: React.FormEvent) {
       )}
 
       {/* Promo Banners Auto-Slide Carousel */}
-      {allPromoBanners.length > 0 ? (
+      {showPromoBanner && allPromoBanners.length > 0 ? (
         <section id="promo-banner" className="relative overflow-hidden bg-stone-900">
           <div className="relative h-[200px] sm:h-[280px] md:h-[400px]">
             {allPromoBanners.map((banner, i) => (
@@ -1009,7 +1031,7 @@ async function handleCheckout(e: React.FormEvent) {
             </div>
           )}
         </section>
-      ) : settings.promo_banner_active !== "false" && (settings.promo_banner_tag || settings.promo_banner_title || settings.promo_banner_image) ? (
+      ) : showPromoBanner && settings.promo_banner_active !== "false" && (settings.promo_banner_tag || settings.promo_banner_title || settings.promo_banner_image) ? (
         <section id="promo-banner" className="relative overflow-hidden">
           <div className="relative h-[200px] sm:h-[280px] md:h-[400px]">
             <div className="absolute inset-0" style={{ background: `linear-gradient(to right, ${settings.promo_banner_color1 || '#f97316'}, ${settings.promo_banner_color2 || '#fbbf24'}, ${settings.promo_banner_color3 || '#eab308'})` }} />
@@ -1057,8 +1079,8 @@ async function handleCheckout(e: React.FormEvent) {
                 { type: "kids-girls", name: "Girls Onam Collection", desc: "Girls Festival Attire", bg: "bg-pink-50", border: "border-pink-200", hover: "hover:bg-pink-100", iconText: "text-pink-600", preOrder: `Pre-order before ${preOrderLabel}` },
                 { type: "combo", name: "Onam Family Collection", desc: "Complete Family Sets", bg: "bg-amber-50", border: "border-amber-200", hover: "hover:bg-amber-100", iconText: "text-amber-600" },
               ].map((col) => {
-                const count = dresses.filter((d) => d.type === col.type).length;
-                const colImage = dresses.find((d) => d.type === col.type && d.images?.[0])?.images?.[0];
+                const count = sortedDresses.filter((d) => d.type === col.type).length;
+                const colImage = sortedDresses.find((d) => d.type === col.type && d.images?.[0])?.images?.[0];
                 return (
                   <div
                     key={col.type}
@@ -1183,7 +1205,7 @@ async function handleCheckout(e: React.FormEvent) {
       )}
 
       {/* Onam Sadhya — Pre-Order Section */}
-      {hidePreOrders ? null : (() => {
+      {showSadhya && (hidePreOrders ? null : (() => {
         const sadhyaCat = categories.find((c) => c.name?.toLowerCase().includes("sadhya"));
         const sadhyaItems = sadhyaCat ? items.filter((i) => i.categoryId === sadhyaCat.id) : [];
         return (
@@ -1288,12 +1310,12 @@ async function handleCheckout(e: React.FormEvent) {
       })()}
 
       {/* Pookkalam Promo Section */}
-      {hidePreOrders ? null : (() => {
+      {showPookkalam && (hidePreOrders ? null : (() => {
         const catId = settings.pookkalam_category_id;
         const dressTypes = (settings.pookkalam_dress_types || "").split(",").filter(Boolean);
         let pookkalamProducts: any[] = [];
         if (catId) pookkalamProducts = [...pookkalamProducts, ...items.filter((i) => String(i.categoryId) === String(catId))];
-        if (dressTypes.length > 0) pookkalamProducts = [...pookkalamProducts, ...dresses.filter((d) => dressTypes.includes(d.type))];
+        if (dressTypes.length > 0) pookkalamProducts = [...pookkalamProducts, ...sortedDresses.filter((d) => dressTypes.includes(d.type))];
         const title = settings.pookkalam_title || "Onam Pookkalam";
         const desc = settings.pookkalam_description || "Celebrate the vibrant floral traditions of Onam with our curated Pookkalam collection.";
         const btnText = settings.pookkalam_btn_text || "Shop Pookkalam";
@@ -1410,15 +1432,15 @@ async function handleCheckout(e: React.FormEvent) {
             </div>
           </section>
         );
-      })()}
+      })())}
 
       {/* Onam Fresh Pookkal Promo Section */}
-      {hidePreOrders ? null : (() => {
+      {showFreshPookkal && (hidePreOrders ? null : (() => {
         const catId = settings.fresh_pookkal_category_id;
         let freshProducts: any[] = [];
         if (catId) freshProducts = [...freshProducts, ...items.filter((i) => String(i.categoryId) === String(catId))];
         // Also include any dresses with type fresh_pookkal (legacy items saved via old system)
-        freshProducts = [...freshProducts, ...dresses.filter((d) => d.type === "fresh_pookkal")];
+        freshProducts = [...freshProducts, ...sortedDresses.filter((d) => d.type === "fresh_pookkal")];
         const title = settings.fresh_pookkal_title || "Onam Fresh Pookkal";
         const desc = settings.fresh_pookkal_description || "Fresh flowers and floral arrangements to bring the spirit of Onam to your home.";
         const btnText = settings.fresh_pookkal_btn_text || "Shop Fresh Pookkal";
@@ -1547,9 +1569,7 @@ async function handleCheckout(e: React.FormEvent) {
             </div>
           </section>
         );
-      })()}
-
-      {/* Categories */}
+      })())}
       <section id="categories" className="py-16 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
@@ -2157,8 +2177,8 @@ async function handleCheckout(e: React.FormEvent) {
                         </span>
                       )}
                     </div>
-                  );
-                })()}
+        );
+      })())}
 
                 {/* Dress / Fresh Pookkal Size Selector */}
                 {detailProduct.isDress && parseSizes(detailProduct.sizes).length > 0 && (
