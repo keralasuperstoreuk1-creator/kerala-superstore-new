@@ -1307,7 +1307,7 @@ async function handleCheckout(e: React.FormEvent) {
             </div>
           </section>
         );
-      })()}
+      })())}
 
       {/* Pookkalam Promo Section */}
       {showPookkalam && (hidePreOrders ? null : (() => {
@@ -2178,7 +2178,7 @@ async function handleCheckout(e: React.FormEvent) {
                       )}
                     </div>
         );
-      })())}
+      })()}
 
                 {/* Dress / Fresh Pookkal Size Selector */}
                 {detailProduct.isDress && parseSizes(detailProduct.sizes).length > 0 && (
