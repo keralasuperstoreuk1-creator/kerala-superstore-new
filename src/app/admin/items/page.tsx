@@ -14,6 +14,31 @@ export default function ItemsPage() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
+  const [sortMode, setSortMode] = useState<"custom"|"name">("custom");
+  function detectCategoryId(name:string){
+    const n=name.toLowerCase();
+    const findByName=(kw:string)=>categories.find((c:any)=>c.name.toLowerCase().includes(kw))?.id;
+    if(n.includes("sadhya")||n.includes("vazha")||n.includes("payasam")||n.includes("feast")) return findByName("sadhya")||categories[0]?.id;
+    if(n.includes("pookalam")||n.includes("poov")||n.includes("flower")||n.includes("rose")||n.includes("jasmine")||n.includes("lotus")) return findByName("pookkalam")||categories[0]?.id;
+    if(n.includes("rice")||n.includes("grain")) return findByName("rice")||categories[0]?.id;
+    if(n.includes("spice")) return findByName("spice")||categories[0]?.id;
+    return categories[0]?.id;
+  }
+  function handleAutoDetectCat(){
+    const cid=detectCategoryId(form.name);
+    if(cid) setForm((f:any)=>({...f,categoryId:String(cid)}));
+  }
+  async function handleMoveSort(item:any,dir:"up"|"down"){
+    const sorted=[...items].sort((a:any,b:any)=>(a.sortOrder||0)-(b.sortOrder||0));
+    const idx=sorted.findIndex((x:any)=>x.id===item.id);
+    const swapIdx=dir==="up"?idx-1:idx+1;
+    if(swapIdx<0||swapIdx>=sorted.length) return;
+    const other=sorted[swapIdx];
+    const aOrder=item.sortOrder||0,bOrder=other.sortOrder||0;
+    await fetch("/api/items",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:item.id, sortOrder:bOrder})});
+    await fetch("/api/items",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:other.id, sortOrder:aOrder})});
+    fetchData();
+  }
 
   const [form, setForm] = useState({
     name: "", slug: "", description: "", price: "", compareAtPrice: "", sku: "", stock: 100,
@@ -174,6 +199,9 @@ export default function ItemsPage() {
       return item.name.toLowerCase().includes(searchTerm.toLowerCase());
     }
     return true;
+  }).sort((a:any,b:any)=>{
+    if(sortMode==="name") return a.name.localeCompare(b.name);
+    return (a.sortOrder||0)-(b.sortOrder||0);
   });
 
   return (
@@ -223,7 +251,7 @@ export default function ItemsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Category *</label>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Category * (Manual override)</label>
               <select required value={form.categoryId} onChange={(e) => {
                 const catId = e.target.value;
                 const selectedCat = categories.find((c: any) => String(c.id) === catId);
@@ -249,8 +277,12 @@ export default function ItemsPage() {
               })()}
             </div>
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Product Name *</label>
-              <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Fresh Coconut Oil 1L" className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm font-medium" />
+              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Product Name * <span className="normal-case text-[10px] text-stone-400">— auto+manual</span></label>
+              <div className="flex gap-2">
+                <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Fresh Coconut Oil 1L" className="flex-1 px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm font-medium" />
+                <button type="button" onClick={handleAutoDetectCat} title="Auto detect category from name" className="px-3 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 border border-emerald-300 rounded-xl text-[11px] font-bold whitespace-nowrap">✨ Auto</button>
+              </div>
+              <p className="text-[10px] text-stone-400 mt-1">Type name — click ✨ Auto — or select category manually →</p>
             </div>
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Price (£) *</label>
@@ -551,6 +583,10 @@ export default function ItemsPage() {
               </option>
             ))}
           </select>
+          <div className="flex items-center gap-1 bg-stone-100 p-1 rounded-xl">
+            <button type="button" onClick={()=>setSortMode("custom")} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${sortMode==="custom"?"bg-[#0b2416] text-white":"text-stone-600"}`}>Custom Order</button>
+            <button type="button" onClick={()=>setSortMode("name")} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${sortMode==="name"?"bg-[#0b2416] text-white":"text-stone-600"}`}>Name A-Z</button>
+          </div>
         </div>
       </div>
 
@@ -570,6 +606,7 @@ export default function ItemsPage() {
               <th className="p-4">Product</th>
               <th className="p-4">Category</th>
               <th className="p-4">Price</th>
+              <th className="p-4 text-center">Website Order</th>
               <th className="p-4 text-center">Stock & Quick Adjustment</th>
               <th className="p-4 text-right">Actions</th>
             </tr>
@@ -618,6 +655,13 @@ export default function ItemsPage() {
                     {item.compareAtPrice && (
                       <div className="text-[10px] text-stone-400 line-through">£{item.compareAtPrice}</div>
                     )}
+                  </td>
+                  <td className="p-4 text-center">
+                    <div className="flex items-center justify-center gap-1">
+                      <span className="text-xs font-mono font-bold bg-stone-100 px-2 py-1 rounded">{item.sortOrder||0}</span>
+                      <button onClick={()=>handleMoveSort(item,"up")} title="Move up" className="px-1.5 py-1 bg-stone-50 hover:bg-emerald-100 border rounded text-xs">↑</button>
+                      <button onClick={()=>handleMoveSort(item,"down")} title="Move down" className="px-1.5 py-1 bg-stone-50 hover:bg-emerald-100 border rounded text-xs">↓</button>
+                    </div>
                   </td>
                   <td className="p-4 text-center">
                     <div className="space-y-1.5">

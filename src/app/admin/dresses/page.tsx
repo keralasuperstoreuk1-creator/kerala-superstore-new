@@ -13,6 +13,34 @@ export default function DressesPage() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
+  const [sortMode, setSortMode] = useState<"custom"|"name">("custom");
+
+  function detectDressType(name: string): string {
+    const n = name.toLowerCase();
+    if (n.includes("blouse")) return "ladies";
+    if (n.includes("saree") || n.includes("mundu") && n.includes("ladies") || n.includes("set mundu")) return "ladies";
+    if (n.includes("shirt") || n.includes("mundu") || n.includes("gents") || n.includes("men")) return "gents";
+    if (n.includes("boy")) return "kids-boys";
+    if (n.includes("girl") || n.includes("pavada") || n.includes("frock")) return "kids-girls";
+    if (n.includes("family") || n.includes("combo") || n.includes("couple")) return "combo";
+    if (n.includes("kids")) return "kids";
+    return "ladies";
+  }
+  function handleAutoDetect() {
+    const detected = detectDressType(form.name);
+    setForm((f:any)=>({...f,type:detected}));
+  }
+  async function handleMoveSort(item:any, dir:"up"|"down"){
+    const sorted = [...dressesList].sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
+    const idx = sorted.findIndex((x:any)=>x.id===item.id);
+    const swapIdx = dir==="up"? idx-1 : idx+1;
+    if(swapIdx<0 || swapIdx>=sorted.length) return;
+    const other = sorted[swapIdx];
+    const aOrder = item.sortOrder||0, bOrder = other.sortOrder||0;
+    await fetch("/api/dresses",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:item.id, sortOrder:bOrder})});
+    await fetch("/api/dresses",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:other.id, sortOrder:aOrder})});
+    fetchDresses();
+  }
 
   // Remember last used sizes & sizePrices for quick re-use
   const [lastSizes, setLastSizes] = useState<string[]>([]);
@@ -255,6 +283,9 @@ export default function DressesPage() {
       return d.name.toLowerCase().includes(searchTerm.toLowerCase());
     }
     return true;
+  }).sort((a:any,b:any)=>{
+    if(sortMode==="name") return a.name.localeCompare(b.name);
+    return (a.sortOrder||0)-(b.sortOrder||0);
   });
 
   return (
@@ -294,11 +325,15 @@ export default function DressesPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Dress Name *</label>
-              <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Traditional Zari Kasavu Saree" className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm font-medium" />
+              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Dress Name * <span className="normal-case text-[10px] text-stone-400">— auto+manual category</span></label>
+              <div className="flex gap-2">
+                <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Traditional Zari Kasavu Saree" className="flex-1 px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm font-medium" />
+                <button type="button" onClick={handleAutoDetect} title="Auto detect category from name (blouse/shirt/pant)" className="px-3 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-300 rounded-xl text-[11px] font-bold whitespace-nowrap">✨ Auto</button>
+              </div>
+              <p className="text-[10px] text-stone-400 mt-1">Type blouse/shirt/pant — click ✨ Auto — or select manually →</p>
             </div>
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Category Group *</label>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Category Group * (Manual override)</label>
                 <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm font-semibold">
                   <option value="ladies">👩 Ladies Onam Collection (Saree & Set Mundu)</option>
                   <option value="gents">👨 Gents Onam Collection (Shirt & Kasavu Mundu)</option>
@@ -322,6 +357,11 @@ export default function DressesPage() {
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Stock Count</label>
               <input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: parseInt(e.target.value) || 0 })} className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Website Order (sortOrder)</label>
+              <input type="number" value={form.sortOrder} onChange={(e)=>setForm({...form,sortOrder:parseInt(e.target.value)||0})} placeholder="0 = top" className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white outline-none transition text-sm font-bold" />
+              <p className="text-[10px] text-stone-400 mt-1">Smaller number = website-il mukalil kanikkum</p>
             </div>
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Button Action</label>
@@ -599,6 +639,10 @@ export default function DressesPage() {
             <option value="kids-girls">👧 Girls Onam Collection</option>
             <option value="combo">Onam Family Collection</option>
           </select>
+          <div className="flex items-center gap-1 bg-stone-100 p-1 rounded-xl">
+            <button type="button" onClick={()=>setSortMode("custom")} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${sortMode==="custom"?"bg-[#0b2416] text-white":"text-stone-600"}`}>Custom Order</button>
+            <button type="button" onClick={()=>setSortMode("name")} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${sortMode==="name"?"bg-[#0b2416] text-white":"text-stone-600"}`}>Name A-Z</button>
+          </div>
         </div>
       </div>
 
@@ -619,6 +663,7 @@ export default function DressesPage() {
               <th className="p-4">Group</th>
               <th className="p-4">Price</th>
               <th className="p-4">Color Variants</th>
+              <th className="p-4 text-center">Website Order</th>
               <th className="p-4 text-right">Actions</th>
             </tr>
           </thead>
@@ -675,6 +720,13 @@ export default function DressesPage() {
                       ) : (
                         <span className="text-stone-400 text-[10px] italic">Standard</span>
                       )}
+                    </div>
+                  </td>
+                  <td className="p-4 text-center">
+                    <div className="flex items-center justify-center gap-1">
+                      <span className="text-xs font-mono font-bold bg-stone-100 px-2 py-1 rounded">{d.sortOrder||0}</span>
+                      <button onClick={()=>handleMoveSort(d,"up")} title="Move up (website-il mukalilekku)" className="px-1.5 py-1 bg-stone-50 hover:bg-amber-100 border rounded text-xs">↑</button>
+                      <button onClick={()=>handleMoveSort(d,"down")} title="Move down" className="px-1.5 py-1 bg-stone-50 hover:bg-amber-100 border rounded text-xs">↓</button>
                     </div>
                   </td>
                   <td className="p-4 text-right">
