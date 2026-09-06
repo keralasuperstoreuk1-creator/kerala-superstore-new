@@ -20,6 +20,7 @@ async function seed() {
     { key: "store_address", value: "Old Market Street, M9 8DX, Manchester" },
     { key: "currency", value: "GBP" },
     { key: "admin_password", value: "admin123" },
+    { key: "onam_season_active", value: "true" },
   ];
   for (const s of settingsData) {
     await db.insert(settings).values(s).onConflictDoNothing();
@@ -38,12 +39,20 @@ async function seed() {
 
   // Categories — use ON CONFLICT DO NOTHING, then fetch existing
   const catData = [
-    ["Rice & Grains", "rice-grains"],
+    ["Rice", "rice"],
+    ["Pulses", "pulses"],
     ["Spices", "spices"],
+    ["Masala", "masala"],
+    ["Powders", "powders"],
+    ["Crisps & Snacks", "crisps-snacks"],
+    ["Oil", "oil"],
+    ["Pickles", "pickles"],
+    ["Frozen", "frozen"],
+    ["Kitchen Wares", "kitchen-wares"],
+    ["Rice & Grains", "rice-grains"],
     ["Snacks", "snacks"],
     ["Beverages", "beverages"],
     ["Dairy", "dairy"],
-    ["Frozen", "frozen"],
   ];
   const catMap: Record<string, number> = {};
   for (const [name, slug] of catData) {
@@ -160,8 +169,47 @@ export async function autoSeedIfEmpty() {
       console.log("[auto-seed] Empty database detected — seeding Kerala Super Store demo data…");
       await seed();
       console.log("[auto-seed] Done.");
+    } else {
+      // Always ensure all required categories exist (for live DBs)
+      await ensureCategories();
     }
   } catch (err) {
     console.error("[auto-seed] Failed:", err);
+  }
+}
+
+// Ensures all required categories exist in DB (safe to call on every startup)
+async function ensureCategories() {
+  const allCols = await db.select().from(collections);
+  if (allCols.length === 0) return; // no collections yet, skip
+  const col = allCols.find((c: any) => c.slug === "groceries") || allCols[0];
+
+  const requiredCategories: Array<[string, string]> = [
+    ["Rice", "rice"],
+    ["Pulses", "pulses"],
+    ["Spices", "spices"],
+    ["Masala", "masala"],
+    ["Powders", "powders"],
+    ["Crisps & Snacks", "crisps-snacks"],
+    ["Oil", "oil"],
+    ["Pickles", "pickles"],
+    ["Frozen", "frozen"],
+    ["Kitchen Wares", "kitchen-wares"],
+    ["Rice & Grains", "rice-grains"],
+    ["Snacks", "snacks"],
+    ["Beverages", "beverages"],
+    ["Dairy", "dairy"],
+  ];
+
+  const existingCats = await db.select().from(categories);
+  const existingSlugs = new Set(existingCats.map((c: any) => c.slug));
+
+  for (const [name, slug] of requiredCategories) {
+    if (!existingSlugs.has(slug)) {
+      await db.insert(categories).values({
+        name, slug, collectionId: col.id, sortOrder: 0, isActive: true,
+      }).onConflictDoNothing();
+      console.log(`[seed] Added missing category: ${name}`);
+    }
   }
 }
