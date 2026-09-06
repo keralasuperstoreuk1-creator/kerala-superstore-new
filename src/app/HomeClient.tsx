@@ -190,9 +190,13 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
   const { slides, offers, dresses, categories, items, winners, settings, collections = [], promoBanners: allPromoBanners = [] } = data;
 
   // Section visibility toggles (default: visible)
-  const showSadhya = settings.show_onam_sadhya !== "false";
-  const showPookkalam = settings.show_onam_pookkalam !== "false";
-  const showFreshPookkal = settings.show_fresh_pookkal !== "false";
+  // Master Onam season switch — hides ALL Onam content (dress collections, hero
+  // Onam slides, carousel items, Sadhya/Pookkalam sections) without deleting data.
+  // Admin sets onam_season_active = "false" to hide; "true" (default) to show.
+  const onamSeasonActive = settings.onam_season_active !== "false";
+  const showSadhya = onamSeasonActive && settings.show_onam_sadhya !== "false";
+  const showPookkalam = onamSeasonActive && settings.show_onam_pookkalam !== "false";
+  const showFreshPookkal = onamSeasonActive && settings.show_fresh_pookkal !== "false";
   const showPromoBanner = settings.show_promo_banner !== "false";
 
   // Dress type order from admin settings
@@ -223,6 +227,7 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
   const preOrderMsg = settings.pre_order_message || `Pre-order before ${preOrderLabelFull} for Onam delivery`;
   const preOrderExpired = !isNaN(preOrderDate.getTime()) && Date.now() > preOrderDate.getTime();
   const hidePreOrders = settings.pre_order_hide_after === "true" && preOrderExpired;
+  const showOnamDresses = onamSeasonActive && dresses.length > 0 && !hidePreOrders;
 
   // Live viewers counter (ambient, purely decorative)
   const [viewers, setViewers] = useState(47);
@@ -484,9 +489,19 @@ async function handleCheckout(e: React.FormEvent) {
     }
   }
 
-  const heroSlides = slides.length > 0 ? slides : [
+  const heroSlidesRaw = slides.length > 0 ? slides : [
     { title: "Up to 40% OFF on Groceries", subtitle: "Fresh vegetables, fruits, spices & more at unbeatable prices. Limited time offer!", image: "", buttonText: "Shop Now", link: "#products" },
   ];
+
+  // Filter out Onam hero slides when Onam season is OFF
+  const heroSlides = (() => {
+    if (onamSeasonActive) return heroSlidesRaw;
+    const filtered = heroSlidesRaw.filter((s: any) => {
+      const text = `${s.title || ""} ${s.subtitle || ""} ${s.link || ""}`.toLowerCase();
+      return !text.includes("onam") && !text.includes("kasavu") && !text.includes("festive");
+    });
+    return filtered.length > 0 ? filtered : heroSlidesRaw;
+  })();
 
   const nextHero = () => setHeroIndex((i) => (i + 1) % heroSlides.length);
   const prevHero = () => setHeroIndex((i) => (i - 1 + heroSlides.length) % heroSlides.length);
@@ -821,6 +836,7 @@ async function handleCheckout(e: React.FormEvent) {
           const meta = dressTypeMeta[t];
           const list = dresses.filter((d) => d.type === t);
           if (list.length === 0) continue;
+          if (!onamSeasonActive) continue;
           if (hidePreOrders) continue;
           stripItems.push({
             name: meta.name,
@@ -868,7 +884,11 @@ async function handleCheckout(e: React.FormEvent) {
           const cat = categories.find(ld.findCat);
           const banner = settings[`${ld.id}_banner_image`];
           if (!cat && !banner) continue;
+          if (!onamSeasonActive) continue;
           if (hidePreOrders) continue;
+          if (ld.id === "sadhya" && !showSadhya) continue;
+          if (ld.id === "pookkalam" && !showPookkalam) continue;
+          if (ld.id === "fresh_pookkal" && !showFreshPookkal) continue;
           const list = cat ? items.filter((i) => i.categoryId === cat.id) : [];
           stripItems.push({
             name: settings[`${ld.id}_title`] || ld.name,
@@ -1059,7 +1079,7 @@ async function handleCheckout(e: React.FormEvent) {
       ) : null}
 
       {/* Shop by Collection */}
-      {dresses.length > 0 && !hidePreOrders && (
+      {showOnamDresses && (
         <section className="py-16 bg-gradient-to-b from-amber-50/60 to-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="reveal text-center mb-10 max-w-3xl mx-auto">
@@ -1123,7 +1143,7 @@ async function handleCheckout(e: React.FormEvent) {
       )}
 
       {/* Dress Collections */}
-      {dresses.length > 0 && !hidePreOrders && (
+      {showOnamDresses && (
         <section id="dresses" className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="reveal text-center mb-10 max-w-3xl mx-auto">
@@ -1860,7 +1880,7 @@ async function handleCheckout(e: React.FormEvent) {
       </section>
 
       {/* Lucky Draw Winners */}
-      {winners.length > 0 && (
+      {winners.length > 0 && onamSeasonActive && (
         <section id="winners" className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="reveal text-center mb-12 max-w-2xl mx-auto">
