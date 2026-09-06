@@ -273,6 +273,24 @@ export default function SettingsPage() {
       </div>
 
       <div className="bg-white rounded-xl border border-slate-200 p-6 mb-6 space-y-6">
+        <h2 className="font-semibold text-slate-900">Onam Season Control</h2>
+        <p className="text-xs text-slate-500">Master switch — hides ALL Onam content (dress collections, hero Onam slides, Sadhya, Pookkalam, Lucky Draw winners) without deleting any data. Turn ON when Onam season returns.</p>
+        <div className="flex items-center justify-between p-4 bg-amber-50 rounded-xl border border-amber-200">
+          <div>
+            <span className="text-sm font-bold text-stone-900">🎉 Onam Season Active</span>
+            <p className="text-xs text-stone-500 mt-0.5">{settings.onam_season_active !== "false" ? "ON — All Onam sections visible" : "OFF — All Onam sections hidden"}</p>
+          </div>
+          <button
+            onClick={() => { const v = settings.onam_season_active === "false" ? "true" : "false"; setSettings({ ...settings, onam_season_active: v }); saveSetting("onam_season_active", v); }}
+            className={`w-14 h-8 rounded-full transition relative ${settings.onam_season_active !== "false" ? "bg-emerald-600" : "bg-slate-300"}`}
+          >
+            <span className={`absolute top-1 w-6 h-6 bg-white rounded-full shadow transition-all ${settings.onam_season_active !== "false" ? "left-[30px]" : "left-1"}`} />
+          </button>
+        </div>
+        <p className="text-[10px] text-stone-400">Tip: Turn OFF after Onam ends to hide dresses, Sadhya & Pookkalam. Turn ON next year — all data stays intact.</p>
+      </div>
+
+      <div className="bg-white rounded-xl border border-slate-200 p-6 mb-6 space-y-6">
         <h2 className="font-semibold text-slate-900">Onam Section Visibility</h2>
         <p className="text-xs text-slate-500">Show/hide individual sections on the homepage. Toggle on/off.</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -292,7 +310,7 @@ export default function SettingsPage() {
             </div>
           ))}
         </div>
-        <p className="text-[10px] text-stone-400">Default: All sections visible (ON). Toggle OFF to hide a section.</p>
+        <p className="text-[10px] text-stone-400">Default: All sections visible (ON). Toggle OFF to hide a section. Note: These only work when Onam Season is ON above.</p>
       </div>
 
       <div className="bg-white rounded-xl border border-slate-200 p-6 mb-6 space-y-6">
