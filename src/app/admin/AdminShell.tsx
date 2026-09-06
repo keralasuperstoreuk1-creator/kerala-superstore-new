@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
 import {
   LayoutDashboard, Layers, FolderOpen, Package, ImageIcon,
   ShoppingBag, Settings, Store, Tag, Shirt, Trophy, ExternalLink,
-  Menu, X, Sparkles, Type, Flower2, Salad
+  Menu, X, Sparkles, Type, Flower2, Salad, Calendar
 } from "lucide-react";
 
 const navGroups = [
@@ -15,6 +15,12 @@ const navGroups = [
     title: "Overview",
     items: [
       { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+    ],
+  },
+  {
+    title: "Onam Season",
+    items: [
+      { href: "/admin/onam-season", label: "Onam Control Centre", icon: Calendar },
     ],
   },
   {
