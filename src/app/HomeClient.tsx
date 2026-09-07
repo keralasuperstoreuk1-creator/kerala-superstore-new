@@ -202,7 +202,20 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
   // Categories that are Onam-related — hidden from the homepage when the Onam
   // season is OFF (admin selects these in Onam Control Centre).
   const onamHiddenCatIds = (settings.onam_categories_hidden || "").split(",").map(Number).filter(Boolean);
-  const onamCatKey = (name: string) => {
+  // The three dedicated Onam sections link to categories by id in settings:
+  // - Onam Sadhya -> onam_sadhya_category_id
+  // - Pookkalam   -> pookkalam_category_id
+  // - Fresh Pookkal -> fresh_pookkal_category_id
+  const onamSectionCatIdKey: Record<number, string> = {};
+  for (const [key, catId] of Object.entries({
+    onam_sadhya_category_id: settings.onam_sadhya_category_id,
+    pookkalam_category_id: settings.pookkalam_category_id,
+    fresh_pookkal_category_id: settings.fresh_pookkal_category_id,
+  })) {
+    if (catId) onamSectionCatIdKey[parseInt(catId)] = key;
+  }
+  const onamCatKey = (name: string, id: number) => {
+    if (onamSectionCatIdKey[id]) return onamSectionCatIdKey[id];
     const n = (name || "").toLowerCase();
     if (n.includes("sadhya")) return "show_onam_sadhya";
     if (n.includes("pookkalam")) return "show_onam_pookkalam";
@@ -210,10 +223,14 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
     return null;
   };
   const shopCategories = categories.filter((c: any) => {
-    const key = onamCatKey(c.name);
-    // Respect the individual section toggle for Sadhya/Pookkalam categories
-    if (key && settings[key] === "false") return false;
-    // Respect the master Onam switch for all Onam-named category sections
+    const key = onamCatKey(c.name, c.id);
+    // Respect the individual section toggle for the Sadhya/Pookkalam sections
+    if (key && settings[key] === "false") {
+      if (key === "show_onam_sadhya") return false;
+      if (key === "show_onam_pookkalam") return false;
+      if (key === "show_fresh_pookkal") return false;
+    }
+    // Respect the master Onam switch for all Onam sections/categories
     if (!onamSeasonActive && key) return false;
     // Respect the admin-selected hidden category list
     if (onamHiddenCatIds.includes(c.id)) return false;
@@ -874,13 +891,20 @@ async function handleCheckout(e: React.FormEvent) {
             (c: any) => c.name?.toLowerCase().includes("sadhya"),
             (c: any) => c.name?.toLowerCase().includes("pookkalam"),
             (c: any) => c.name?.toLowerCase().includes("pookkal"),
+            settings.onam_sadhya_category_id,
+            settings.pookkalam_category_id,
+            settings.fresh_pookkal_category_id,
           ]
-            .map((fn) => categories.find(fn))
+            .map((fn: any) => {
+              if (typeof fn === "function") return categories.find(fn);
+              return categories.find((c: any) => c.id && String(c.id) === String(fn));
+            })
             .filter(Boolean)
             .map((c: any) => c.id)
         );
         for (const cat of categories) {
           if (legacyCatIds.has(cat.id)) continue;
+          if (onamHiddenCatIds.includes(cat.id)) continue;
           const catItems = items.filter((i) => i.categoryId === cat.id);
           const sectionBanner = settings[`section_${cat.id}_banner_image`];
           const enabled = settings[`section_${cat.id}_enabled`] !== "false";
