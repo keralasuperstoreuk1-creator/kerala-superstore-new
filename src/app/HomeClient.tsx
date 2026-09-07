@@ -203,35 +203,36 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
   // season is OFF (admin selects these in Onam Control Centre).
   const onamHiddenCatIds = (settings.onam_categories_hidden || "").split(",").map(Number).filter(Boolean);
   // The three dedicated Onam sections link to categories by id in settings:
-  // - Onam Sadhya -> onam_sadhya_category_id
-  // - Pookkalam   -> pookkalam_category_id
-  // - Fresh Pookkal -> fresh_pookkal_category_id
+  // - Onam Sadhya -> onam_sadhya_category_id (toggle: show_onam_sadhya)
+  // - Pookkalam   -> pookkalam_category_id (toggle: show_onam_pookkalam)
+  // - Fresh Pookkal -> fresh_pookkal_category_id (toggle: show_fresh_pookkal)
+  const onamSectionToggleKey: Record<string, string> = {
+    onam_sadhya_category_id: "show_onam_sadhya",
+    pookkalam_category_id: "show_onam_pookkalam",
+    fresh_pookkal_category_id: "show_fresh_pookkal",
+  };
   const onamSectionCatIdKey: Record<number, string> = {};
-  for (const [key, catId] of Object.entries({
-    onam_sadhya_category_id: settings.onam_sadhya_category_id,
-    pookkalam_category_id: settings.pookkalam_category_id,
-    fresh_pookkal_category_id: settings.fresh_pookkal_category_id,
-  })) {
-    if (catId) onamSectionCatIdKey[parseInt(catId)] = key;
+  for (const [key, catId] of Object.entries(onamSectionToggleKey)) {
+    if (settings[key]) onamSectionCatIdKey[parseInt(settings[key])] = onamSectionToggleKey[key];
   }
-  const onamCatKey = (name: string, id: number) => {
-    if (onamSectionCatIdKey[id]) return onamSectionCatIdKey[id];
-    const n = (name || "").toLowerCase();
-    if (n.includes("sadhya")) return "show_onam_sadhya";
-    if (n.includes("pookkalam")) return "show_onam_pookkalam";
-    if (n.includes("pookkal")) return "show_fresh_pookkal";
-    return null;
+  const isOnamOffCategory = (c: any) => {
+    const key = onamSectionCatIdKey[c.id] || (() => {
+      const n = (c.name || "").toLowerCase();
+      if (n.includes("sadhya")) return "show_onam_sadhya";
+      if (n.includes("pookkalam")) return "show_onam_pookkalam";
+      if (n.includes("pookkal")) return "show_fresh_pookkal";
+      return null;
+    })();
+    if (!key) return false;
+    // Individual section toggle OFF (e.g. Sadhya section hidden)
+    if ((settings[key] || "true") === "false") return true;
+    // Master Onam switch OFF hides every Onam section/category
+    if (!onamSeasonActive) return true;
+    return false;
   };
   const shopCategories = categories.filter((c: any) => {
-    const key = onamCatKey(c.name, c.id);
-    // Respect the individual section toggle for the Sadhya/Pookkalam sections
-    if (key && settings[key] === "false") {
-      if (key === "show_onam_sadhya") return false;
-      if (key === "show_onam_pookkalam") return false;
-      if (key === "show_fresh_pookkal") return false;
-    }
-    // Respect the master Onam switch for all Onam sections/categories
-    if (!onamSeasonActive && key) return false;
+    // Respect the individual Onam section toggles and the master switch
+    if (isOnamOffCategory(c)) return false;
     // Respect the admin-selected hidden category list
     if (onamHiddenCatIds.includes(c.id)) return false;
     return true;
