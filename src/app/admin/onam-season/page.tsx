@@ -60,12 +60,23 @@ export default function OnamSeasonPage() {
 
   // Master Onam season switch — controls everything
   const masterOn = settings.onam_season_active !== "false";
+  const CHILD_KEYS = ["show_onam_sadhya", "show_onam_pookkalam", "show_fresh_pookkal"];
 
   async function setMaster(on: boolean) {
     setSaving(true);
     const v = on ? "true" : "false";
     setSettings((s) => ({ ...s, onam_season_active: v }));
     await saveSetting("onam_season_active", v);
+    // Hard-set every individual Onam section toggle to match the master.
+    // This makes the hide/show bulletproof and keeps the UI in sync.
+    for (const key of CHILD_KEYS) {
+      await saveSetting(key, v);
+    }
+    setSettings((s) => {
+      const next: Record<string, string> = { ...s, onam_season_active: v };
+      CHILD_KEYS.forEach((k) => { next[k] = v; });
+      return next;
+    });
     setSaving(false);
     showMessage(on ? "Onam season ON — all Onam content visible" : "Onam season OFF — all Onam content hidden");
   }
