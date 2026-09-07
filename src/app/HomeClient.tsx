@@ -202,9 +202,23 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
   // Categories that are Onam-related — hidden from the homepage when the Onam
   // season is OFF (admin selects these in Onam Control Centre).
   const onamHiddenCatIds = (settings.onam_categories_hidden || "").split(",").map(Number).filter(Boolean);
-  const shopCategories = onamSeasonActive
-    ? categories
-    : categories.filter((c: any) => !onamHiddenCatIds.includes(c.id));
+  const onamCatKey = (name: string) => {
+    const n = (name || "").toLowerCase();
+    if (n.includes("sadhya")) return "show_onam_sadhya";
+    if (n.includes("pookkalam")) return "show_onam_pookkalam";
+    if (n.includes("pookkal")) return "show_fresh_pookkal";
+    return null;
+  };
+  const shopCategories = categories.filter((c: any) => {
+    const key = onamCatKey(c.name);
+    // Respect the individual section toggle for Sadhya/Pookkalam categories
+    if (key && settings[key] === "false") return false;
+    // Respect the master Onam switch for all Onam-named category sections
+    if (!onamSeasonActive && key) return false;
+    // Respect the admin-selected hidden category list
+    if (onamHiddenCatIds.includes(c.id)) return false;
+    return true;
+  });
 
   // Dress type order from admin settings
   const dressTypeOrder: Record<string, number> = {
