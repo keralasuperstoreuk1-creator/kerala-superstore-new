@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Sparkles, Shirt, Salad, Flower2, Trophy, ImageIcon, CheckCircle2, EyeOff, Eye, Settings2, ExternalLink } from "lucide-react";
+import { Sparkles, Shirt, Salad, Flower2, Trophy, ImageIcon, CheckCircle2, EyeOff, Eye, Settings2, ExternalLink, FolderOpen } from "lucide-react";
 
 export default function OnamSeasonPage() {
   const [settings, setSettings] = useState<Record<string, string>>({});
@@ -229,6 +229,79 @@ export default function OnamSeasonPage() {
         </div>
         <p className="text-[10px] text-stone-400 pt-1">
           💡 Tip: "Hide All Onam" എന്ന ഒറ്റ ബട്ടൺ എല്ലാം ഒന്നിച്ച് മറയ്ക്കും. "Show Onam" തിരികെ കൊണ്ടുവരും. ഒന്നും delete ആകില്ല.
+        </p>
+      </div>
+
+      {/* Onam-related Categories (hide from Shop by Category when OFF) */}
+      <div className="bg-white rounded-2xl border border-stone-200 p-6 shadow-sm space-y-4">
+        <div className="flex items-center gap-2">
+          <FolderOpen className="w-5 h-5 text-emerald-600" />
+          <h3 className="font-bold text-stone-900">Onam Categories</h3>
+          <span className="text-[10px] text-stone-400 font-mono">(ഇവ "Shop by Category"-യിൽ നിന്ന് Off-season-ൽ മറയും)</span>
+        </div>
+        <p className="text-xs text-stone-500 max-w-2xl">
+          Onam-മായി ബന്ധപ്പെട്ട Categories-ന് താഴെ check ചെയ്യുക. "Hide All Onam" ബട്ടൺ അമർത്തിയാൽ ഇവ/icons Shop by Category-യിൽ നിന്ന് ഒഴിവാക്കും. ഡാറ്റ delete ആകില്ല.
+        </p>
+        <div className="flex items-center gap-3 pb-2 border-b border-stone-100">
+          <button
+            onClick={async () => {
+              await saveSetting("onam_categories_hidden", categories.map((c) => c.id).join(","));
+              await saveSetting("onam_season_active", "false");
+              showMessage("All categories hidden (Onam OFF)");
+              setSettings((s) => ({ ...s, onam_categories_hidden: categories.map((c) => c.id).join(","), onam_season_active: "false" }));
+            }}
+            className="bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-slate-900 transition"
+          >
+            Hide ALL categories now
+          </button>
+          <button
+            onClick={async () => {
+              await saveSetting("onam_categories_hidden", "");
+              showMessage("All categories visible again (Onam ON)");
+              setSettings((s) => ({ ...s, onam_categories_hidden: "" }));
+            }}
+            className="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-emerald-700 transition"
+          >
+            Show ALL categories
+          </button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 max-h-[380px] overflow-y-auto pr-1">
+          {(categories || []).map((cat) => {
+            const isHidden = (settings.onam_categories_hidden || "").split(",").map((x) => x.trim()).filter(Boolean).includes(String(cat.id));
+            return (
+              <label
+                key={cat.id}
+                className={`flex items-center justify-between gap-2 p-3 rounded-xl border cursor-pointer transition ${
+                  isHidden ? "bg-amber-50 border-amber-300" : "bg-stone-50 border-stone-200 hover:border-emerald-300"
+                }`}
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  {cat.name?.toLowerCase().includes("sadhya") || cat.name?.toLowerCase().includes("pookkalam") ? (
+                    <Flower2 className="w-4 h-4 text-pink-500 shrink-0" />
+                  ) : (
+                    <FolderOpen className="w-4 h-4 text-emerald-600 shrink-0" />
+                  )}
+                  <span className="text-sm font-semibold text-stone-800 truncate">{cat.name}</span>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={!isHidden}
+                  onChange={async () => {
+                    const current = (settings.onam_categories_hidden || "").split(",").map((x) => x.trim()).filter(Boolean);
+                    const updated = isHidden
+                      ? current.filter((x) => x !== String(cat.id))
+                      : [...current, String(cat.id)];
+                    await saveSetting("onam_categories_hidden", updated.join(","));
+                    setSettings((s) => ({ ...s, onam_categories_hidden: updated.join(",") }));
+                    showMessage(isHidden ? `${cat.name} — visible` : `${cat.name} — hidden when Onam OFF`);
+                  }}
+                />
+              </label>
+            );
+          })}
+        </div>
+        <p className="text-[10px] text-stone-400">
+          Note: Onam season OFF ആയാൽ മാത്രമേ ഈ icon-കൾ Shop by Category-യിൽ നിന്ന് മറയൂ. Season ON ആണെങ്കിൽ എല്ലാം ദൃശ്യമാണ്.
         </p>
       </div>
     </div>
