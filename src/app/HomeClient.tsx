@@ -199,6 +199,13 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
   const showFreshPookkal = onamSeasonActive && settings.show_fresh_pookkal !== "false";
   const showPromoBanner = settings.show_promo_banner !== "false";
 
+  // Categories that are Onam-related — hidden from the homepage when the Onam
+  // season is OFF (admin selects these in Onam Control Centre).
+  const onamHiddenCatIds = (settings.onam_categories_hidden || "").split(",").map(Number).filter(Boolean);
+  const shopCategories = onamSeasonActive
+    ? categories
+    : categories.filter((c: any) => !onamHiddenCatIds.includes(c.id));
+
   // Dress type order from admin settings
   const dressTypeOrder: Record<string, number> = {
     gents: parseInt(settings.order_gents || "0"),
@@ -1603,7 +1610,7 @@ async function handleCheckout(e: React.FormEvent) {
             </div>
             <p className="text-stone-600 max-w-sm">Six shelves, one promise — authentic South Indian pantry staples, always in stock.</p>
             <div className="flex gap-2 mt-4 flex-wrap">
-              {categories.map((c) => (
+              {shopCategories.map((c) => (
                 <a key={c.id} href={`#cat-${c.id}`} className="px-4 py-1.5 bg-white/60 backdrop-blur-sm rounded-full text-xs font-medium text-stone-700 hover:bg-white border border-stone-200/80 transition">
                   {c.name}
                 </a>
@@ -1611,7 +1618,7 @@ async function handleCheckout(e: React.FormEvent) {
             </div>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {categories.map((cat) => (
+            {shopCategories.map((cat) => (
               <button key={cat.id} onClick={() => { setCatFilter(String(cat.id)); window.location.href = "#products"; }} className="bg-white rounded-xl p-6 text-center border border-slate-200 hover:border-green-500 hover:shadow-md transition group">
                 <div className="w-14 h-14 mx-auto bg-green-100 rounded-full flex items-center justify-center text-green-700 text-2xl mb-3 group-hover:bg-green-600 group-hover:text-white transition">
                   {cat.name.includes("Rice") ? "🌾" : cat.name.includes("Spice") ? "🌶️" : cat.name.includes("Snack") ? "🍪" : cat.name.includes("Beverage") ? "☕" : cat.name.includes("Dairy") ? "🧀" : cat.name.includes("Frozen") ? "❄️" : cat.name.includes("Pookkal") || cat.name.includes("Flower") || cat.name.includes("Garland") ? "🌸" : "📦"}
@@ -1624,7 +1631,7 @@ async function handleCheckout(e: React.FormEvent) {
       </section>
 
       {/* Dynamic Category Sections */}
-      {categories.map((cat) => {
+      {shopCategories.map((cat) => {
         const filtered = filteredItems.filter(item => item.categoryId === cat.id);
         const sectionBanner = settings[`section_${cat.id}_banner_image`];
         const sectionEnabled = settings[`section_${cat.id}_enabled`] !== "false";
@@ -1746,7 +1753,7 @@ async function handleCheckout(e: React.FormEvent) {
 
           <div className="reveal flex gap-2 mb-10 overflow-x-auto pb-2 scrollbar-hide">
             <button onClick={() => setCatFilter("all")} className={`shrink-0 px-5 py-2.5 rounded-full text-sm font-medium transition ${catFilter === "all" ? "bg-[#0b2416] text-white shadow-lg shadow-emerald-900/20" : "bg-white text-stone-700 border border-stone-200 hover:border-emerald-500"}`}>All shelves</button>
-            {categories.map((cat) => (
+            {shopCategories.map((cat) => (
               <button key={cat.id} onClick={() => setCatFilter(String(cat.id))} className={`shrink-0 px-5 py-2.5 rounded-full text-sm font-medium transition ${catFilter === String(cat.id) ? "bg-[#0b2416] text-white shadow-lg shadow-emerald-900/20" : "bg-white text-stone-700 border border-stone-200 hover:border-emerald-500"}`}>{cat.name}</button>
             ))}
           </div>
