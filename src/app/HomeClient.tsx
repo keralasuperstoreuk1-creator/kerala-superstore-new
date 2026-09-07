@@ -240,10 +240,21 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   // Hide product cards from Onam-hidden categories in the main grid + search too.
   const isOnamCategoryId = (catId: any) => {
+    const numId = typeof catId === "number" ? catId : parseInt(catId);
+    // Linked Onam section categories (by id from settings) are hidden even when
+    // the category record is absent/inactive — otherwise their items leak through.
+    const sectionKey = onamSectionCatIdKey[numId];
+    if (sectionKey) {
+      if ((settings[sectionKey] || "true") === "false") return true;
+      if (!onamSeasonActive) return true;
+      return false;
+    }
+    if (onamHiddenCatIds.includes(numId)) return true;
     const cat = categories.find((c: any) => c.id === catId);
-    if (!cat) return false;
-    if (isOnamOffCategory(cat)) return true;
-    if (onamHiddenCatIds.includes(cat.id)) return true;
+    if (cat) {
+      if (isOnamOffCategory(cat)) return true;
+      if (onamHiddenCatIds.includes(cat.id)) return true;
+    }
     return false;
   };
   const isOnamOffItem = (item: any) => isOnamCategoryId(item.categoryId);
