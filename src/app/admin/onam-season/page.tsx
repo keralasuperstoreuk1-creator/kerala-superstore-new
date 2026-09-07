@@ -71,10 +71,15 @@ export default function OnamSeasonPage() {
   }
 
   // Children toggles
+  const checkSetting = (key: string) => settings[key] !== "false";
+  const catNameById = (id: any) => {
+    const c = (categories || []).find((x) => x.id && String(x.id) === String(id));
+    return c ? c.name : null;
+  };
   const children = [
-    { key: "show_onam_sadhya", label: "Onam Sadhya Section", icon: <Salad className="w-4 h-4" />, href: "/admin/onam-sadhya" },
-    { key: "show_onam_pookkalam", label: "Onam Pookkalam Section", icon: <Flower2 className="w-4 h-4" />, href: "/admin/onam-pookkalam" },
-    { key: "show_fresh_pookkal", label: "Fresh Pookkal Section", icon: <Flower2 className="w-4 h-4" />, href: "/admin/fresh-pookkal" },
+    { key: "show_onam_sadhya", label: "Onam Sadhya Section", icon: <Salad className="w-4 h-4" />, href: "/admin/onam-sadhya", linkedCat: catNameById(settings.onam_sadhya_category_id) },
+    { key: "show_onam_pookkalam", label: "Onam Pookkalam Section", icon: <Flower2 className="w-4 h-4" />, href: "/admin/onam-pookkalam", linkedCat: catNameById(settings.pookkalam_category_id) },
+    { key: "show_fresh_pookkal", label: "Fresh Pookkal Section", icon: <Flower2 className="w-4 h-4" />, href: "/admin/fresh-pookkal", linkedCat: catNameById(settings.fresh_pookkal_category_id) },
   ];
 
   const sadhyaCats = categories.filter((c) => c.name?.toLowerCase().includes("sadhya"));
@@ -210,6 +215,7 @@ export default function OnamSeasonPage() {
                   <div>
                     <div className="text-sm font-bold text-stone-800">{item.label}</div>
                     <Link href={item.href} className="text-[10px] text-blue-600 hover:underline">Open manager →</Link>
+                    {item.linkedCat && <div className="text-[10px] text-stone-500 font-mono mt-0.5">Category: {item.linkedCat}</div>}
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -268,6 +274,10 @@ export default function OnamSeasonPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 max-h-[380px] overflow-y-auto pr-1">
           {(categories || []).map((cat) => {
             const isHidden = (settings.onam_categories_hidden || "").split(",").map((x) => x.trim()).filter(Boolean).includes(String(cat.id));
+            const linkedTo =
+              String(cat.id) === String(settings.onam_sadhya_category_id) ? "Onam Sadhya" :
+              String(cat.id) === String(settings.pookkalam_category_id) ? "Onam Pookkalam" :
+              String(cat.id) === String(settings.fresh_pookkal_category_id) ? "Fresh Pookkal" : null;
             return (
               <label
                 key={cat.id}
@@ -281,7 +291,14 @@ export default function OnamSeasonPage() {
                   ) : (
                     <FolderOpen className="w-4 h-4 text-emerald-600 shrink-0" />
                   )}
-                  <span className="text-sm font-semibold text-stone-800 truncate">{cat.name}</span>
+                  <div className="min-w-0">
+                    <span className="text-sm font-semibold text-stone-800 block truncate">{cat.name}</span>
+                    {linkedTo && (
+                      <span className="text-[9px] font-bold text-pink-700 bg-pink-50 border border-pink-200 rounded-full px-1.5 py-0.5">
+                        {linkedTo} section icon
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <input
                   type="checkbox"
