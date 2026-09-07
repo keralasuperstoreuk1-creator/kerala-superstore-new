@@ -238,6 +238,16 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
     return true;
   });
 
+  // Hide product cards from Onam-hidden categories in the main grid + search too.
+  const isOnamCategoryId = (catId: any) => {
+    const cat = categories.find((c: any) => c.id === catId);
+    if (!cat) return false;
+    if (isOnamOffCategory(cat)) return true;
+    if (onamHiddenCatIds.includes(cat.id)) return true;
+    return false;
+  };
+  const isOnamOffItem = (item: any) => isOnamCategoryId(item.categoryId);
+
   // Dress type order from admin settings
   const dressTypeOrder: Record<string, number> = {
     gents: parseInt(settings.order_gents || "0"),
@@ -399,6 +409,7 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   const filteredItems = items.filter((item) => {
     if (hidePreOrders && isPreOrder(item)) return false;
+    if (isOnamOffItem(item)) return false;
     const q = searchQuery.toLowerCase();
     const matchesSearch = !searchQuery ||
       item.name.toLowerCase().includes(q) ||
@@ -423,6 +434,7 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
           .filter(
             (i) =>
               !(hidePreOrders && isPreOrder(i)) &&
+              !isOnamOffItem(i) &&
               (i.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
               (i.description && i.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
               categories.some((c) => c.id === i.categoryId && c.name.toLowerCase().includes(searchQuery.toLowerCase())))
@@ -1272,7 +1284,9 @@ async function handleCheckout(e: React.FormEvent) {
 
       {/* Onam Sadhya — Pre-Order Section */}
       {showSadhya && (hidePreOrders ? null : (() => {
-        const sadhyaCat = categories.find((c) => c.name?.toLowerCase().includes("sadhya"));
+        const sadhyaCat =
+          (settings.onam_sadhya_category_id && categories.find((c) => String(c.id) === String(settings.onam_sadhya_category_id))) ||
+          categories.find((c) => c.name?.toLowerCase().includes("sadhya"));
         const sadhyaItems = sadhyaCat ? items.filter((i) => i.categoryId === sadhyaCat.id) : [];
         return (
           <section id="onam-sadhya" className="py-16 bg-gradient-to-b from-amber-50 via-orange-50/30 to-white">
