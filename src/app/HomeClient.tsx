@@ -190,7 +190,7 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
   const { slides, offers, dresses, categories, items, winners, settings, collections = [], promoBanners: allPromoBanners = [] } = data;
 
   // Section visibility toggles (default: visible)
-  // Master Onam season switch — hides ALL Onam content (dress collections, hero
+  // Master Onam season switch â€” hides ALL Onam content (dress collections, hero
   // Onam slides, carousel items, Sadhya/Pookkalam sections) without deleting data.
   // Admin sets onam_season_active = "false" to hide; "true" (default) to show.
   const onamSeasonActive = settings.onam_season_active !== "false";
@@ -199,7 +199,7 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
   const showFreshPookkal = onamSeasonActive && settings.show_fresh_pookkal !== "false";
   const showPromoBanner = settings.show_promo_banner !== "false";
 
-  // Categories that are Onam-related — hidden from the homepage when the Onam
+  // Categories that are Onam-related â€” hidden from the homepage when the Onam
   // season is OFF (admin selects these in Onam Control Centre).
   const onamHiddenCatIds = (settings.onam_categories_hidden || "").split(",").map(Number).filter(Boolean);
   // The three dedicated Onam sections link to categories by id in settings:
@@ -241,8 +241,8 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
   // Hide product cards from Onam-hidden categories in the main grid + search too.
   const isOnamCategoryId = (catId: any) => {
     const numId = typeof catId === "number" ? catId : parseInt(catId);
-    // Linked Onam section categories (by id from settings) are hidden even when
-    // the category record is absent/inactive — otherwise their items leak through.
+    // FORCE_REBUILD_20260907: 
+    // the category record is absent/inactive â€” otherwise their items leak through.
     const sectionKey = onamSectionCatIdKey[numId];
     if (sectionKey) {
       if ((settings[sectionKey] || "true") === "false") return true;
@@ -365,14 +365,14 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
   function shareOnWhatsApp(name: string, price: string | undefined, slug?: string) {
     const url = slug ? `${window.location.origin}/product/${slug}` : window.location.href;
     const text = price
-      ? `Check out ${name} (£${price}) on Kerala Super Store!`
+      ? `Check out ${name} (Â£${price}) on Kerala Super Store!`
       : `Check out ${name} on Kerala Super Store!`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text + " " + url)}`, "_blank");
   }
 
   function shareCollection(collectionName: string, collectionType: string) {
     const url = `${window.location.origin}?collection=${collectionType}`;
-    const text = `🛍️ ${collectionName} Collection — Kerala Super Store\n\nBrowse our ${collectionName} collection for Onam 2026!\n${url}`;
+    const text = `ðŸ›ï¸ ${collectionName} Collection â€” Kerala Super Store\n\nBrowse our ${collectionName} collection for Onam 2026!\n${url}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   }
 
@@ -572,13 +572,13 @@ async function handleCheckout(e: React.FormEvent) {
   const prevOffer = () => setOfferIndex((i) => (i - 1 + Math.max(offers.length, 1)) % Math.max(offers.length, 1));
 
   const whatsappLink = `https://wa.me/${whatsappNumber}`;
-  const whatsappOrderLink = `https://wa.me/${whatsappNumber}?text=Hi%20Kerala%20Super%20Store!%20I%20want%20to%20place%20an%20order.%20Please%20help%20me%20❤️`;
+  const whatsappOrderLink = `https://wa.me/${whatsappNumber}?text=Hi%20Kerala%20Super%20Store!%20I%20want%20to%20place%20an%20order.%20Please%20help%20me%20â¤ï¸`;
 
   return (
     <div className="min-h-screen font-sans">
        {/* Promo Banner */}
        <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-center py-2 px-4 text-sm relative">
-         <span>{settings.store_topbar_text || "🎉 Free Delivery on orders over £35 | Cash on Delivery Available"}</span>
+         <span>{settings.store_topbar_text || "ðŸŽ‰ Free Delivery on orders over Â£35 | Cash on Delivery Available"}</span>
        </div>
 
       {/* Header */}
@@ -642,7 +642,7 @@ async function handleCheckout(e: React.FormEvent) {
                                 <img src={match.images[0]} alt="" className="w-10 h-10 object-cover rounded-lg border border-stone-200 shrink-0" />
                               ) : (
                                 <div className="w-10 h-10 bg-stone-100 rounded-lg flex items-center justify-center text-xs text-stone-400 shrink-0">
-                                  {match.isDress ? "👗" : "📦"}
+                                  {match.isDress ? "ðŸ‘—" : "ðŸ“¦"}
                                 </div>
                               )}
                               <div>
@@ -650,14 +650,14 @@ async function handleCheckout(e: React.FormEvent) {
                                   {match.name}
                                 </div>
                                 <div className="text-[10px] text-stone-500">
-                                  {match.isDress ? `👗 Festival Attire (${match.type || ""})` : "🛒 Grocery Item"}
+                                  {match.isDress ? `ðŸ‘— Festival Attire (${match.type || ""})` : "ðŸ›’ Grocery Item"}
                                 </div>
                               </div>
                             </div>
                             <div className="text-right">
-                              <div className="font-bold text-stone-900 text-xs">£{match.price}</div>
+                              <div className="font-bold text-stone-900 text-xs">Â£{match.price}</div>
                               <span className="text-[9px] font-bold uppercase text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1">
-                                👁️ View Details
+                                ðŸ‘ï¸ View Details
                               </span>
                             </div>
                           </div>
@@ -678,7 +678,7 @@ async function handleCheckout(e: React.FormEvent) {
                         }}
                         className="w-full text-center py-2 bg-[#0b2416] hover:bg-emerald-950 text-white rounded-xl text-xs font-bold transition mt-2 shadow-sm"
                       >
-                        View all matching & related products below ↓
+                        View all matching & related products below â†“
                       </button>
                     )}
                   </div>
@@ -723,13 +723,13 @@ async function handleCheckout(e: React.FormEvent) {
                     {searchMatches.slice(0, 6).map((match: any) => (
                       <div key={`${match.isDress ? "dress" : "item"}-${match.id}`} onClick={() => { openDetailModal(match); if (match.categoryId) setCatFilter(String(match.categoryId)); const el = match.isDress ? document.querySelector("#dresses") : document.querySelector("#products"); if (el) el.scrollIntoView({ behavior: "smooth" }); setSearchQuery(""); }} className="flex items-center justify-between p-2 hover:bg-emerald-50/60 rounded-xl cursor-pointer transition group">
                         <div className="flex items-center gap-3">
-                          {match.images && match.images[0] ? <img src={match.images[0]} alt="" className="w-10 h-10 object-cover rounded-lg border border-stone-200 shrink-0" /> : <div className="w-10 h-10 bg-stone-100 rounded-lg flex items-center justify-center text-xs text-stone-400 shrink-0">{match.isDress ? "👗" : "📦"}</div>}
+                          {match.images && match.images[0] ? <img src={match.images[0]} alt="" className="w-10 h-10 object-cover rounded-lg border border-stone-200 shrink-0" /> : <div className="w-10 h-10 bg-stone-100 rounded-lg flex items-center justify-center text-xs text-stone-400 shrink-0">{match.isDress ? "ðŸ‘—" : "ðŸ“¦"}</div>}
                           <div>
                             <div className="font-bold text-stone-900 text-xs group-hover:text-emerald-800 transition">{match.name}</div>
-                            <div className="text-[10px] text-stone-500">{match.isDress ? `👗 ${match.type || ""}` : "🛒 Grocery"}</div>
+                            <div className="text-[10px] text-stone-500">{match.isDress ? `ðŸ‘— ${match.type || ""}` : "ðŸ›’ Grocery"}</div>
                           </div>
                         </div>
-                        <div className="font-bold text-stone-900 text-xs">£{match.price}</div>
+                        <div className="font-bold text-stone-900 text-xs">Â£{match.price}</div>
                       </div>
                     ))}
                   </div>
@@ -737,7 +737,7 @@ async function handleCheckout(e: React.FormEvent) {
                   <div className="p-4 text-center text-xs text-stone-500">No matching products found for "{searchQuery}".</div>
                 )}
                 {searchMatches.length > 0 && (
-                  <button onClick={() => { const el = document.querySelector("#dresses") || document.querySelector("#products"); if (el) el.scrollIntoView({ behavior: "smooth" }); setSearchQuery(""); }} className="w-full text-center py-2 bg-[#0b2416] hover:bg-emerald-950 text-white rounded-xl text-xs font-bold transition mt-2 shadow-sm">View all matching products below ↓</button>
+                  <button onClick={() => { const el = document.querySelector("#dresses") || document.querySelector("#products"); if (el) el.scrollIntoView({ behavior: "smooth" }); setSearchQuery(""); }} className="w-full text-center py-2 bg-[#0b2416] hover:bg-emerald-950 text-white rounded-xl text-xs font-bold transition mt-2 shadow-sm">View all matching products below â†“</button>
                 )}
               </div>
             </>
@@ -795,7 +795,7 @@ async function handleCheckout(e: React.FormEvent) {
             <div className="flex flex-wrap items-center gap-2.5 mb-5">
               {(heroSlides[heroIndex]?.badgeText || settings.hero_badge_text) && (
               <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.2em] text-amber-300 bg-amber-500/20 border border-amber-400/30 rounded-full px-3 py-1.5 backdrop-blur-sm font-semibold">
-                <Sparkles className="w-3 h-3 text-amber-400" /> {heroSlides[heroIndex]?.badgeText || settings.hero_badge_text || "Authentic Kerala Store · UK Delivery"}
+                <Sparkles className="w-3 h-3 text-amber-400" /> {heroSlides[heroIndex]?.badgeText || settings.hero_badge_text || "Authentic Kerala Store Â· UK Delivery"}
               </span>
               )}
               {settings.hero_viewers_text !== "" && (
@@ -859,7 +859,7 @@ async function handleCheckout(e: React.FormEvent) {
 
             {/* Trust strip */}
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-[11px] sm:text-xs text-emerald-100/80 font-medium pt-4 border-t border-white/10">
-              {(settings.hero_trust_1 || "Free UK delivery over £30") && <div className="flex items-center gap-1.5"><Truck className="w-3.5 h-3.5 text-amber-400" /> {settings.hero_trust_1 || "Free UK delivery over £30"}</div>}
+              {(settings.hero_trust_1 || "Free UK delivery over Â£30") && <div className="flex items-center gap-1.5"><Truck className="w-3.5 h-3.5 text-amber-400" /> {settings.hero_trust_1 || "Free UK delivery over Â£30"}</div>}
               {(settings.hero_trust_2 || "Cash on Delivery Available") && <div className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5 text-amber-400" /> {settings.hero_trust_2 || "Cash on Delivery Available"}</div>}
               {(settings.hero_trust_3 || "100% Authentic Products") && <div className="flex items-center gap-1.5"><Leaf className="w-3.5 h-3.5 text-amber-400" /> {settings.hero_trust_3 || "100% Authentic Products"}</div>}
             </div>
@@ -982,7 +982,7 @@ async function handleCheckout(e: React.FormEvent) {
           <section className="bg-[#0b2416] py-6 relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-4 flex items-center justify-between">
               <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.22em] text-amber-300">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Collections <span className="text-emerald-100/40">·</span> tap to explore
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Collections <span className="text-emerald-100/40">Â·</span> tap to explore
               </div>
               <span className="hidden sm:flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-emerald-100/40">
                 <ChevronRight className="w-3 h-3" /> auto-moving
@@ -1008,7 +1008,7 @@ async function handleCheckout(e: React.FormEvent) {
                     <div className="absolute bottom-0 left-0 right-0 p-3.5">
                       <h3 className="font-bold text-white text-sm leading-tight drop-shadow">{item.name}</h3>
                       <p className="text-[10px] font-mono text-amber-200/80 mt-0.5">
-                        {typeof item.count === "number" && item.count > 0 ? `${item.count} items` : "Shop now"} · explore →
+                        {typeof item.count === "number" && item.count > 0 ? `${item.count} items` : "Shop now"} Â· explore â†’
                       </p>
                     </div>
                   </button>
@@ -1023,7 +1023,7 @@ async function handleCheckout(e: React.FormEvent) {
       <section className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[{icon:Truck,title:settings.hero_f1 || "Free Delivery",desc:settings.hero_d1 || "On orders over £35"},{icon:Shield,title:settings.hero_f2 || "Cash on Delivery",desc:settings.hero_d2 || "Pay when you receive"},{icon:Leaf,title:settings.hero_f3 || "100% Fresh",desc:settings.hero_d3 || "Quality guaranteed"},{icon:Phone,title:settings.hero_f4 || "Easy Ordering",desc:settings.hero_d4 || "Order via WhatsApp"}].map((f) => (
+            {[{icon:Truck,title:settings.hero_f1 || "Free Delivery",desc:settings.hero_d1 || "On orders over Â£35"},{icon:Shield,title:settings.hero_f2 || "Cash on Delivery",desc:settings.hero_d2 || "Pay when you receive"},{icon:Leaf,title:settings.hero_f3 || "100% Fresh",desc:settings.hero_d3 || "Quality guaranteed"},{icon:Phone,title:settings.hero_f4 || "Easy Ordering",desc:settings.hero_d4 || "Order via WhatsApp"}].map((f) => (
               <div key={f.title} className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-700"><f.icon className="w-5 h-5" /></div>
                 <div><h4 className="font-semibold text-sm text-slate-900">{f.title}</h4><p className="text-xs text-slate-500">{f.desc}</p></div>
@@ -1038,10 +1038,10 @@ async function handleCheckout(e: React.FormEvent) {
         <div className="flex animate-marquee whitespace-nowrap">
           {[...Array(2)].map((_, idx) => (
             <span key={idx} className="flex gap-8 mx-8 text-sm">
-              {(settings.marquee_1 || "🚚 Free Delivery on orders over £35") && <span>{settings.marquee_1 || "🚚 Free Delivery on orders over £35"}</span>}
-              {(settings.marquee_2 || "🔥 Special Offers Available") && <span>{settings.marquee_2 || "🔥 Special Offers Available"}</span>}
-              {(settings.marquee_3 || "📱 Order via WhatsApp: +44 7749 132122") && <span>{settings.marquee_3 || "📱 Order via WhatsApp: +44 7749 132122"}</span>}
-              {(settings.marquee_4 || "🌿 Fresh Products Daily") && <span>{settings.marquee_4 || "🌿 Fresh Products Daily"}</span>}
+              {(settings.marquee_1 || "ðŸšš Free Delivery on orders over Â£35") && <span>{settings.marquee_1 || "ðŸšš Free Delivery on orders over Â£35"}</span>}
+              {(settings.marquee_2 || "ðŸ”¥ Special Offers Available") && <span>{settings.marquee_2 || "ðŸ”¥ Special Offers Available"}</span>}
+              {(settings.marquee_3 || "ðŸ“± Order via WhatsApp: +44 7749 132122") && <span>{settings.marquee_3 || "ðŸ“± Order via WhatsApp: +44 7749 132122"}</span>}
+              {(settings.marquee_4 || "ðŸŒ¿ Fresh Products Daily") && <span>{settings.marquee_4 || "ðŸŒ¿ Fresh Products Daily"}</span>}
             </span>
           ))}
         </div>
@@ -1053,7 +1053,7 @@ async function handleCheckout(e: React.FormEvent) {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-8">
               <div>
-                <span className="inline-block bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium mb-2">🔥 Today's Special</span>
+                <span className="inline-block bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium mb-2">ðŸ”¥ Today's Special</span>
                 <h2 className="text-2xl md:text-3xl font-bold text-slate-900">Today's Offers</h2>
               </div>
             </div>
@@ -1072,8 +1072,8 @@ async function handleCheckout(e: React.FormEvent) {
                           <span className="text-xs font-bold text-blue-600 uppercase tracking-wide">{offer.tag}</span>
                           <h3 className="text-xl font-bold text-slate-900 mt-1">{offer.name}</h3>
                           <div className="flex items-center gap-3 mt-3">
-                            <span className="text-2xl font-bold text-slate-900">£{offer.newPrice}</span>
-                            <span className="text-lg text-slate-400 line-through">£{offer.oldPrice}</span>
+                            <span className="text-2xl font-bold text-slate-900">Â£{offer.newPrice}</span>
+                            <span className="text-lg text-slate-400 line-through">Â£{offer.oldPrice}</span>
                           </div>
                           <button onClick={() => addToCart(offer.id, offer.name, offer.newPrice, 1, "offer")} className="mt-4 bg-green-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-green-700 transition w-fit flex items-center gap-2">
                             <ShoppingCart className="w-4 h-4" /> Add to Cart
@@ -1158,7 +1158,7 @@ async function handleCheckout(e: React.FormEvent) {
               <h2 className="font-editorial text-4xl md:text-5xl font-bold text-[#0b2416] leading-[0.95]">
                 Shop by <span className="italic text-amber-700">Collection.</span>
               </h2>
-              <p className="text-stone-600 mt-4">Choose your festive look — curated collections for the whole family.</p>
+              <p className="text-stone-600 mt-4">Choose your festive look â€” curated collections for the whole family.</p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
               {[
@@ -1180,20 +1180,20 @@ async function handleCheckout(e: React.FormEvent) {
                       {colImage ? (
                         <img src={colImage} alt={col.name} className="w-full h-full object-cover" />
                       ) : (
-                        <div className="w-full h-full bg-white flex items-center justify-center text-3xl">👗</div>
+                        <div className="w-full h-full bg-white flex items-center justify-center text-3xl">ðŸ‘—</div>
                       )}
                       <div className="absolute inset-0 ring-1 ring-inset ring-white/40 rounded-full" />
                     </div>
                     <h3 className="font-bold text-stone-900 text-sm">{col.name}</h3>
                     <p className="text-[10px] text-stone-500 mt-0.5">{col.desc}</p>
                     <p className="text-[10px] font-mono text-stone-400 mt-1">{count} items</p>
-                    {col.preOrder && <p className="text-[8px] font-bold text-amber-700 bg-amber-100 rounded-full px-2 py-0.5 mt-1 inline-block">⏰ {col.preOrder}</p>}
+                    {col.preOrder && <p className="text-[8px] font-bold text-amber-700 bg-amber-100 rounded-full px-2 py-0.5 mt-1 inline-block">â° {col.preOrder}</p>}
                     <div className="flex gap-1.5 mt-3 justify-center">
                       <button
                         onClick={(e) => { e.stopPropagation(); setDressFilter(col.type); document.getElementById("dresses")?.scrollIntoView({ behavior: "smooth" }); }}
                         className="flex-1 bg-stone-900 hover:bg-stone-800 text-white text-[10px] font-bold py-2 rounded-xl transition"
                       >
-                        Explore →
+                        Explore â†’
                       </button>
                       <button
                         onClick={(e) => { e.stopPropagation(); shareCollection(col.name, col.type); }}
@@ -1217,12 +1217,12 @@ async function handleCheckout(e: React.FormEvent) {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="reveal text-center mb-10 max-w-3xl mx-auto">
               <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.22em] text-rose-700/80 mb-3">
-                <span className="w-8 h-px bg-rose-700/40" /> Festival · Onam 2026 <span className="w-8 h-px bg-rose-700/40" />
+                <span className="w-8 h-px bg-rose-700/40" /> Festival Â· Onam 2026 <span className="w-8 h-px bg-rose-700/40" />
               </div>
               <h2 className="font-editorial text-4xl md:text-5xl font-bold text-[#0b2416] leading-[0.95]">
                 Dressed for <span className="italic text-rose-700">Onam.</span>
               </h2>
-              <p className="text-stone-600 mt-4">Pre-order traditional Kerala attire for ladies, gents and kids — reserved and delivered before the festivities begin.</p>
+              <p className="text-stone-600 mt-4">Pre-order traditional Kerala attire for ladies, gents and kids â€” reserved and delivered before the festivities begin.</p>
             </div>
             <div className="flex gap-2 justify-center mb-8 flex-wrap">
               {["all","ladies","gents","kids","kids-boys","kids-girls","combo"].map((type) => (
@@ -1233,7 +1233,7 @@ async function handleCheckout(e: React.FormEvent) {
             </div>
             {(dressFilter === "kids-girls" || dressFilter === "kids-boys" || dressFilter === "kids") && (
               <div className="mb-6 flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-amber-900">
-                <span className="text-lg">⏰</span>
+                <span className="text-lg">â°</span>
                 <div>
                   <p className="font-bold text-sm">{preOrderMsg}</p>
                   <p className="text-[11px] text-amber-700/70">Order now to guarantee arrival before Thiruvonam</p>
@@ -1244,10 +1244,10 @@ async function handleCheckout(e: React.FormEvent) {
               {filteredDresses.map((dress) => (
                 <div key={dress.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all group cursor-pointer" onClick={() => openDetailModal(dress)}>
                   <div className="aspect-[3/4] bg-slate-100 relative overflow-hidden">
-                    {dress.images?.[0] ? <img src={dress.images[0]} alt={dress.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /> : <div className="w-full h-full flex items-center justify-center text-4xl">👗</div>}
+                    {dress.images?.[0] ? <img src={dress.images[0]} alt={dress.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /> : <div className="w-full h-full flex items-center justify-center text-4xl">ðŸ‘—</div>}
                     {isPreOrder(dress) && (
                        <span className="absolute top-2 left-2 bg-amber-500 text-white text-[9px] font-bold px-2 py-1 rounded-lg shadow-md leading-tight text-center">
-                         ⏰ Pre-order before<br />{preOrderLabel}
+                         â° Pre-order before<br />{preOrderLabel}
                        </span>
                      )}
                      {dress.colorVariants?.length > 0 && (
@@ -1262,16 +1262,16 @@ async function handleCheckout(e: React.FormEvent) {
                       {(() => {
                         const range = getPriceRange(dress);
                         if (range && range.min !== range.max) {
-                          return <span className="font-bold text-slate-900">£{range.min.toFixed(2)} – £{range.max.toFixed(2)}</span>;
+                          return <span className="font-bold text-slate-900">Â£{range.min.toFixed(2)} â€“ Â£{range.max.toFixed(2)}</span>;
                         }
-                        return <span className="font-bold text-slate-900">£{dress.price}</span>;
+                        return <span className="font-bold text-slate-900">Â£{dress.price}</span>;
                       })()}
-                      {dress.compareAtPrice && <span className="text-sm text-slate-400 line-through">£{dress.compareAtPrice}</span>}
+                      {dress.compareAtPrice && <span className="text-sm text-slate-400 line-through">Â£{dress.compareAtPrice}</span>}
                     </div>
                     {parseSizes(dress.sizes).length > 0 && <p className="text-xs text-slate-500 mt-1">Sizes: {parseSizes(dress.sizes).join(", ")}</p>}
                     <div className="mt-3 flex gap-2">
                       {isOrderingHidden(dress) ? (
-                        <div className="flex-1 bg-slate-100 text-slate-400 py-2 rounded-lg text-sm font-bold transition flex items-center justify-center gap-1 uppercase tracking-wider">🚫 Not Available</div>
+                        <div className="flex-1 bg-slate-100 text-slate-400 py-2 rounded-lg text-sm font-bold transition flex items-center justify-center gap-1 uppercase tracking-wider">ðŸš« Not Available</div>
                       ) : isPreOrder(dress) ? (
                         <button onClick={(e) => { e.stopPropagation(); openDetailModal(dress); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-lg text-sm font-bold transition flex items-center justify-center gap-1 shadow-sm uppercase tracking-wider">
                           <Clock className="w-3.5 h-3.5" /> Pre-Order
@@ -1293,7 +1293,7 @@ async function handleCheckout(e: React.FormEvent) {
         </section>
       )}
 
-      {/* Onam Sadhya — Pre-Order Section */}
+      {/* Onam Sadhya â€” Pre-Order Section */}
       {showSadhya && (hidePreOrders ? null : (() => {
         const sadhyaCat =
           (settings.onam_sadhya_category_id && categories.find((c) => String(c.id) === String(settings.onam_sadhya_category_id))) ||
@@ -1314,20 +1314,20 @@ async function handleCheckout(e: React.FormEvent) {
                 <div className="absolute inset-0 bg-gradient-to-r from-amber-900/70 via-amber-800/50 to-transparent" />
                 <div className="relative px-6 py-12 md:px-12 md:py-16 text-center text-white">
                   <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.25em] text-amber-200 bg-white/15 border border-white/20 rounded-full px-4 py-1.5 mb-4">
-                    🍛 Onam 2026
+                    ðŸ› Onam 2026
                   </div>
                   <h2 className="font-editorial text-4xl md:text-6xl font-bold leading-[0.95] mb-3">
                     Onam <span className="italic text-amber-200">Sadhya.</span>
                   </h2>
                   <p className="text-amber-50/90 text-base md:text-lg max-w-2xl mx-auto mb-6">
-                    Pre-order your traditional Onam feast — banana chips, sambar powder, payasam mix & more.
+                    Pre-order your traditional Onam feast â€” banana chips, sambar powder, payasam mix & more.
                     Freshly packed & delivered before Thiruvonam.
                   </p>
                   <a
                     href={sadhyaItems.length > 0 ? `#cat-${sadhyaCat.id}` : "#products"}
                     className="inline-flex items-center gap-2 bg-white text-amber-900 px-8 py-3.5 rounded-full font-bold text-sm hover:bg-amber-50 transition shadow-lg"
                   >
-                    {sadhyaItems.length > 0 ? `Shop Sadhya (${sadhyaItems.length} items) →` : "Browse Sadhya Items →"}
+                    {sadhyaItems.length > 0 ? `Shop Sadhya (${sadhyaItems.length} items) â†’` : "Browse Sadhya Items â†’"}
                   </a>
                   <button
                     onClick={() => shareCollection("Onam Sadhya", "onam-sadhya")}
@@ -1348,7 +1348,7 @@ async function handleCheckout(e: React.FormEvent) {
                           {item.images?.[0] ? (
                             <img src={item.images[0]} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-5xl">🍛</div>
+                            <div className="w-full h-full flex items-center justify-center text-5xl">ðŸ›</div>
                           )}
                           <div className="absolute top-3 left-3 flex flex-col gap-1">
                             {discountPct > 0 && <div className="bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">-{discountPct}%</div>}
@@ -1364,16 +1364,16 @@ async function handleCheckout(e: React.FormEvent) {
                             <p className="text-xs text-stone-500 mt-1 line-clamp-2">{item.description}</p>
                           )}
                           <div className="flex items-baseline gap-2 mt-2">
-                            <span className="font-bold text-stone-900">£{item.price}</span>
-                            {item.compareAtPrice && <span className="text-xs text-red-500 line-through">£{item.compareAtPrice}</span>}
+                            <span className="font-bold text-stone-900">Â£{item.price}</span>
+                            {item.compareAtPrice && <span className="text-xs text-red-500 line-through">Â£{item.compareAtPrice}</span>}
                           </div>
                           <div className="flex gap-2 mt-3">
                             {isOrderingHidden(item) ? (
-                              <div className="flex-1 bg-stone-100 text-stone-400 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">🚫 Not Available</div>
+                              <div className="flex-1 bg-stone-100 text-stone-400 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">ðŸš« Not Available</div>
                             ) : (
                             <>
                             {(item.buttonAction === "pre_order" || item.buttonAction === "both") && (
-                              <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
+                              <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">â³ Pre-Order</button>
                             )}
                             {(item.buttonAction === "add_to_bag" || item.buttonAction === "both" || !item.buttonAction) && (
                               <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
@@ -1390,7 +1390,7 @@ async function handleCheckout(e: React.FormEvent) {
               )}
               {sadhyaItems.length === 0 && (
                 <div className="text-center py-10">
-                  <div className="text-5xl mb-4">🍌</div>
+                  <div className="text-5xl mb-4">ðŸŒ</div>
                   <p className="text-stone-600 font-medium">Onam Sadhya items coming soon!</p>
                   <p className="text-sm text-stone-400 mt-1">Click the button above to browse all our products or check back later.</p>
                 </div>
@@ -1429,7 +1429,7 @@ async function handleCheckout(e: React.FormEvent) {
                 <div className="absolute inset-0 bg-gradient-to-r from-pink-900/70 via-pink-800/50 to-transparent" />
                 <div className="relative px-6 py-12 md:px-12 md:py-16 text-center text-white">
                   <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.25em] text-pink-200 bg-white/15 border border-white/20 rounded-full px-4 py-1.5 mb-4">
-                    🌸 Onam 2026
+                    ðŸŒ¸ Onam 2026
                   </div>
                   <h2 className="font-editorial text-4xl md:text-6xl font-bold leading-[0.95] mb-3">
                     <span className="italic text-pink-200">{title}.</span>
@@ -1437,7 +1437,7 @@ async function handleCheckout(e: React.FormEvent) {
                   <p className="text-pink-50/90 text-base md:text-lg max-w-2xl mx-auto mb-6">{desc}</p>
                   <div className="flex gap-3 justify-center flex-wrap">
                     <a href={btnLink} className="inline-flex items-center gap-2 bg-white text-pink-900 px-8 py-3.5 rounded-full font-bold text-sm hover:bg-pink-50 transition shadow-lg">
-                      {pookkalamProducts.length > 0 ? `${btnText} (${pookkalamProducts.length} items) →` : `${btnText} →`}
+                      {pookkalamProducts.length > 0 ? `${btnText} (${pookkalamProducts.length} items) â†’` : `${btnText} â†’`}
                     </a>
                     <button onClick={() => shareCollection(title, "pookkalam")} className="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 text-white border border-white/30 px-5 py-3.5 rounded-full font-bold text-sm transition">
                       <Share2 className="w-4 h-4" /> Share
@@ -1462,7 +1462,7 @@ async function handleCheckout(e: React.FormEvent) {
                           {displayImage ? (
                             <img src={displayImage} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-5xl">🌸</div>
+                            <div className="w-full h-full flex items-center justify-center text-5xl">ðŸŒ¸</div>
                           )}
                           <div className="absolute top-3 left-3 flex flex-col gap-1">
                             {discountPct > 0 && <div className="bg-pink-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">-{discountPct}%</div>}
@@ -1474,8 +1474,8 @@ async function handleCheckout(e: React.FormEvent) {
                         <div className="p-4 cursor-pointer" onClick={() => openDetailModal(item)}>
                           <h3 className="font-semibold text-stone-900 text-sm line-clamp-2">{item.name}</h3>
                           <div className="flex items-baseline gap-2 mt-2">
-                            <span className="font-bold text-stone-900">£{displayPrice}</span>
-                            {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">£{item.compareAtPrice}</span>}
+                            <span className="font-bold text-stone-900">Â£{displayPrice}</span>
+                            {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">Â£{item.compareAtPrice}</span>}
                           </div>
                           {hasVariants && (
                             <div className="flex flex-wrap gap-1.5 mt-2">
@@ -1494,11 +1494,11 @@ async function handleCheckout(e: React.FormEvent) {
                           )}
                           <div className="flex gap-2 mt-3">
                             {isOrderingHidden(item) ? (
-                              <div className="flex-1 bg-stone-100 text-stone-400 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">🚫 Not Available</div>
+                              <div className="flex-1 bg-stone-100 text-stone-400 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">ðŸš« Not Available</div>
                             ) : (
                             <>
                             {(item.buttonAction === "pre_order" || item.buttonAction === "both") && (
-                              <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
+                              <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">â³ Pre-Order</button>
                             )}
                             {(item.buttonAction === "add_to_bag" || item.buttonAction === "both" || !item.buttonAction) && (
                               <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-pink-600 hover:bg-pink-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
@@ -1515,9 +1515,9 @@ async function handleCheckout(e: React.FormEvent) {
               )}
               {pookkalamProducts.length === 0 && hasBanner && (
                 <div className="text-center py-10">
-                  <div className="text-5xl mb-4">🌸</div>
+                  <div className="text-5xl mb-4">ðŸŒ¸</div>
                   <p className="text-stone-600 font-medium">{title} items coming soon!</p>
-                  <p className="text-sm text-stone-400 mt-1">Add products in Admin → Categories → link to this section.</p>
+                  <p className="text-sm text-stone-400 mt-1">Add products in Admin â†’ Categories â†’ link to this section.</p>
                 </div>
               )}
             </div>
@@ -1554,7 +1554,7 @@ async function handleCheckout(e: React.FormEvent) {
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/70 via-emerald-800/50 to-transparent" />
                 <div className="relative px-6 py-12 md:px-12 md:py-16 text-center text-white">
                   <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.25em] text-emerald-200 bg-white/15 border border-white/20 rounded-full px-4 py-1.5 mb-4">
-                    🌿 Onam 2026
+                    ðŸŒ¿ Onam 2026
                   </div>
                   <h2 className="font-editorial text-4xl md:text-6xl font-bold leading-[0.95] mb-3">
                     <span className="italic text-emerald-200">{title}.</span>
@@ -1562,7 +1562,7 @@ async function handleCheckout(e: React.FormEvent) {
                   <p className="text-emerald-50/90 text-base md:text-lg max-w-2xl mx-auto mb-6">{desc}</p>
                   <div className="flex gap-3 justify-center flex-wrap">
                     <a href={btnLink} className="inline-flex items-center gap-2 bg-white text-emerald-900 px-8 py-3.5 rounded-full font-bold text-sm hover:bg-emerald-50 transition shadow-lg">
-                      {freshProducts.length > 0 ? `${btnText} (${freshProducts.length} items) →` : `${btnText} →`}
+                      {freshProducts.length > 0 ? `${btnText} (${freshProducts.length} items) â†’` : `${btnText} â†’`}
                     </a>
                     <button onClick={() => shareCollection(title, "fresh-pookkal")} className="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 text-white border border-white/30 px-5 py-3.5 rounded-full font-bold text-sm transition">
                       <Share2 className="w-4 h-4" /> Share
@@ -1590,7 +1590,7 @@ async function handleCheckout(e: React.FormEvent) {
                           {displayImage ? (
                             <img src={displayImage} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-5xl">🌿</div>
+                            <div className="w-full h-full flex items-center justify-center text-5xl">ðŸŒ¿</div>
                           )}
                           <div className="absolute top-3 left-3 flex flex-col gap-1">
                             {discountPct > 0 && <div className="bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">-{discountPct}%</div>}
@@ -1602,8 +1602,8 @@ async function handleCheckout(e: React.FormEvent) {
                         <div className="p-4 cursor-pointer" onClick={() => openDetailModal(item)}>
                           <h3 className="font-semibold text-stone-900 text-sm line-clamp-2">{item.name}</h3>
                           <div className="flex items-baseline gap-2 mt-2">
-                            <span className="font-bold text-stone-900">£{displayPrice}</span>
-                            {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">£{item.compareAtPrice}</span>}
+                            <span className="font-bold text-stone-900">Â£{displayPrice}</span>
+                            {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">Â£{item.compareAtPrice}</span>}
                           </div>
                           {allSizes.length > 0 && (
                             <div className="flex flex-wrap gap-1.5 mt-2">
@@ -1631,11 +1631,11 @@ async function handleCheckout(e: React.FormEvent) {
                           )}
                           <div className="flex gap-2 mt-3">
                             {isOrderingHidden(item) ? (
-                              <div className="flex-1 bg-stone-100 text-stone-400 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">🚫 Not Available</div>
+                              <div className="flex-1 bg-stone-100 text-stone-400 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">ðŸš« Not Available</div>
                             ) : (
                             <>
                             {(effAction === "pre_order" || effAction === "both") && (
-                              <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">⏳ Pre-Order</button>
+                              <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">â³ Pre-Order</button>
                             )}
                             {(effAction === "add_to_bag" || effAction === "both" || !effAction) && (
                               <button onClick={(e) => { e.stopPropagation(); openDetailModal(item); }} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition">Add to Cart</button>
@@ -1652,9 +1652,9 @@ async function handleCheckout(e: React.FormEvent) {
               )}
               {freshProducts.length === 0 && hasBanner && (
                 <div className="text-center py-10">
-                  <div className="text-5xl mb-4">🌿</div>
+                  <div className="text-5xl mb-4">ðŸŒ¿</div>
                   <p className="text-stone-600 font-medium">{title} items coming soon!</p>
-                  <p className="text-sm text-stone-400 mt-1">Add products in Admin → Categories → link to this section.</p>
+                  <p className="text-sm text-stone-400 mt-1">Add products in Admin â†’ Categories â†’ link to this section.</p>
                 </div>
               )}
             </div>
@@ -1672,7 +1672,7 @@ async function handleCheckout(e: React.FormEvent) {
                 Shop by <span className="italic text-emerald-700">category.</span>
               </h2>
             </div>
-            <p className="text-stone-600 max-w-sm">Six shelves, one promise — authentic South Indian pantry staples, always in stock.</p>
+            <p className="text-stone-600 max-w-sm">Six shelves, one promise â€” authentic South Indian pantry staples, always in stock.</p>
             <div className="flex gap-2 mt-4 flex-wrap">
               {shopCategories.map((c) => (
                 <a key={c.id} href={`#cat-${c.id}`} className="px-4 py-1.5 bg-white/60 backdrop-blur-sm rounded-full text-xs font-medium text-stone-700 hover:bg-white border border-stone-200/80 transition">
@@ -1685,7 +1685,7 @@ async function handleCheckout(e: React.FormEvent) {
             {shopCategories.map((cat) => (
               <button key={cat.id} onClick={() => { setCatFilter(String(cat.id)); window.location.href = "#products"; }} className="bg-white rounded-xl p-6 text-center border border-slate-200 hover:border-green-500 hover:shadow-md transition group">
                 <div className="w-14 h-14 mx-auto bg-green-100 rounded-full flex items-center justify-center text-green-700 text-2xl mb-3 group-hover:bg-green-600 group-hover:text-white transition">
-                  {cat.name.includes("Rice") ? "🌾" : cat.name.includes("Spice") ? "🌶️" : cat.name.includes("Snack") ? "🍪" : cat.name.includes("Beverage") ? "☕" : cat.name.includes("Dairy") ? "🧀" : cat.name.includes("Frozen") ? "❄️" : cat.name.includes("Pookkal") || cat.name.includes("Flower") || cat.name.includes("Garland") ? "🌸" : "📦"}
+                  {cat.name.includes("Rice") ? "ðŸŒ¾" : cat.name.includes("Spice") ? "ðŸŒ¶ï¸" : cat.name.includes("Snack") ? "ðŸª" : cat.name.includes("Beverage") ? "â˜•" : cat.name.includes("Dairy") ? "ðŸ§€" : cat.name.includes("Frozen") ? "â„ï¸" : cat.name.includes("Pookkal") || cat.name.includes("Flower") || cat.name.includes("Garland") ? "ðŸŒ¸" : "ðŸ“¦"}
                 </div>
                 <h3 className="font-semibold text-slate-900 text-sm">{cat.name}</h3>
               </button>
@@ -1725,7 +1725,7 @@ async function handleCheckout(e: React.FormEvent) {
                     {bannerDesc && <p className="text-emerald-50/90 text-base md:text-lg max-w-2xl mx-auto mb-6">{bannerDesc}</p>}
                     <div className="flex gap-3 justify-center flex-wrap">
                       <a href={filtered.length > 0 ? `#cat-${cat.id}-items` : "#products"} className="inline-flex items-center gap-2 bg-white text-emerald-900 px-8 py-3.5 rounded-full font-bold text-sm hover:bg-emerald-50 transition shadow-lg">
-                        {filtered.length > 0 ? `${bannerBtnText} (${filtered.length} items) →` : `${bannerBtnText} →`}
+                        {filtered.length > 0 ? `${bannerBtnText} (${filtered.length} items) â†’` : `${bannerBtnText} â†’`}
                       </a>
                     </div>
                   </div>
@@ -1734,7 +1734,7 @@ async function handleCheckout(e: React.FormEvent) {
               <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
                 <div>
                   <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.22em] text-emerald-700/80 mb-3">
-                    <span className="w-8 h-px bg-emerald-700/40" /> {cat.name} · {filtered.length} items
+                    <span className="w-8 h-px bg-emerald-700/40" /> {cat.name} Â· {filtered.length} items
                   </div>
                   <h2 className="font-editorial text-4xl md:text-5xl font-bold text-[#0b2416] leading-[0.95]">
                     {cat.name} <span className="italic text-emerald-700">collection.</span>
@@ -1754,17 +1754,17 @@ async function handleCheckout(e: React.FormEvent) {
                         {item.images?.[0] ? (
                           <img src={item.images[0]} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-5xl">📦</div>
+                          <div className="w-full h-full flex items-center justify-center text-5xl">ðŸ“¦</div>
                         )}
                         <div className="absolute top-3 left-3 flex flex-col gap-1 items-start">
                           {discountPct > 0 && <div className="bg-amber-400 text-[#0b2416] text-[10px] font-bold font-mono uppercase tracking-wider px-2 py-1 rounded-md shadow-xs">-{discountPct}%</div>}
                           {idx % 2 === 0 ? (
                             <div className="bg-rose-600 text-white text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md shadow-xs flex items-center gap-1">
-                              🔥 UK Trending
+                              ðŸ”¥ UK Trending
                             </div>
                           ) : (
                             <div className="bg-emerald-800 text-white text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md shadow-xs flex items-center gap-1">
-                              ⭐ Best Seller
+                              â­ Best Seller
                             </div>
                           )}
                         </div>
@@ -1779,8 +1779,8 @@ async function handleCheckout(e: React.FormEvent) {
                         </div>
                         <h3 className="font-display text-[15px] font-semibold text-[#0b2416] line-clamp-2 leading-snug">{item.name}</h3>
                         <div className="flex items-baseline gap-2 mt-2">
-                          <span className="font-display text-xl font-bold text-[#0b2416]">£{item.price}</span>
-                          {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">£{item.compareAtPrice}</span>}
+                          <span className="font-display text-xl font-bold text-[#0b2416]">Â£{item.price}</span>
+                          {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">Â£{item.compareAtPrice}</span>}
                         </div>
                       </div>
                     </div>
@@ -1800,7 +1800,7 @@ async function handleCheckout(e: React.FormEvent) {
             <div>
               <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.22em] text-emerald-700/80 mb-3">
                 <span className="w-8 h-px bg-emerald-700/40" />
-                The pantry · {filteredItems.length} {filteredItems.length === 1 ? "item" : "items"}
+                The pantry Â· {filteredItems.length} {filteredItems.length === 1 ? "item" : "items"}
               </div>
               <h2 className="font-editorial text-4xl md:text-5xl lg:text-6xl font-bold text-[#0b2416] leading-[0.95]">
                 Picked <span className="italic text-emerald-700">fresh,</span> priced fair.
@@ -1833,7 +1833,7 @@ async function handleCheckout(e: React.FormEvent) {
                     {item.images?.[0] ? (
                       <img src={item.images[0]} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-5xl">📦</div>
+                      <div className="w-full h-full flex items-center justify-center text-5xl">ðŸ“¦</div>
                     )}
                     {discountPct > 0 && (
                       <div className="absolute top-3 left-3 bg-amber-400 text-[#0b2416] text-[10px] font-bold font-mono uppercase tracking-wider px-2 py-1 rounded-md">-{discountPct}%</div>
@@ -1861,8 +1861,8 @@ async function handleCheckout(e: React.FormEvent) {
                     </div>
                     <h3 className="font-display text-[15px] font-semibold text-[#0b2416] line-clamp-2 leading-snug">{item.name}</h3>
                     <div className="flex items-baseline gap-2 mt-2">
-                      <span className="font-display text-xl font-bold text-[#0b2416]">£{item.price}</span>
-                      {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">£{item.compareAtPrice}</span>}
+                      <span className="font-display text-xl font-bold text-[#0b2416]">Â£{item.price}</span>
+                      {item.compareAtPrice && <span className="text-xs text-stone-400 line-through">Â£{item.compareAtPrice}</span>}
                     </div>
                   </div>
                 </div>
@@ -1871,7 +1871,7 @@ async function handleCheckout(e: React.FormEvent) {
           </div>
           {filteredItems.length === 0 && (
             <div className="text-center py-16">
-              <div className="text-5xl mb-3">🔍</div>
+              <div className="text-5xl mb-3">ðŸ”</div>
               <p className="text-stone-600">No products on this shelf yet. Try another category.</p>
             </div>
           )}
@@ -1899,7 +1899,7 @@ async function handleCheckout(e: React.FormEvent) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="bg-green-100 rounded-2xl h-80 flex items-center justify-center">
               <div className="text-center">
-                <div className="w-20 h-20 mx-auto bg-green-600 rounded-full flex items-center justify-center text-white text-3xl mb-4">🏪</div>
+                <div className="w-20 h-20 mx-auto bg-green-600 rounded-full flex items-center justify-center text-white text-3xl mb-4">ðŸª</div>
                 <span className="font-bold text-green-800 text-xl">Kerala Super Store</span>
               </div>
             </div>
@@ -1967,7 +1967,7 @@ async function handleCheckout(e: React.FormEvent) {
               {winners.map((w) => (
                 <div key={w.id} className="text-center">
                   <div className="w-24 h-24 mx-auto rounded-full overflow-hidden bg-slate-100 border-4 border-amber-400 mb-3">
-                    {w.photo ? <img src={w.photo} alt={w.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">🏆</div>}
+                    {w.photo ? <img src={w.photo} alt={w.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">ðŸ†</div>}
                   </div>
                   <h4 className="font-semibold text-slate-900 text-sm">{w.name}</h4>
                   <p className="text-xs text-blue-600 mt-1">{w.prize}</p>
@@ -2018,15 +2018,15 @@ async function handleCheckout(e: React.FormEvent) {
             <div>
               <h4 className="font-semibold text-white mb-4">Contact Info</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href={settings.store_map_link || "https://www.google.com/maps/search/Kerala+superstore+ltd+Old+Market+Street+M98DX+Manchester"} target="_blank" className="hover:text-white transition">📍 {settings.store_address || "Old Market Street, M98DX, Manchester"}</a></li>
-                <li><a href={`tel:${(settings.store_phone || "+447749132122").replace(/ /g, '')}`} className="hover:text-white transition">📞 {settings.store_phone || "+44 7749 132122"}</a></li>
-                <li><a href={whatsappLink} target="_blank" className="hover:text-white transition">💬 {settings.store_whatsapp || "+44 7749 132122"}</a></li>
-                <li>✉️ {settings.store_email || "info@keralasuperstore.co.uk"}</li>
+                <li><a href={settings.store_map_link || "https://www.google.com/maps/search/Kerala+superstore+ltd+Old+Market+Street+M98DX+Manchester"} target="_blank" className="hover:text-white transition">ðŸ“ {settings.store_address || "Old Market Street, M98DX, Manchester"}</a></li>
+                <li><a href={`tel:${(settings.store_phone || "+447749132122").replace(/ /g, '')}`} className="hover:text-white transition">ðŸ“ž {settings.store_phone || "+44 7749 132122"}</a></li>
+                <li><a href={whatsappLink} target="_blank" className="hover:text-white transition">ðŸ’¬ {settings.store_whatsapp || "+44 7749 132122"}</a></li>
+                <li>âœ‰ï¸ {settings.store_email || "info@keralasuperstore.co.uk"}</li>
               </ul>
             </div>
           </div>
           <div className="border-t border-slate-800 mt-8 pt-8 text-center text-sm text-slate-500">
-            <p>© 2026 Kerala Super Store. All rights reserved.</p>
+            <p>Â© 2026 Kerala Super Store. All rights reserved.</p>
           </div>
         </div>
       </footer>
@@ -2055,13 +2055,13 @@ async function handleCheckout(e: React.FormEvent) {
                 cart.map((item) => (
                   <div key={item.id} className="flex items-center gap-3 bg-slate-50 rounded-lg p-3">
                     <div className="w-14 h-14 bg-slate-200 rounded-lg overflow-hidden flex-shrink-0">
-                      {item.item?.images?.[0] ? <img src={item.item.images[0]} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xl">📦</div>}
+                      {item.item?.images?.[0] ? <img src={item.item.images[0]} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xl">ðŸ“¦</div>}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sm text-slate-900 truncate">
                         {item.item?.name} {item.variantName ? `(${item.variantName})` : ""}{item.variantSize ? ` - Size: ${item.variantSize}` : ""}
                       </p>
-                      <p className="text-xs text-slate-500">£{getCartUnitPrice(item)}</p>
+                      <p className="text-xs text-slate-500">Â£{getCartUnitPrice(item)}</p>
                     </div>
                     <div className="flex items-center border border-slate-300 rounded-lg">
                       <button onClick={() => updateCartQty(item.id, item.quantity - 1)} className="px-2 py-1 hover:bg-slate-100 text-sm">-</button>
@@ -2077,7 +2077,7 @@ async function handleCheckout(e: React.FormEvent) {
               <div className="p-4 border-t">
                 <div className="flex items-center justify-between mb-4">
                   <span className="font-semibold">Total:</span>
-                  <span className="text-xl font-bold">£{cartTotal.toFixed(2)}</span>
+                  <span className="text-xl font-bold">Â£{cartTotal.toFixed(2)}</span>
                 </div>
                 <button
                    type="button"
@@ -2128,15 +2128,15 @@ async function handleCheckout(e: React.FormEvent) {
                       return (
                         <div key={item.id} className="flex justify-between text-sm py-1">
                           <span>{item.item?.name}{item.variantSize ? ` (${item.variantName || ''} Size: ${item.variantSize})` : ''} x{item.quantity}</span>
-                          <span>£{(parseFloat(effPrice) * item.quantity).toFixed(2)}</span>
+                          <span>Â£{(parseFloat(effPrice) * item.quantity).toFixed(2)}</span>
                         </div>
                       );
                     })}
                     <div className="border-t mt-2 pt-2 flex justify-between font-bold">
                       <span>Total</span>
-                      <span>£{cartTotal.toFixed(2)}</span>
+                      <span>Â£{cartTotal.toFixed(2)}</span>
                     </div>
-                    <p className="text-sm text-slate-500 mt-2">💰 Payment: Cash on Delivery</p>
+                    <p className="text-sm text-slate-500 mt-2">ðŸ’° Payment: Cash on Delivery</p>
                   </div>
                   <button
                     type="submit"
@@ -2205,7 +2205,7 @@ async function handleCheckout(e: React.FormEvent) {
                 {selectedImage ? (
                   <img src={selectedImage} alt={detailProduct.name} className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-6xl">👗</div>
+                  <div className="w-full h-full flex items-center justify-center text-6xl">ðŸ‘—</div>
                 )}
                 {selectedColor && (
                   <span className="absolute bottom-3 left-3 bg-black/75 text-white text-xs font-mono px-3 py-1 rounded-full backdrop-blur-sm">
@@ -2232,11 +2232,11 @@ async function handleCheckout(e: React.FormEvent) {
                   </div>
                 </div>
 
-                {/* Important Color Warning Box — only for dresses */}
+                {/* Important Color Warning Box â€” only for dresses */}
                 {detailProduct.isDress && (
                 <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-amber-950 space-y-1.5 shadow-sm">
                   <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-amber-900">
-                    <span className="text-amber-600">⚠️</span> Important:
+                    <span className="text-amber-600">âš ï¸</span> Important:
                   </div>
                   <p className="text-xs leading-relaxed text-amber-900/90 font-medium">
                     The <strong className="text-stone-900">colour you buy</strong> will be the <strong className="text-stone-900">image you select</strong> from the thumbnails. Please choose the exact colour image, then click <strong className="text-amber-950">ADD TO BAG</strong> or <strong className="text-amber-950">BUY NOW</strong>.
@@ -2255,8 +2255,8 @@ async function handleCheckout(e: React.FormEvent) {
                   const modalPrice = isItemWithVariants && detailSelectedVariant ? detailSelectedVariant.price : (selectedSize && getSizePrice(detailProduct, selectedSize) ? getSizePrice(detailProduct, selectedSize) : detailProduct.price);
                   return (
                     <div className="flex items-baseline gap-3 pt-1">
-                      <span className="font-editorial text-3xl font-bold text-stone-900">£{modalPrice}</span>
-                      {detailProduct.compareAtPrice && <span className="text-base text-stone-400 line-through">£{detailProduct.compareAtPrice}</span>}
+                      <span className="font-editorial text-3xl font-bold text-stone-900">Â£{modalPrice}</span>
+                      {detailProduct.compareAtPrice && <span className="text-base text-stone-400 line-through">Â£{detailProduct.compareAtPrice}</span>}
                       {isItemWithVariants && detailSelectedVariant && (
                         <span className="text-[10px] text-emerald-600 font-semibold font-mono bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                           {detailSelectedVariant.size}
@@ -2292,7 +2292,7 @@ async function handleCheckout(e: React.FormEvent) {
                             <span>{size}</span>
                             {sp && (
                               <span className={`text-[9px] font-mono ${selectedSize === size ? "text-emerald-200" : "text-emerald-600"}`}>
-                                £{sp}
+                                Â£{sp}
                               </span>
                             )}
                           </button>
@@ -2302,7 +2302,7 @@ async function handleCheckout(e: React.FormEvent) {
                   </div>
                 )}
 
-                {/* Available Sizes — Item Sizes */}
+                {/* Available Sizes â€” Item Sizes */}
                 {!detailProduct.isDress && parseSizes(detailProduct.sizes).length > 0 && (
                   <div>
                     <label className="block text-xs font-mono uppercase tracking-wider text-stone-500 mb-2">Available Sizes:</label>
@@ -2323,7 +2323,7 @@ async function handleCheckout(e: React.FormEvent) {
                             <span>{size}</span>
                             {sp && (
                               <span className={`text-[9px] font-mono ${selectedSize === size ? "text-blue-200" : "text-emerald-600"}`}>
-                                £{sp}
+                                Â£{sp}
                               </span>
                             )}
                           </button>
@@ -2351,7 +2351,7 @@ async function handleCheckout(e: React.FormEvent) {
                         >
                           <span>{v.size}</span>
                           <span className={`text-[9px] font-mono ${detailSelectedVariant?.id === v.id ? "text-amber-100" : "text-emerald-600"}`}>
-                            £{v.price}
+                            Â£{v.price}
                           </span>
                         </button>
                       ))}
@@ -2374,11 +2374,11 @@ async function handleCheckout(e: React.FormEvent) {
                   </div>
                 </div>
 
-                {/* Action Buttons (ADD TO BAG / PRE-ORDER → both go to cart) */}
+                {/* Action Buttons (ADD TO BAG / PRE-ORDER â†’ both go to cart) */}
                 <div className="space-y-3 pt-3">
                   {isOrderingHidden(detailProduct) ? (
                     <div className="w-full py-3.5 rounded-xl border border-rose-200 bg-rose-50 text-rose-800 font-bold text-sm flex items-center justify-center gap-2 text-center px-4">
-                      🚫 Currently Unavailable for Ordering
+                      ðŸš« Currently Unavailable for Ordering
                     </div>
                   ) : (
                   <>
@@ -2387,10 +2387,10 @@ async function handleCheckout(e: React.FormEvent) {
                     onClick={() => {
                       const isItemWithVariants = detailProduct.variants && detailProduct.variants.length > 0 && !detailProduct.isDress;
                       if (parseSizes(detailProduct.sizes).length > 0 && !selectedSize) {
-                        return alert("⚠️ Please select a size before adding to bag");
+                        return alert("âš ï¸ Please select a size before adding to bag");
                       }
                       if (isItemWithVariants && !detailSelectedVariant) {
-                        return alert("⚠️ Please select a size/weight before adding to bag");
+                        return alert("âš ï¸ Please select a size/weight before adding to bag");
                       }
                       const effPrice = isItemWithVariants && detailSelectedVariant ? detailSelectedVariant.price : getEffectivePrice(detailProduct, selectedSize);
                       const vName = isItemWithVariants && detailSelectedVariant ? detailSelectedVariant.size : selectedColor;
@@ -2406,7 +2406,7 @@ async function handleCheckout(e: React.FormEvent) {
                     }`}
                   >
                     {isPreOrder(detailProduct) ? (
-                      <><Clock className="w-4 h-4" /> PRE-ORDER — ADD TO CART</>
+                      <><Clock className="w-4 h-4" /> PRE-ORDER â€” ADD TO CART</>
                     ) : (
                       <><ShoppingCart className="w-4 h-4" /> ADD TO BAG</>
                     )}
@@ -2417,10 +2417,10 @@ async function handleCheckout(e: React.FormEvent) {
                     onClick={() => {
                       const isItemWithVariants = detailProduct.variants && detailProduct.variants.length > 0 && !detailProduct.isDress;
                       if (parseSizes(detailProduct.sizes).length > 0 && !selectedSize) {
-                        return alert("⚠️ Please select a size before ordering");
+                        return alert("âš ï¸ Please select a size before ordering");
                       }
                       if (isItemWithVariants && !detailSelectedVariant) {
-                        return alert("⚠️ Please select a size/weight before ordering");
+                        return alert("âš ï¸ Please select a size/weight before ordering");
                       }
                       const prefix = isPreOrder(detailProduct) ? "PRE-ORDER" : "BUY NOW";
                       const name = detailProduct.name;
@@ -2428,12 +2428,12 @@ async function handleCheckout(e: React.FormEvent) {
                       const clr = isItemWithVariants && detailSelectedVariant ? detailSelectedVariant.size : (selectedColor || '-');
                       const sz = isItemWithVariants && detailSelectedVariant ? detailSelectedVariant.size : (selectedSize || '-');
                       const effPrice2 = isItemWithVariants && detailSelectedVariant ? detailSelectedVariant.price : getEffectivePrice(detailProduct, selectedSize);
-                      const msg = `${prefix}\n\nItem: ${name}\nSize: ${sz}\nQty: ${detailQty}\nPrice: £${effPrice2}\nImage: ${img}`;
+                      const msg = `${prefix}\n\nItem: ${name}\nSize: ${sz}\nQty: ${detailQty}\nPrice: Â£${effPrice2}\nImage: ${img}`;
                       window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, "_blank");
                     }}
                     className="w-full bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition uppercase tracking-wider"
                   >
-                    ⚡ {isPreOrder(detailProduct) ? "WHATSAPP PRE-ORDER" : "BUY NOW VIA WHATSAPP"}
+                    âš¡ {isPreOrder(detailProduct) ? "WHATSAPP PRE-ORDER" : "BUY NOW VIA WHATSAPP"}
                   </button>
                   </>
                   )}
