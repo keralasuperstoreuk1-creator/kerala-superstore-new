@@ -1697,7 +1697,7 @@ Shop by <span className="italic text-emerald-700">category.</span>
             {shopCategories.map((cat) => (
               <button key={cat.id} onClick={() => { setCatFilter(String(cat.id)); window.location.href = "#products"; }} className="bg-white rounded-xl p-6 text-center border border-slate-200 hover:border-green-500 hover:shadow-md transition group">
                 <div className="w-14 h-14 mx-auto bg-green-100 rounded-full flex items-center justify-center text-green-700 text-2xl mb-3 group-hover:bg-green-600 group-hover:text-white transition">
-                  {cat.name.includes("{cat.name.includes("{getCategoryIcon(cat.name)
+                  {cat.name.includes("{cat.name.includes("{categoryIcons[Object.keys(categoryIcons).find(k => cat.name.includes(k))] || String.fromCodePoint(0x1F4E6)
                 </div>
                 <h3 className="font-semibold text-slate-900 text-sm">{cat.name}</h3>
               </button>
