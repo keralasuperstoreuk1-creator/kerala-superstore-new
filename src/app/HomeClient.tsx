@@ -1685,7 +1685,7 @@ async function handleCheckout(e: React.FormEvent) {
             {shopCategories.map((cat) => (
               <button key={cat.id} onClick={() => { setCatFilter(String(cat.id)); window.location.href = "#products"; }} className="bg-white rounded-xl p-6 text-center border border-slate-200 hover:border-green-500 hover:shadow-md transition group">
                 <div className="w-14 h-14 mx-auto bg-green-100 rounded-full flex items-center justify-center text-green-700 text-2xl mb-3 group-hover:bg-green-600 group-hover:text-white transition">
-                  {cat.name.includes("{cat.name.includes("Rice") ? "\u{1F33E}" : cat.name.includes("Spice") ? "\u{1F336}\u{FE0F}" : cat.name.includes("Snack") ? "\u{1F36A}" : cat.name.includes("Beverage") ? "\u{2615}\u{FE0F}" : cat.name.includes("Dairy") ? "\u{1F9C0}" : cat.name.includes("Frozen") ? "\u{2744}\u{FE0F}" : cat.name.includes("Pookkal") || cat.name.includes("Flower") || cat.name.includes("Garland") ? "\u{1F338}" : "\u{1F4E6"}
+                  {cat.name.includes("{cat.name.includes("{cat.name.includes("Rice") ? "\u{1F33E}" : cat.name.includes("Spice") ? "\u{1F336}" : cat.name.includes("Snack") ? "\u{1F36A}" : cat.name.includes("Beverage") ? "\u{2615}" : cat.name.includes("Dairy") ? "\u{1F9C0}" : cat.name.includes("Frozen") ? "\u{2744}" : cat.name.includes("Pookkal") || cat.name.includes("Flower") || cat.name.includes("Garland") ? "\u{1F338}" : "\u{1F4E6"}
                 </div>
                 <h3 className="font-semibold text-slate-900 text-sm">{cat.name}</h3>
               </button>
