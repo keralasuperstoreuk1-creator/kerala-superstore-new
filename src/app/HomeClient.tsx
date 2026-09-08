@@ -267,17 +267,7 @@ const [checkoutLoading, setCheckoutLoading] = useState(false);
     "kids-girls": parseInt(settings.order_kids_girls || "3"),
     combo: parseInt(settings.order_combo || "4"),
   };
-  const getCategoryIcon = (name: string) => {
-    const icons: Record<string, number> = {
-      Rice: 0x1F33E, Spice: 0x1F336, Snack: 0x1F36A,
-      Beverage: 0x2615, Dairy: 0x1F9C0, Frozen: 0x2744,
-      Pookkal: 0x1F338, Flower: 0x1F338, Garland: 0x1F338,
-    };
-    for (const [key, code] of Object.entries(icons)) {
-      if (name.includes(key)) return String.fromCodePoint(code);
-    }
-    return String.fromCodePoint(0x1F4E6);
-  };
+  
 
   // Sorted dresses by admin-configured order
   const sortedDresses = [...dresses].sort((a, b) => {
@@ -1680,7 +1670,18 @@ async function handleCheckout(e: React.FormEvent) {
                 <span className="w-8 h-px bg-emerald-700/40" /> The aisles
               </div>
               <h2 className="font-editorial text-4xl md:text-5xl font-bold text-[#0b2416] leading-[0.95]">
-                Shop by <span className="italic text-emerald-700">category.</span>
+                  const categoryIcons: Record<string, string> = {
+    Rice: String.fromCodePoint(0x1F33E),
+    Spice: String.fromCodePoint(0x1F336),
+    Snack: String.fromCodePoint(0x1F36A),
+    Beverage: String.fromCodePoint(0x2615),
+    Dairy: String.fromCodePoint(0x1F9C0),
+    Frozen: String.fromCodePoint(0x2744),
+    Pookkal: String.fromCodePoint(0x1F338),
+    Flower: String.fromCodePoint(0x1F338),
+    Garland: String.fromCodePoint(0x1F338),
+  };
+Shop by <span className="italic text-emerald-700">category.</span>
               </h2>
             </div>
             <p className="text-stone-600 max-w-sm">Six shelves, one promise â€” authentic South Indian pantry staples, always in stock.</p>
