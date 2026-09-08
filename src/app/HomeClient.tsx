@@ -1670,7 +1670,7 @@ async function handleCheckout(e: React.FormEvent) {
                 <span className="w-8 h-px bg-emerald-700/40" /> The aisles
               </div>
               <h2 className="font-editorial text-4xl md:text-5xl font-bold text-[#0b2416] leading-[0.95]">
-                  const categoryIcons: Record<string, string> = {
+                  const const categoryIcons: Record<string, string> = {
     Rice: String.fromCodePoint(0x1F33E),
     Spice: String.fromCodePoint(0x1F336),
     Snack: String.fromCodePoint(0x1F36A),
