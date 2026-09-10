@@ -1670,18 +1670,7 @@ async function handleCheckout(e: React.FormEvent) {
                 <span className="w-8 h-px bg-emerald-700/40" /> The aisles
               </div>
               <h2 className="font-editorial text-4xl md:text-5xl font-bold text-[#0b2416] leading-[0.95]">
-                  const const categoryIcons: Record<string, string> = {
-    Rice: String.fromCodePoint(0x1F33E),
-    Spice: String.fromCodePoint(0x1F336),
-    Snack: String.fromCodePoint(0x1F36A),
-    Beverage: String.fromCodePoint(0x2615),
-    Dairy: String.fromCodePoint(0x1F9C0),
-    Frozen: String.fromCodePoint(0x2744),
-    Pookkal: String.fromCodePoint(0x1F338),
-    Flower: String.fromCodePoint(0x1F338),
-    Garland: String.fromCodePoint(0x1F338),
-  };
-Shop by <span className="italic text-emerald-700">category.</span>
+                  const Shop by <span className="italic text-emerald-700">category.</span>
               </h2>
             </div>
             <p className="text-stone-600 max-w-sm">Six shelves, one promise â€” authentic South Indian pantry staples, always in stock.</p>
@@ -1697,7 +1686,7 @@ Shop by <span className="italic text-emerald-700">category.</span>
             {shopCategories.map((cat) => (
               <button key={cat.id} onClick={() => { setCatFilter(String(cat.id)); window.location.href = "#products"; }} className="bg-white rounded-xl p-6 text-center border border-slate-200 hover:border-green-500 hover:shadow-md transition group">
                 <div className="w-14 h-14 mx-auto bg-green-100 rounded-full flex items-center justify-center text-green-700 text-2xl mb-3 group-hover:bg-green-600 group-hover:text-white transition">
-                  {cat.name.includes("{cat.name.includes("{categoryIcons[Object.keys(categoryIcons).find(k => cat.name.includes(k))] || String.fromCodePoint(0x1F4E6)
+                  {cat.name.includes("{cat.name.includes("{cat.name.includes("Rice") ? "🌾" : cat.name.includes("Spice") ? "🌶️" : cat.name.includes("Snack") ? "🍪" : cat.name.includes("Beverage") ? "☕" : cat.name.includes("Dairy") ? "🧀" : cat.name.includes("Frozen") ? "❄️" : cat.name.includes("Pookkal") || cat.name.includes("Flower") || cat.name.includes("Garland") ? "🌸" : "📦"
                 </div>
                 <h3 className="font-semibold text-slate-900 text-sm">{cat.name}</h3>
               </button>
